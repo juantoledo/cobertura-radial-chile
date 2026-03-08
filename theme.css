@@ -36,10 +36,35 @@
   vertical-align: middle;
 }
 
+/* Download button — shared, more prominent */
+.btn-download {
+  background: rgba(0, 212, 255, 0.15) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+.btn-download:hover {
+  background: rgba(0, 212, 255, 0.25) !important;
+  border-color: var(--accent) !important;
+  color: var(--text-bright) !important;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+}
+
 /* Theme toggle button — shared */
 #theme-toggle:hover {
   border-color: var(--accent) !important;
   color: var(--accent) !important;
+}
+
+/* Light mode — download button */
+html[data-theme="light"] .btn-download {
+  background: rgba(0, 136, 204, 0.12) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+html[data-theme="light"] .btn-download:hover {
+  background: rgba(0, 136, 204, 0.2) !important;
+  box-shadow: 0 0 12px rgba(0, 136, 204, 0.25);
 }
 
 /* Light mode overrides — applied when html[data-theme="light"] */
@@ -78,6 +103,13 @@ html[data-theme="light"] .leaflet-control-attribution {
 }
 html[data-theme="light"] .leaflet-control-attribution a {
   color: var(--accent) !important;
+}
+
+/* Light mode — methodology info tooltip (mapa) */
+html[data-theme="light"] .meth-info:hover::after {
+  background: var(--surface2);
+  border-color: var(--border);
+  color: var(--text);
 }
 
 /* Light mode — methodology bar (mapa) */
@@ -137,6 +169,16 @@ html[data-theme="light"] .legend-title {
 }
 html[data-theme="light"] .legend-zone {
   color: var(--text);
+}
+
+/* Light mode — sidebar download (mapa) */
+html[data-theme="light"] .sb-download-neighbors {
+  background: rgba(0, 136, 204, 0.1);
+  border-color: rgba(0, 136, 204, 0.4);
+  color: var(--accent);
+}
+html[data-theme="light"] .sb-download-neighbors:hover {
+  background: rgba(0, 136, 204, 0.18);
 }
 
 /* Light mode — sb-row borders (mapa sidebar) */
