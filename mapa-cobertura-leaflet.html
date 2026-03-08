@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAPA COBERTURA — REPETIDORAS RA CHILE</title>
+<script>(function(){try{var m=document.cookie.match(/(^|\s)ra-theme=([^;]+)/);var t=(m&&m[2])||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="stylesheet" href="theme.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="data.js"></script>
+<script src="export-csv.js"></script>
+<script src="theme.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%; overflow: hidden; background: var(--bg); color: var(--text);
+  font-family: 'Barlow', sans-serif; font-size: 15px; line-height: 1.5;
+}
+
+/* ── LAYOUT ── */
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ── HEADER ── */
+.header {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 20px 32px; display: flex; align-items: center; gap: 20px; flex-shrink: 0;
+}
+.header-signal { font-family: 'Share Tech Mono', monospace; font-size: 20px; color: var(--accent); letter-spacing: 0.08em; }
+.header-title { flex: 1; }
+.header-title h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 0.04em; color: var(--text-bright); text-transform: uppercase; }
+.header-title p  { font-size: 13px; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; }
+.theme-btn {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim);
+  width: 40px; height: 40px; border-radius: 6px; cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0;
+}
+.header-link { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: var(--text-dim); text-decoration: none; padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all .15s; }
+.header-link:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── METHODOLOGY BAR ── */
+.methodology-bar {
+  background: rgba(8,12,20,0.92); border-bottom: 1px solid var(--border);
+  padding: 12px 32px; display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0; flex-wrap: wrap; line-height: 1.5;
+}
+.meth-label {
+  font-family: 'Share Tech Mono', monospace; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; color: var(--accent); white-space: nowrap;
+  background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);
+  padding: 3px 8px; border-radius: 3px;
+}
+.meth-sep  { color: #2a4060; font-size: 14px; }
+.meth-text { color: var(--text-dim); font-size: 13px; }
+.meth-text strong { color: var(--text); }
+.meth-warn { color: #ff6b35cc; font-size: 13px; font-family: 'Barlow', sans-serif; letter-spacing: .03em; }
+/* ── CONTROLS ── */
+.controls {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 16px 32px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; flex-wrap: wrap;
+}
+.ctrl-group { display: flex; align-items: center; gap: 8px; }
+.ctrl-label { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-dim); letter-spacing: 0.08em; white-space: nowrap; }
+select, input[type=text] {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 4px; padding: 7px 10px;
+  font-family: 'Share Tech Mono', monospace; font-size: 14px; outline: none;
+  transition: border-color .15s;
+}
+select:focus, input[type=text]:focus { border-color: var(--accent); }
+input[type=text] { width: 200px; }
+.ctrl-sep { width: 1px; height: 28px; background: var(--border); }
+.btn-group { display: flex; gap: 6px; }
+.mode-btn {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim);
+  border-radius: 4px; padding: 7px 14px; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; cursor: pointer; letter-spacing: .04em; transition: all .15s;
+}
+.mode-btn.active, .mode-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.07); }
+#stat-badge {
+  margin-left: auto; font-family: 'Share Tech Mono', monospace; font-size: 13px;
+  color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border);
+  padding: 7px 12px; border-radius: 4px; white-space: nowrap;
+}
+
+/* ── MAP AREA ── */
+#map-wrap { flex: 1; display: flex; overflow: hidden; position: relative; }
+#map { flex: 1; }
+
+/* ── Leaflet dark overrides ── */
+.leaflet-tile-pane { filter: brightness(0.92) contrast(1.05); }
+.leaflet-marker-icon { border: none !important; outline: none !important; background: none !important; }
+.leaflet-control-zoom a { background: var(--surface2) !important; border-color: var(--border) !important; color: var(--text) !important; font-size: 16px !important; }
+.leaflet-control-zoom a:hover { background: var(--surface) !important; color: var(--accent) !important; }
+.leaflet-control-attribution { background: rgba(8,12,20,0.7) !important; color: var(--text-dim) !important; font-size: 10px !important; }
+.leaflet-control-attribution a { color: var(--text-dim) !important; }
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: 320px; background: var(--surface); border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0;
+  transform: translateX(100%); transition: transform .25s ease; position: absolute; right: 0; top: 0; bottom: 0; z-index: 1000;
+}
+#sidebar.open { transform: translateX(0); }
+.sidebar-header {
+  padding: 20px 24px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.sidebar-signal { font-family: 'Share Tech Mono', monospace; font-size: 19px; color: var(--accent); flex: 1; }
+.sidebar-club   { font-size: 13px; color: var(--text-dim); margin-top: 4px; line-height: 1.3; }
+.sidebar-close  { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 18px; padding: 0 4px; }
+.sidebar-close:hover { color: var(--accent); }
+.sidebar-body   { flex: 1; overflow-y: auto; padding: 14px 24px; }
+.sb-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(30,45,61,0.5); font-size: 14px; }
+.sb-key { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: .06em; }
+.sb-val { color: var(--text-bright); font-family: 'Share Tech Mono', monospace; font-size: 14px; text-align: right; max-width: 180px; word-break: break-all; }
+.sb-section-title {
+  font-family: 'Share Tech Mono', monospace; font-size: 13px; font-weight: 700;
+  letter-spacing: .1em; color: var(--text-dim); margin: 18px 0 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sb-section-title::after { content:''; flex:1; height:1px; background: var(--border); }
+.sb-download-neighbors { margin-left: auto; font-size: 11px; font-weight: 400; color: var(--text-dim); text-decoration: none; white-space: nowrap; }
+.sb-download-neighbors:hover { color: var(--accent); }
+.neighbor-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(30,45,61,0.3); cursor: pointer; }
+.neighbor-row:hover .neighbor-signal { color: var(--accent); }
+.neighbor-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.neighbor-signal { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-bright); flex: 1; }
+.neighbor-zone   { font-size: 12px; color: var(--text-dim); }
+.neighbor-dist   { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--accent2); flex-shrink: 0; }
+
+/* ── LEGEND ── */
+#legend {
+  position: absolute; bottom: 20px; left: 24px; z-index: 900;
+  background: rgba(8,12,20,0.88); border: 1px solid var(--border);
+  border-radius: 6px; padding: 12px 18px; min-width: 180px;
+}
+.legend-title { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--text-dim); letter-spacing: .1em; margin-bottom: 10px; }
+.legend-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; font-size: 14px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legend-zone { color: var(--text); font-size: 14px; }
+
+/* ── Custom markers ── */
+.rpt-marker {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.35);
+  cursor: pointer; transition: transform .15s;
+  outline: none; box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
+.rpt-marker:hover { transform: scale(1.6); border-color: var(--accent) !important; box-shadow: 0 0 6px rgba(0,212,255,0.4); }
+.rpt-marker.selected { transform: scale(1.8); border-color: rgba(255,255,255,0.9); box-shadow: 0 0 8px rgba(0,212,255,0.6); }
+
+/* Tooltip — override Leaflet white border (loads after Leaflet CSS) */
+#map .leaflet-tooltip.rpt-tooltip {
+  background: transparent !important; background-color: transparent !important;
+  border: 1px solid var(--border) !important; padding: 0 !important;
+}
+#map .leaflet-tooltip-top.rpt-tooltip:before { border-top-color: var(--border) !important; }
+#map .leaflet-tooltip-bottom.rpt-tooltip:before { border-bottom-color: var(--border) !important; }
+#map .leaflet-tooltip-left.rpt-tooltip:before { border-left-color: var(--border) !important; }
+#map .leaflet-tooltip-right.rpt-tooltip:before { border-right-color: var(--border) !important; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-signal">◈ RA</div>
+  <div class="header-title">
+    <h1>MAPA DE COBERTURA — REPETIDORAS</h1>
+    <p>RADIOAFICIONADOS CHILE · 172 ESTACIONES</p>
+  </div>
+  <button id="theme-toggle" onclick="toggleTheme()" aria-label="Modo claro" title="Cambiar tema" class="theme-btn">☽</button>
+  <a href="#" id="btn-download-csv" class="header-link" title="Descargar CSV">↓ CSV</a>
+  <a href="lista-repetidores.html" class="header-link">← LISTA</a>
+</div>
+
+<!-- METHODOLOGY BAR -->
+<div class="methodology-bar">
+  <span class="meth-label">CÁLCULO DE COBERTURA</span>
+  <span class="meth-sep">|</span>
+  <span class="meth-text">EIRP(dBW) = 10·log₁₀(P) + G<sub>dBi</sub></span>
+  <span class="meth-sep">|</span>
+  <span class="meth-text">Base <strong>VHF 55 km</strong> · <strong>UHF 25 km</strong> @ 10W+6dBi</span>
+  <span class="meth-sep">|</span>
+  <span class="meth-text">Altura ×<strong>1.65</strong> · Límite ×<strong>2.5</strong></span>
+  <span class="meth-sep">|</span>
+  <span class="meth-warn">⚠ Cobertura teórica en terreno plano — no refleja obstrucciones geográficas</span>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="ctrl-group">
+    <span class="ctrl-label">VISTA</span>
+    <div class="btn-group">
+      <button class="mode-btn" id="btn-circles" onclick="setMode('circles')">CÍRCULOS</button>
+      <button class="mode-btn" id="btn-markers" onclick="setMode('markers')">MARCADORES</button>
+      <button class="mode-btn active" id="btn-both" onclick="setMode('both')">AMBOS</button>
+    </div>
+  </div>
+  <div class="ctrl-sep"></div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">BANDA</span>
+    <select id="fil-banda" onchange="applyFilters()">
+      <option value="">TODAS</option>
+      <option value="VHF">VHF</option>
+      <option value="UHF">UHF</option>
+    </select>
+  </div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">ZONA</span>
+    <select id="fil-zona" onchange="applyFilters()">
+      <option value="">TODAS</option>
+    </select>
+  </div>
+  <div class="ctrl-group">
+    <input type="text" id="fil-search" placeholder="Buscar señal / comuna…" oninput="applyFilters()">
+  </div>
+  <div id="stat-badge">172 / 172</div>
+</div>
+
+<!-- MAP -->
+<div id="map-wrap">
+  <div id="map"></div>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-header">
+      <div>
+        <div class="sidebar-signal" id="sb-signal">—</div>
+        <div class="sidebar-club"   id="sb-club">—</div>
+      </div>
+      <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+    </div>
+    <div class="sidebar-body" id="sb-body"></div>
+  </div>
+
+  <!-- LEGEND -->
+  <div id="legend">
+    <div class="legend-title">ZONAS</div>
+  </div>
+</div>
+
+<footer class="app-footer">
+  <span>v<span id="app-version">—</span></span>
+  <span>·</span>
+  <span>Agénticamente desarrollado por <a href="https://cd3dxz.radio" target="_blank" rel="noopener">CD3DXZ</a></span>
+</footer>
+</div><!-- #app -->
+
+<script>
+// ZONE_COLORS, REPEATERS, DATA, VERSION loaded from data.js
+if (typeof VERSION !== 'undefined') document.getElementById('app-version').textContent = VERSION;
+const sigToNombre = {};
+if (typeof DATA !== 'undefined') {
+  DATA.forEach(d => { const s = d.senal || d.signal; if (s) sigToNombre[s] = d.nombre || ''; });
+}
+function getClubName(signal) { return sigToNombre[signal] || ''; }
+
+// Pre-compute overlaps
+function haversine(la1,lo1,la2,lo2){
+  const R=6371, dLa=(la2-la1)*Math.PI/180, dLo=(lo2-lo1)*Math.PI/180;
+  const a=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+REPEATERS.forEach((r,i)=>{
+  r._idx = i;
+  r._neighbors = [];
+  REPEATERS.forEach((s,j)=>{
+    if(i===j) return;
+    const d = haversine(r.lat,r.lon,s.lat,s.lon);
+    if(d < r.range_km + s.range_km) r._neighbors.push({idx:j, dist:Math.round(d)});
+  });
+  r._neighbors.sort((a,b)=>a.dist-b.dist);
+});
+
+// ── INIT MAP ───────────────────────────────────────────────────────────────
+const map = L.map('map', {
+  center: [-33.5, -70.6],
+  zoom: 5,
+  zoomControl: true,
+  attributionControl: true,
+});
+
+// Tile layers for dark/light mode
+const tileOpts = {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19,
+};
+let currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', tileOpts).addTo(map);
+
+function setMapTiles(theme) {
+  map.removeLayer(currentTileLayer);
+  currentTileLayer = L.tileLayer(
+    theme === 'light' ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    tileOpts
+  ).addTo(map);
+}
+setMapTiles(getTheme());
+window.onThemeChange = function(theme) { setMapTiles(theme); };
+
+// ── LAYERS ─────────────────────────────────────────────────────────────────
+const circleLayer  = L.layerGroup().addTo(map);
+const markerLayer  = L.layerGroup().addTo(map);
+
+let currentMode = 'both';
+let selectedIdx = null;
+let visibleSet   = new Set(REPEATERS.map(r=>r._idx));
+
+// ── POPULATE ZONA FILTER ───────────────────────────────────────────────────
+const zoneIds = new Set(REPEATERS.map(r=>r.zona));
+const filZona = document.getElementById('fil-zona');
+ZONE_ORDER.filter(z=>zoneIds.has(z.id)).forEach(z=>{
+  const o = document.createElement('option');
+  o.value = z.id; o.textContent = z.label;
+  filZona.appendChild(o);
+});
+
+// ── LEGEND ─────────────────────────────────────────────────────────────────
+const legend = document.getElementById('legend');
+ZONE_ORDER.filter(z=>zoneIds.has(z.id)).forEach(z=>{
+  const row = document.createElement('div');
+  row.className = 'legend-row';
+  row.innerHTML = '<div class="legend-dot" style="background:' + (ZONE_COLORS[z.id]||'#888') + '"></div><span class="legend-zone">' + z.label + '</span>';
+  legend.appendChild(row);
+});
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return r+','+g+','+b;
+}
+
+function renderAll(){
+  circleLayer.clearLayers();
+  markerLayer.clearLayers();
+
+  REPEATERS.forEach(r=>{
+    const visible = visibleSet.has(r._idx);
+    const color   = ZONE_COLORS[r.zona] || '#888';
+    const rgb     = hexToRgb(color);
+    const isSelected = r._idx === selectedIdx;
+    const isNeighbor = selectedIdx !== null && REPEATERS[selectedIdx]._neighbors.some(n=>n.idx===r._idx);
+
+    // ── Circle ──
+    if(currentMode === 'circles' || currentMode === 'both'){
+      let fillOp, strokeOp, weight, dashArr;
+      if(selectedIdx === null){
+        fillOp = 0.07; strokeOp = 0.35; weight = 1; dashArr = null;
+      } else if(isSelected){
+        fillOp = 0.18; strokeOp = 0.9; weight = 2; dashArr = null;
+      } else if(isNeighbor){
+        fillOp = 0.04; strokeOp = 0.2; weight = 1; dashArr = '4 4';
+      } else {
+        fillOp = 0.02; strokeOp = 0.07; weight = 0.5; dashArr = null;
+      }
+
+      const circle = L.circle([r.lat, r.lon], {
+        radius: r.range_km * 1000,
+        color:  'rgba('+rgb+','+strokeOp+')',
+        fillColor: 'rgba('+rgb+','+fillOp+')',
+        fillOpacity: 1,
+        weight: weight,
+        dashArray: dashArr,
+        interactive: false,
+      });
+      if(visible) circle.addTo(circleLayer);
+    }
+
+    // ── Marker ──
+    if(currentMode === 'markers' || currentMode === 'both'){
+      const size = isSelected ? 14 : 9;
+      const icon = L.divIcon({
+        className: '',
+        html: '<div class="rpt-marker' + (isSelected?' selected':'') + '" style="background:' + color + ';width:'+size+'px;height:'+size+'px;border-radius:50%;border:2px solid rgba(255,255,255,'+(isSelected?'0.9':'0.35')+');box-shadow:0 0 '+(isSelected?'8px':'3px')+' rgba('+rgb+',0.6);"></div>',
+        iconSize: [size, size],
+        iconAnchor: [size/2, size/2],
+      });
+      const marker = L.marker([r.lat, r.lon], { icon, zIndexOffset: isSelected ? 1000 : 0 });
+      marker.on('click', ()=>{ selectRepeater(r._idx); });
+
+      // Tooltip
+      const club = getClubName(r.signal);
+      const tooltipHtml = '<div style="font-family:Share Tech Mono,monospace;font-size:12px;color:#00d4ff;background:#0d1520;border:1px solid #1a2d42;padding:6px 10px;border-radius:4px;">' +
+        r.signal + (club ? '<br><span style="color:#c8d8e8;font-size:11px;">' + club + '</span>' : '') +
+        '<br><span style="color:#5a7a9a;font-size:10px;">' + r.comuna + ' · ' + r.banda + '</span></div>';
+      marker.bindTooltip(tooltipHtml, { permanent: false, direction: 'top', opacity: 1, className: 'rpt-tooltip' });
+      if(visible) marker.addTo(markerLayer);
+    } else {
+      // In circles-only mode, add invisible click target
+      const icon = L.divIcon({
+        className: '',
+        html: '<div style="width:16px;height:16px;border-radius:50%;cursor:pointer;"></div>',
+        iconSize: [16,16], iconAnchor: [8,8],
+      });
+      const clickTarget = L.marker([r.lat, r.lon], { icon, opacity: 0 });
+      clickTarget.on('click', ()=>selectRepeater(r._idx));
+      if(visible) clickTarget.addTo(markerLayer);
+    }
+  });
+}
+
+// ── MODE ───────────────────────────────────────────────────────────────────
+function setMode(mode){
+  currentMode = mode;
+  ['circles','markers','both'].forEach(m=>{
+    document.getElementById('btn-'+m).classList.toggle('active', m===mode);
+  });
+  renderAll();
+}
+
+// ── FILTERS ────────────────────────────────────────────────────────────────
+function applyFilters(){
+  const banda  = document.getElementById('fil-banda').value;
+  const zona   = document.getElementById('fil-zona').value;
+  const search = document.getElementById('fil-search').value.trim().toLowerCase();
+  visibleSet = new Set();
+  REPEATERS.forEach(r=>{
+    if(banda && !r.banda.startsWith(banda)) return;
+    if(zona  && r.zona !== zona) return;
+    if(search && !r.signal.toLowerCase().includes(search) && !r.comuna.toLowerCase().includes(search) && !r.ubicacion.toLowerCase().includes(search)) return;
+    visibleSet.add(r._idx);
+  });
+  document.getElementById('stat-badge').textContent = visibleSet.size + ' / ' + REPEATERS.length;
+  renderAll();
+}
+
+// ── SELECT ─────────────────────────────────────────────────────────────────
+function selectRepeater(idx){
+  selectedIdx = idx;
+  renderAll();
+  showSidebar(idx);
+}
+
+function showSidebar(idx){
+  const r = REPEATERS[idx];
+  const color = ZONE_COLORS[r.zona] || '#888';
+  const club = getClubName(r.signal);
+  document.getElementById('sb-signal').textContent = r.signal;
+  document.getElementById('sb-signal').style.color = color;
+  document.getElementById('sb-club').textContent = club || r.zona + ' · ' + r.comuna;
+
+  const body = document.getElementById('sb-body');
+  const vence = r.vence || '—';
+  const rows = [
+    ['CLUB',      club || '—'],
+    ['ZONA',      r.zona],
+    ['COMUNA',    r.comuna || '—'],
+    ['BANDA',     '<span style="color:'+(r.banda.startsWith('VHF')?'#29abe2':'#e91e8c')+'">' + r.banda + '</span>'],
+    ['RX (MHz)',  r.tx || '—'],
+    ['TX (MHz)',  r.rx || '—'],
+    ['TONO',      r.tono ? r.tono + ' Hz' : '—'],
+    ['POTENCIA',  r.potencia ? r.potencia + ' W' : '—'],
+    ['GANANCIA',  r.ganancia ? r.ganancia + ' dBi' : '—'],
+    ['COBERTURA', r.range_km + ' km'],
+    ['UBICACIÓN', r.ubicacion || '—'],
+    ['VENCE',     vence],
+  ];
+
+  let html = rows.map(([k,v])=>
+    '<div class="sb-row"><span class="sb-key">'+k+'</span><span class="sb-val">'+v+'</span></div>'
+  ).join('');
+
+  // Neighbors
+  if(r._neighbors.length > 0){
+    html += '<div class="sb-section-title">VECINOS CON SOLAPAMIENTO <a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar vecinos como CSV">↓ CSV</a></div>';
+    const shown = r._neighbors.slice(0, 20);
+    html += shown.map(n=>{
+      const nb = REPEATERS[n.idx];
+      const nc = ZONE_COLORS[nb.zona]||'#888';
+      return '<div class="neighbor-row" onclick="selectRepeater('+n.idx+')">' +
+        '<div class="neighbor-dot" style="background:'+nc+'"></div>' +
+        '<span class="neighbor-signal">'+nb.signal+'</span>' +
+        '<span class="neighbor-zone">'+nb.zona+'</span>' +
+        '<span class="neighbor-dist">'+n.dist+' km</span>' +
+        '</div>';
+    }).join('');
+    if(r._neighbors.length > 20) html += '<div style="font-size:11px;color:var(--text-dim);padding:6px 0;">… y '+(r._neighbors.length-20)+' más</div>';
+  }
+
+  body.innerHTML = html;
+  document.getElementById('sidebar').classList.add('open');
+}
+
+function downloadNeighborsCSV(){
+  if(selectedIdx == null) return;
+  const r = REPEATERS[selectedIdx];
+  if(!r._neighbors || r._neighbors.length === 0) return;
+  const esc = v => (v == null || v === '') ? '' : (''+v).includes(',') || (''+v).includes('"') ? '"' + (''+v).replace(/"/g, '""') + '"' : ''+v;
+  const headers = ['Repetidor','Señal vecino','Club','Zona','Comuna','Distancia (km)'];
+  const rows = r._neighbors.map(n=>{
+    const nb = REPEATERS[n.idx];
+    return [r.signal, nb.signal, getClubName(nb.signal), nb.zona, nb.comuna || '', n.dist];
+  });
+  const csv = [headers.join(','), ...rows.map(row=>row.map(esc).join(','))].join('\n');
+  const blob = new Blob(['\ufeff'+csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'vecinos-' + r.signal.replace(/\s+/g,'-') + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  selectedIdx = null;
+  renderAll();
+}
+
+// Click on map closes sidebar
+map.on('click', function(e){
+  if(selectedIdx !== null){
+    closeSidebar();
+  }
+});
+
+// ── CSV DOWNLOAD ───────────────────────────────────────────────────────────
+document.getElementById('btn-download-csv').addEventListener('click', function(e){
+  e.preventDefault();
+  const visibleSignals = new Set(REPEATERS.filter((r,i)=>visibleSet.has(i)).map(r=>r.signal));
+  const rows = DATA.filter(d=>visibleSignals.has(d.senal||d.signal));
+  exportRepeatersCSV(rows.length ? rows : DATA);
+});
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+renderAll();
+
+// Fit Chile bounds on load
+map.fitBounds([[-55, -76], [-17, -66]]);
+</script>
+</body>
+</html>

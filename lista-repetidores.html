@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Repetidores — Radioaficionados Chile</title>
+<script>(function(){try{var m=document.cookie.match(/(^|\s)ra-theme=([^;]+)/);var t=(m&&m[2])||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css"/>
+<script src="theme.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-icon {
+    width: 42px; height: 42px;
+    border: 2px solid var(--accent);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .header-icon svg { width: 22px; height: 22px; color: var(--accent); }
+
+  .header-title h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .header-title p {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .theme-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .theme-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .header-link {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .header-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .header-stats {
+    margin-left: auto;
+    display: flex;
+    gap: 24px;
+  }
+  .stat {
+    text-align: right;
+  }
+  .stat-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 21px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* CONTROLS */
+  .controls {
+    padding: 16px 32px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 380px;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px; height: 14px;
+    color: var(--text-dim);
+  }
+  input[type="text"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    padding: 7px 10px 7px 32px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--text-dim); }
+
+  select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    padding: 7px 10px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  select:focus { border-color: var(--accent); }
+
+  .filter-count {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+  .filter-count span { color: var(--accent); }
+
+  /* MAIN CONTENT */
+  main {
+    padding: 24px 32px;
+    max-width: 1400px;
+  }
+
+  /* ZONE GROUP */
+  .zone-group {
+    margin-bottom: 32px;
+  }
+
+  .zone-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .zone-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+
+  .zone-region {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .zone-count {
+    margin-left: auto;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .zone-count span { color: var(--text-bright); font-size: 15px; }
+
+  /* TABLE */
+  .rpt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .rpt-table thead tr {
+    background: var(--surface2);
+  }
+
+  .rpt-table th {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    padding: 7px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  .rpt-table th:hover { color: var(--accent); }
+
+  .rpt-table tbody tr {
+    border-bottom: 1px solid rgba(30, 45, 61, 0.6);
+    transition: background 0.1s;
+  }
+  .rpt-table tbody tr:hover {
+    background: rgba(0, 212, 255, 0.04);
+  }
+
+  .rpt-table td {
+    padding: 7px 10px;
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  .cell-signal {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--accent);
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  .cell-freq {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .freq-tx { color: var(--green); }
+  .freq-rx { color: var(--yellow); }
+
+  .cell-tone {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .badge-banda {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .badge-vhf { border-color: #39d353; color: #39d353; }
+  .badge-uhf { border-color: #ff9500; color: #ff9500; }
+
+  .cell-club {
+    font-size: 13px;
+    color: var(--text-dim);
+    max-width: 240px;
+  }
+  .cell-club strong {
+    display: block;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .cell-club small {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .cell-pot {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: right;
+  }
+  .cell-pot span { color: var(--text); }
+
+  .cell-ub {
+    font-size: 12px;
+    color: var(--text-dim);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cell-vence {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .vence-ok { color: var(--green); }
+  .vence-warn { color: var(--yellow); }
+  .vence-expired { color: var(--accent2); }
+
+  /* no results */
+  .no-results {
+    text-align: center;
+    padding: 48px;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .no-results::before {
+    content: '// ';
+    color: var(--border);
+  }
+
+  /* Zone color palette */
+  /* Zone badge colors from ZONE_COLORS in data.js */
+
+  @media (max-width: 900px) {
+    header, .controls, main { padding-left: 16px; padding-right: 16px; }
+    .header-stats { display: none; }
+    .cell-ub, .cell-club small { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+      <path d="M12 8v8M8 12h8"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  </div>
+  <div class="header-title">
+    <h1>Repetidores Radioaficionados — Chile</h1>
+    <p>INFORME RA · 26-03-2025 · SUBTEL / DGMN</p>
+  </div>
+  <button id="theme-toggle" onclick="toggleTheme()" aria-label="Modo claro" title="Cambiar tema" class="theme-btn">☽</button>
+  <a href="#" id="btn-download-csv" class="header-link" title="Descargar CSV">↓ CSV</a>
+  <a href="mapa-cobertura-leaflet.html" class="header-link">MAPA →</a>
+  <div class="header-stats">
+    <div class="stat">
+      <div class="stat-val" id="total-count">172</div>
+      <div class="stat-lbl">Repetidores</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">13</div>
+      <div class="stat-lbl">Zonas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="clubs-count">—</div>
+      <div class="stat-lbl">Clubes</div>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="search" placeholder="Buscar señal, club, comuna...">
+  </div>
+  <select id="filter-banda">
+    <option value="">Todas las bandas</option>
+    <option value="VHF">VHF</option>
+    <option value="UHF">UHF</option>
+  </select>
+  <select id="filter-zona">
+    <option value="">Todas las zonas</option>
+  </select>
+  <div class="filter-count">Mostrando <span id="shown-count">172</span> de 172</div>
+</div>
+
+<main id="main-content"></main>
+
+<footer class="app-footer">
+  <span>v<span id="app-version">—</span></span>
+  <span>·</span>
+  <span>Agénticamente desarrollado por <a href="https://cd3dxz.radio" target="_blank" rel="noopener">CD3DXZ</a></span>
+</footer>
+
+<script src="data.js"></script>
+<script src="export-csv.js"></script>
+<script>
+// DATA, ZONE_ORDER, VERSION loaded from data.js
+if (typeof VERSION !== 'undefined') document.getElementById('app-version').textContent = VERSION;
+
+// Populate zone filter
+const filterZona = document.getElementById('filter-zona');
+ZONE_ORDER.forEach(z => {
+  const opt = document.createElement('option');
+  opt.value = z.id;
+  opt.textContent = z.label + ' — ' + z.region;
+  filterZona.appendChild(opt);
+});
+
+// Count unique clubs
+const clubs = new Set(DATA.map(d => d.nombre));
+document.getElementById('clubs-count').textContent = clubs.size;
+
+// Vence status
+function venceClass(vence) {
+  if (!vence) return '';
+  const d = new Date(vence);
+  const now = new Date('2026-03-08');
+  const diff = (d - now) / (1000*60*60*24);
+  if (diff < 0) return 'vence-expired';
+  if (diff < 365) return 'vence-warn';
+  return 'vence-ok';
+}
+
+function bandaClass(banda) {
+  if (banda.includes('UHF')) return 'badge-uhf';
+  return 'badge-vhf';
+}
+
+function render(filtered) {
+  const main = document.getElementById('main-content');
+  document.getElementById('shown-count').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    main.innerHTML = '<div class="no-results">No se encontraron resultados para la búsqueda actual.</div>';
+    return;
+  }
+
+  // Group by zone maintaining order
+  const byZone = {};
+  ZONE_ORDER.forEach(z => { byZone[z.id] = []; });
+  filtered.forEach(r => {
+    if (byZone[r.zona] !== undefined) byZone[r.zona].push(r);
+  });
+
+  let html = '';
+  ZONE_ORDER.forEach(z => {
+    const rows = byZone[z.id];
+    if (!rows.length) return;
+
+    html += `<div class="zone-group" data-zone="${z.id}">
+      <div class="zone-header">
+        <span class="zone-badge" style="border-color: ${ZONE_COLORS[z.id]||'#888'}; color: ${ZONE_COLORS[z.id]||'#888'}">${z.label}</span>
+        <span class="zone-count"><span>${rows.length}</span> repetidor${rows.length !== 1 ? 'es' : ''}</span>
+      </div>
+      <table class="rpt-table">
+        <thead><tr>
+          <th>Señal</th>
+          <th>Banda</th>
+          <th>RX (MHz)</th>
+          <th>TX (MHz)</th>
+          <th>Tono</th>
+          <th>Pot. W</th>
+          <th>Club / Titular</th>
+          <th>Comuna</th>
+          <th>Ubicación</th>
+          <th>Vence</th>
+        </tr></thead>
+        <tbody>`;
+
+    rows.forEach(r => {
+      const vc = venceClass(r.vence);
+      const bc = bandaClass(r.banda);
+      const bandaShort = r.banda.replace('/FM','');
+      html += `<tr>
+        <td class="cell-signal">${r.senal || '—'}</td>
+        <td><span class="badge-banda ${bc}">${bandaShort}</span></td>
+        <td class="cell-freq freq-rx">${r.tx || '—'}</td>
+        <td class="cell-freq freq-tx">${r.rx || '—'}</td>
+        <td class="cell-tone">${r.tono || '—'}</td>
+        <td class="cell-pot"><span>${r.potencia || '—'}</span> W</td>
+        <td class="cell-club"><strong>${r.nombre}</strong><small>${r.region}</small></td>
+        <td style="font-size:13px;color:var(--text)">${r.comuna || '—'}</td>
+        <td class="cell-ub" title="${r.ubicacion}">${r.ubicacion || '—'}</td>
+        <td class="cell-vence ${vc}">${r.vence || '—'}</td>
+      </tr>`;
+    });
+
+    html += `</tbody></table></div>`;
+  });
+
+  main.innerHTML = html;
+}
+
+function getFiltered() {
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const banda = document.getElementById('filter-banda').value;
+  const zona = document.getElementById('filter-zona').value;
+
+  return DATA.filter(r => {
+    if (zona && r.zona !== zona) return false;
+    if (banda && !r.banda.includes(banda)) return false;
+    if (q) {
+      const haystack = [r.senal, r.nombre, r.comuna, r.ubicacion, r.region, r.zona].join(' ').toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+['search','filter-banda','filter-zona'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => render(getFiltered()));
+});
+
+document.getElementById('btn-download-csv').addEventListener('click', function(e){
+  e.preventDefault();
+  exportRepeatersCSV(getFiltered());
+});
+
+render(DATA);
+</script>
+</body>
+</html>
