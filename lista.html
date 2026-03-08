@@ -2,7 +2,7 @@
 <html lang="es" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Lista de Repetidores — Radioaficionados Chile</title>
 <script>(function(){try{var m=document.cookie.match(/(^|\s)ra-theme=([^;]+)/);var t=(m&&m[2])||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
@@ -89,6 +89,8 @@
     border-color: var(--accent);
     color: var(--accent);
   }
+  .header-actions { display: flex; align-items: center; gap: 12px; }
+  .menu-toggle { display: none; }
   .header-stats {
     margin-left: auto;
     display: flex;
@@ -175,7 +177,6 @@
   /* MAIN CONTENT */
   main {
     padding: 24px 32px;
-    max-width: 1400px;
   }
 
   /* ZONE GROUP */
@@ -347,10 +348,80 @@
   /* Zone color palette */
   /* Zone badge colors from ZONE_COLORS in data.js */
 
+  /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     header, .controls, main { padding-left: 16px; padding-right: 16px; }
     .header-stats { display: none; }
     .cell-ub, .cell-club small { display: none; }
+  }
+  @media (max-width: 900px) and (min-width: 769px) {
+    main { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  }
+  @media (max-width: 768px) {
+    header { padding: 12px 16px; gap: 12px; flex-wrap: nowrap; position: relative; }
+    .header-icon { width: 36px; height: 36px; flex-shrink: 0; }
+    .header-icon svg { width: 18px; height: 18px; }
+    .header-title { flex: 1; min-width: 0; }
+    .header-title h1 { font-size: 16px; line-height: 1.2; }
+    .header-title p { font-size: 11px; }
+    .header-actions { display: none; }
+    .menu-toggle {
+      display: flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; flex-shrink: 0;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text-dim); cursor: pointer;
+      font-size: 20px; padding: 0;
+    }
+    .menu-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    .menu-toggle[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+    .header-menu {
+      position: absolute; top: 100%; right: 16px; left: 16px; margin-top: 4px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 200; display: none; flex-direction: column; gap: 4px;
+    }
+    .header-menu.open { display: flex; }
+    .header-menu .header-link, .header-menu .theme-btn {
+      width: 100%; justify-content: flex-start; padding: 12px 14px;
+      border-radius: 4px; border: none; background: transparent;
+      font-family: inherit; font-size: 14px; color: var(--text-dim);
+      text-align: left; cursor: pointer;
+    }
+    .header-menu .header-link:hover, .header-menu .theme-btn:hover {
+      background: rgba(0,212,255,0.08); color: var(--accent);
+    }
+    .header-menu .theme-btn { min-height: 44px; display: flex; align-items: center; }
+    .controls { padding: 12px 16px; gap: 10px; flex-direction: column; align-items: stretch; }
+    .search-wrap { max-width: none; }
+    input[type="text"] { min-height: 44px; font-size: 16px; }
+    select { min-height: 44px; font-size: 16px; width: 100%; }
+    .filter-count { margin-left: 0; text-align: center; }
+    main { padding: 16px; width: 100%; box-sizing: border-box; }
+    .zone-group { width: 100%; }
+    .rpt-table { font-size: 12px; display: block; width: 100%; }
+    .rpt-table thead { display: none; }
+    .rpt-table tbody { display: block; width: 100%; }
+    .rpt-table tbody tr { display: block; width: 100%; min-width: 100%; padding: 12px 0; border-bottom: 1px solid var(--border); box-sizing: border-box; }
+    .rpt-table td { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border: none; width: 100%; box-sizing: border-box; }
+    .rpt-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-dim); font-size: 11px; text-transform: uppercase; margin-right: 12px; flex-shrink: 0; }
+    .rpt-table td:first-child { padding-top: 0; }
+    .rpt-table td:last-child { padding-bottom: 0; border-bottom: 1px solid rgba(30,45,61,0.4); }
+    .rpt-table .cell-ub { display: none; }
+    .rpt-table .cell-signal { font-size: 14px; }
+    .rpt-table .cell-club { max-width: none; }
+    .rpt-table .cell-club strong { font-size: 13px; }
+    .zone-header { flex-wrap: wrap; gap: 8px; }
+    .zone-badge { font-size: 11px; }
+  }
+  @media (min-width: 769px) {
+    .header-menu { display: none !important; }
+  }
+  @media (max-width: 480px) {
+    header { padding: 10px 12px; }
+    .header-title h1 { font-size: 14px; }
+    .header-title p { display: none; }
+    main { padding: 12px; }
+    .rpt-table td { font-size: 13px; }
   }
 </style>
 </head>
@@ -368,10 +439,19 @@
     <h1><a href="https://juantoledo.github.io/cobertura-radial-chile/" class="header-title-link">Repetidores Radioaficionados — Chile</a></h1>
     <p>INFORME RA · 26-03-2025 · SUBTEL / DGMN</p>
   </div>
-  <button id="theme-toggle" onclick="toggleTheme()" aria-label="Modo claro" title="Cambiar tema" class="theme-btn">☽</button>
-  <a href="#" id="btn-download-csv" class="header-link" title="Descargar CSV">↓ CSV</a>
-  <a href="index.html" class="header-link">MAPA →</a>
-  <a href="https://github.com/juantoledo/cobertura-radial-chile" class="header-link header-link-icon" target="_blank" rel="noopener" title="Ver en GitHub" aria-label="Ver en GitHub"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+  <div class="header-actions">
+    <button id="theme-toggle" onclick="toggleTheme()" aria-label="Modo claro" title="Cambiar tema" class="theme-btn">☽</button>
+    <a href="#" id="btn-download-csv" class="header-link" title="Descargar CSV">↓ CSV</a>
+    <a href="index.html" class="header-link">MAPA →</a>
+    <a href="https://github.com/juantoledo/cobertura-radial-chile" class="header-link header-link-icon" target="_blank" rel="noopener" title="Ver en GitHub" aria-label="Ver en GitHub"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+  </div>
+  <button class="menu-toggle" id="menu-toggle" aria-label="Menú" aria-expanded="false" aria-haspopup="true" title="Menú">☰</button>
+  <div class="header-menu" id="header-menu">
+    <button type="button" onclick="toggleTheme(); closeMenu();" class="theme-btn">☽ Tema claro/oscuro</button>
+    <a href="#" id="btn-download-csv-menu" class="header-link">↓ Descargar CSV</a>
+    <a href="index.html" class="header-link">🗺️ Ir al mapa</a>
+    <a href="https://github.com/juantoledo/cobertura-radial-chile" class="header-link" target="_blank" rel="noopener">GitHub</a>
+  </div>
   <div class="header-stats">
     <div class="stat">
       <div class="stat-val" id="total-count">172</div>
@@ -470,6 +550,7 @@ function render(filtered) {
     const rows = byZone[z.id];
     if (!rows.length) return;
 
+    const labels = ['Señal','Banda','RX (MHz)','TX (MHz)','Tono','Pot. W','Club / Titular','Comuna','Ubicación','Vence'];
     html += `<div class="zone-group" data-zone="${z.id}">
       <div class="zone-header">
         <span class="zone-badge" style="border-color: ${ZONE_COLORS[z.id]||'#888'}; color: ${ZONE_COLORS[z.id]||'#888'}">${z.label}</span>
@@ -495,16 +576,16 @@ function render(filtered) {
       const bc = bandaClass(r.banda);
       const bandaShort = r.banda.replace('/FM','');
       html += `<tr>
-        <td class="cell-signal">${r.senal || '—'}</td>
-        <td><span class="badge-banda ${bc}">${bandaShort}</span></td>
-        <td class="cell-freq freq-rx">${r.tx || '—'}</td>
-        <td class="cell-freq freq-tx">${r.rx || '—'}</td>
-        <td class="cell-tone">${r.tono || '—'}</td>
-        <td class="cell-pot"><span>${r.potencia || '—'}</span> W</td>
-        <td class="cell-club"><strong>${r.nombre}</strong><small>${r.region}</small></td>
-        <td style="font-size:13px;color:var(--text)">${r.comuna || '—'}</td>
-        <td class="cell-ub" title="${r.ubicacion}">${r.ubicacion || '—'}</td>
-        <td class="cell-vence ${vc}">${r.vence || '—'}</td>
+        <td class="cell-signal" data-label="${labels[0]}">${r.senal || '—'}</td>
+        <td data-label="${labels[1]}"><span class="badge-banda ${bc}">${bandaShort}</span></td>
+        <td class="cell-freq freq-rx" data-label="${labels[2]}">${r.tx || '—'}</td>
+        <td class="cell-freq freq-tx" data-label="${labels[3]}">${r.rx || '—'}</td>
+        <td class="cell-tone" data-label="${labels[4]}">${r.tono || '—'}</td>
+        <td class="cell-pot" data-label="${labels[5]}"><span>${r.potencia || '—'}</span> W</td>
+        <td class="cell-club" data-label="${labels[6]}"><strong>${r.nombre}</strong><small>${r.region}</small></td>
+        <td data-label="${labels[7]}" style="font-size:13px;color:var(--text)">${r.comuna || '—'}</td>
+        <td class="cell-ub" data-label="${labels[8]}" title="${r.ubicacion}">${r.ubicacion || '—'}</td>
+        <td class="cell-vence ${vc}" data-label="${labels[9]}">${r.vence || '—'}</td>
       </tr>`;
     });
 
@@ -534,9 +615,31 @@ function getFiltered() {
   document.getElementById(id).addEventListener('input', () => render(getFiltered()));
 });
 
-document.getElementById('btn-download-csv').addEventListener('click', function(e){
-  e.preventDefault();
-  exportRepeatersCSV(getFiltered());
+function closeMenu() {
+  document.getElementById('header-menu').classList.remove('open');
+  document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
+}
+
+document.getElementById('menu-toggle').addEventListener('click', function() {
+  const menu = document.getElementById('header-menu');
+  const open = menu.classList.toggle('open');
+  this.setAttribute('aria-expanded', open);
+});
+
+document.querySelectorAll('#btn-download-csv, #btn-download-csv-menu').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    exportRepeatersCSV(getFiltered());
+    closeMenu();
+  });
+});
+
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('header-menu');
+  const toggle = document.getElementById('menu-toggle');
+  if (menu.classList.contains('open') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+    closeMenu();
+  }
 });
 
 render(DATA);
