@@ -185,6 +185,9 @@ html[data-theme="light"] .sb-download-neighbors:hover {
 html[data-theme="light"] .sb-row {
   border-bottom-color: rgba(0,0,0,0.08);
 }
+html[data-theme="light"] .neighbor-selected {
+  background: rgba(0, 136, 204, 0.08);
+}
 html[data-theme="light"] .neighbor-row {
   border-bottom-color: rgba(0,0,0,0.06);
 }

@@ -154,6 +154,8 @@ input[type=text] { width: 200px; }
 }
 .neighbor-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(30,45,61,0.3); cursor: pointer; }
 .neighbor-row:hover .neighbor-signal { color: var(--accent); }
+.neighbor-selected { background: rgba(0,212,255,0.06); margin: 0 -8px; padding: 8px; border-radius: 4px; }
+.neighbor-selected .neighbor-signal { color: var(--accent); font-weight: 600; }
 .neighbor-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; align-self: flex-start; margin-top: 4px; }
 .neighbor-main { flex: 1; min-width: 0; }
 .neighbor-signal { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-bright); display: block; }
@@ -581,26 +583,29 @@ function showSidebar(idx){
     '<div class="sb-row"><span class="sb-key">'+k+'</span><span class="sb-val">'+v+'</span></div>'
   ).join('');
 
-  // Neighbors
-  if(r._neighbors.length > 0){
+  // Neighbors (selected item first, then sorted by distance)
+  const allNeighbors = [{idx: idx, dist: 0}, ...r._neighbors].sort((a,b)=>a.dist-b.dist);
+  if(allNeighbors.length > 0){
     html += '<div class="sb-section-title">VECINOS CON SOLAPAMIENTO <a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar vecinos como CSV">↓ CSV</a></div>';
-    const shown = r._neighbors.slice(0, 20);
+    const shown = allNeighbors.slice(0, 21);
     html += shown.map(n=>{
       const nb = REPEATERS[n.idx];
       const nc = ZONE_COLORS[nb.zona]||'#888';
       const rx = nb.rx || '—', tx = nb.tx || '—', tono = nb.tono ? nb.tono+' Hz' : '—';
       const details = 'RX '+rx+' · TX '+tx+' · '+tono;
-      return '<div class="neighbor-row" onclick="selectRepeater('+n.idx+')">' +
+      const isSelected = n.idx === idx;
+      const distStr = n.dist === 0 ? '0 km' : n.dist+' km';
+      return '<div class="neighbor-row'+(isSelected?' neighbor-selected':'')+'" onclick="selectRepeater('+n.idx+')">' +
         '<div class="neighbor-dot" style="background:'+nc+'"></div>' +
         '<div class="neighbor-main">' +
-          '<span class="neighbor-signal">'+nb.signal+'</span>' +
+          '<span class="neighbor-signal">'+nb.signal+(isSelected?' (este)':'')+'</span>' +
           '<div class="neighbor-details"><span>'+details+'</span></div>' +
         '</div>' +
         '<span class="neighbor-zone">'+nb.zona+'</span>' +
-        '<span class="neighbor-dist">'+n.dist+' km</span>' +
+        '<span class="neighbor-dist">'+distStr+'</span>' +
         '</div>';
     }).join('');
-    if(r._neighbors.length > 20) html += '<div style="font-size:11px;color:var(--text-dim);padding:6px 0;">… y '+(r._neighbors.length-20)+' más</div>';
+    if(allNeighbors.length > 21) html += '<div style="font-size:11px;color:var(--text-dim);padding:6px 0;">… y '+(allNeighbors.length-21)+' más</div>';
   }
 
   body.innerHTML = html;
@@ -610,10 +615,11 @@ function showSidebar(idx){
 function downloadNeighborsCSV(){
   if(selectedIdx == null) return;
   const r = REPEATERS[selectedIdx];
-  if(!r._neighbors || r._neighbors.length === 0) return;
+  const allNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || [])].sort((a,b)=>a.dist-b.dist);
+  if(allNeighbors.length === 0) return;
   const esc = v => (v == null || v === '') ? '' : (''+v).includes(',') || (''+v).includes('"') ? '"' + (''+v).replace(/"/g, '""') + '"' : ''+v;
   const headers = ['Repetidor','Señal vecino','Club','Zona','Comuna','RX (MHz)','TX (MHz)','Tono (Hz)','Banda','Distancia (km)'];
-  const rows = r._neighbors.map(n=>{
+  const rows = allNeighbors.map(n=>{
     const nb = REPEATERS[n.idx];
     return [r.signal, nb.signal, getClubName(nb.signal), nb.zona, nb.comuna || '', nb.rx || '', nb.tx || '', nb.tono || '', nb.banda || '', n.dist];
   });
