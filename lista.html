@@ -20,42 +20,41 @@
     min-height: 100vh;
   }
 
-  /* HEADER */
-  header {
+  /* HEADER — same as index.html */
+  .header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     padding: 20px 32px;
     display: flex;
     align-items: center;
     gap: 20px;
+    flex-shrink: 0;
     position: sticky;
     top: 0;
     z-index: 100;
   }
-
-  .header-icon {
-    width: 42px; height: 42px;
-    border: 2px solid var(--accent);
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
+  .header-signal {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 20px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
   }
-  .header-icon svg { width: 22px; height: 22px; color: var(--accent); }
-
+  .header-title { flex: 1; }
   .header-title h1 {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 24px;
     font-weight: 700;
-    color: var(--text-bright);
     letter-spacing: 0.04em;
+    color: var(--text-bright);
     text-transform: uppercase;
   }
+  .header-title h1 a { color: inherit; text-decoration: none; }
+  .header-title h1 a:hover { color: var(--accent); }
   .header-title p {
     font-size: 13px;
     color: var(--text-dim);
     font-family: 'Share Tech Mono', monospace;
   }
-
   .theme-btn {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -75,6 +74,17 @@
     border-color: var(--accent);
     color: var(--accent);
   }
+  .help-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 40px; height: 40px;
+    border-radius: 6px; cursor: pointer;
+    font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .help-btn:hover { border-color: var(--accent); color: var(--accent); }
   .header-link {
     font-family: 'Share Tech Mono', monospace;
     font-size: 14px;
@@ -91,26 +101,6 @@
   }
   .header-actions { display: flex; align-items: center; gap: 12px; }
   .menu-toggle { display: none; }
-  .header-stats {
-    margin-left: auto;
-    display: flex;
-    gap: 24px;
-  }
-  .stat {
-    text-align: right;
-  }
-  .stat-val {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 21px;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .stat-lbl {
-    font-size: 11px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
 
   /* CONTROLS */
   .controls {
@@ -173,6 +163,67 @@
     margin-left: auto;
   }
   .filter-count span { color: var(--accent); }
+
+  /* HELP MODAL */
+  .help-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2000; padding: 16px; box-sizing: border-box;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+  .help-overlay.open { opacity: 1; visibility: visible; }
+  .help-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    max-width: 480px; width: 100%;
+    max-height: calc(100vh - 32px);
+    display: flex; flex-direction: column;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  .help-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .help-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--text-bright); margin: 0;
+    letter-spacing: 0.04em;
+  }
+  .help-close {
+    background: none; border: none;
+    color: var(--text-dim); font-size: 18px;
+    cursor: pointer; padding: 8px; line-height: 1;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .help-close:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+  .help-modal-body {
+    padding: 20px; overflow-y: auto;
+    font-size: 14px; line-height: 1.55;
+    color: var(--text);
+  }
+  .help-lead { margin: 0 0 16px; color: var(--text-dim); }
+  .help-section { margin-bottom: 18px; }
+  .help-section h3 {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.08em; color: var(--accent);
+    margin: 0 0 8px;
+  }
+  .help-section ul { margin: 0; padding-left: 20px; }
+  .help-section li { margin-bottom: 6px; }
+  .help-modal-body a { color: var(--accent); text-decoration: none; }
+  .help-modal-body a:hover { text-decoration: underline; }
+  .help-footer {
+    margin: 16px 0 0; padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--text-dim);
+  }
 
   /* MAIN CONTENT */
   main {
@@ -346,7 +397,7 @@
   }
 
   /* Zone color palette */
-  /* Zone badge colors from ZONE_COLORS in data.js */
+  /* Region badge colors from REGION_COLORS in data.js */
 
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
@@ -358,39 +409,38 @@
     main { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   }
   @media (max-width: 768px) {
-    header { padding: 12px 16px; gap: 12px; flex-wrap: nowrap; position: relative; }
-    .header-icon { width: 36px; height: 36px; flex-shrink: 0; }
-    .header-icon svg { width: 18px; height: 18px; }
+    .header { padding: 8px 12px; gap: 8px; flex-wrap: nowrap; position: relative; }
+    .header-signal { font-size: 14px; flex-shrink: 0; }
     .header-title { flex: 1; min-width: 0; }
-    .header-title h1 { font-size: 16px; line-height: 1.2; }
-    .header-title p { font-size: 11px; }
+    .header-title h1 { font-size: 14px; line-height: 1.2; }
+    .header-title p { font-size: 10px; }
     .header-actions { display: none; }
     .menu-toggle {
       display: flex; align-items: center; justify-content: center;
-      width: 44px; height: 44px; flex-shrink: 0;
+      width: 36px; height: 36px; flex-shrink: 0;
       background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 6px; color: var(--text-dim); cursor: pointer;
-      font-size: 20px; padding: 0;
+      border-radius: 4px; color: var(--text-dim); cursor: pointer;
+      font-size: 16px; padding: 0;
     }
     .menu-toggle:hover { border-color: var(--accent); color: var(--accent); }
     .menu-toggle[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
     .header-menu {
-      position: absolute; top: 100%; right: 16px; left: 16px; margin-top: 4px;
+      position: absolute; top: 100%; right: 12px; left: 12px; margin-top: 4px;
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 6px; padding: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      z-index: 200; display: none; flex-direction: column; gap: 4px;
+      border-radius: 6px; padding: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 200; display: none; flex-direction: column; gap: 2px;
     }
     .header-menu.open { display: flex; }
     .header-menu .header-link, .header-menu .theme-btn {
-      width: 100%; justify-content: flex-start; padding: 12px 14px;
+      width: 100%; justify-content: flex-start; padding: 8px 10px;
       border-radius: 4px; border: none; background: transparent;
-      font-family: inherit; font-size: 14px; color: var(--text-dim);
+      font-family: inherit; font-size: 13px; color: var(--text-dim);
       text-align: left; cursor: pointer;
     }
     .header-menu .header-link:hover, .header-menu .theme-btn:hover {
       background: rgba(0,212,255,0.08); color: var(--accent);
     }
-    .header-menu .theme-btn { min-height: 44px; display: flex; align-items: center; }
+    .header-menu .theme-btn { min-height: 36px; display: flex; align-items: center; }
     .controls { padding: 12px 16px; gap: 10px; flex-direction: column; align-items: stretch; }
     .search-wrap { max-width: none; }
     input[type="text"] { min-height: 44px; font-size: 16px; }
@@ -417,30 +467,30 @@
     .header-menu { display: none !important; }
   }
   @media (max-width: 480px) {
-    header { padding: 10px 12px; }
-    .header-title h1 { font-size: 14px; }
+    .header { padding: 6px 10px; }
+    .header-title h1 { font-size: 12px; }
     .header-title p { display: none; }
+    .menu-toggle { width: 32px; height: 32px; font-size: 14px; }
     main { padding: 12px; }
     .rpt-table td { font-size: 13px; }
+    .help-modal { max-height: calc(100vh - 24px); }
+    .help-modal-header, .help-modal-body { padding: 12px 16px; }
+    .help-title { font-size: 18px; }
+    .help-modal-body { font-size: 13px; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-icon">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-      <path d="M12 8v8M8 12h8"/>
-      <circle cx="12" cy="12" r="3"/>
-    </svg>
-  </div>
+<header class="header">
+  <div class="header-signal">◈ RA</div>
   <div class="header-title">
-    <h1><a href="https://juantoledo.github.io/cobertura-radial-chile/" class="header-title-link">Repetidores Radioaficionados — Chile</a></h1>
-    <p>INFORME RA · 26-03-2025 · SUBTEL / DGMN</p>
+    <h1><a href="https://juantoledo.github.io/cobertura-radial-chile/" class="header-title-link">LISTA DE REPETIDORAS</a></h1>
+    <p>RADIOAFICIONADOS CHILE · <span id="nodes-count">—</span> ESTACIONES</p>
   </div>
   <div class="header-actions">
     <button id="theme-toggle" onclick="toggleTheme()" aria-label="Modo claro" title="Cambiar tema" class="theme-btn">☽</button>
+    <button id="help-btn" onclick="openHelp()" aria-label="Ayuda" title="Cómo usar la app" class="help-btn">?</button>
     <a href="#" id="btn-download-csv" class="header-link btn-download" title="Descargar CSV">↓ CSV</a>
     <a href="index.html" class="header-link">MAPA →</a>
     <a href="https://github.com/juantoledo/cobertura-radial-chile" class="header-link header-link-icon" target="_blank" rel="noopener" title="Ver en GitHub" aria-label="Ver en GitHub"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
@@ -448,42 +498,68 @@
   <button class="menu-toggle" id="menu-toggle" aria-label="Menú" aria-expanded="false" aria-haspopup="true" title="Menú">☰</button>
   <div class="header-menu" id="header-menu">
     <button type="button" onclick="toggleTheme(); closeMenu();" class="theme-btn">☽ Tema claro/oscuro</button>
+    <button type="button" onclick="openHelp(); closeMenu();" class="help-btn" style="width:100%;justify-content:flex-start;padding:8px 10px;">? Ayuda</button>
     <a href="#" id="btn-download-csv-menu" class="header-link btn-download">↓ Descargar CSV</a>
     <a href="index.html" class="header-link">🗺️ Ir al mapa</a>
     <a href="https://github.com/juantoledo/cobertura-radial-chile" class="header-link" target="_blank" rel="noopener">GitHub</a>
   </div>
-  <div class="header-stats">
-    <div class="stat">
-      <div class="stat-val" id="total-count">172</div>
-      <div class="stat-lbl">Repetidores</div>
+</header>
+
+<!-- HELP MODAL -->
+<div id="help-overlay" class="help-overlay" aria-hidden="true">
+  <div class="help-modal" role="dialog" aria-labelledby="help-title" aria-modal="true">
+    <div class="help-modal-header">
+      <h2 id="help-title" class="help-title">Cómo usar la app</h2>
+      <button type="button" class="help-close" onclick="closeHelp()" aria-label="Cerrar">✕</button>
     </div>
-    <div class="stat">
-      <div class="stat-val">13</div>
-      <div class="stat-lbl">Zonas</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="clubs-count">—</div>
-      <div class="stat-lbl">Clubes</div>
+    <div class="help-modal-body">
+      <p class="help-lead">Mapa y lista de <strong>repetidoras de radioaficionados en Chile</strong> — datos oficiales SUBTEL/DGMN.</p>
+      <section class="help-section">
+        <h3>Para qué sirve</h3>
+        <ul>
+          <li>Ver en el mapa todas las repetidoras, cobertura teórica y ubicación.</li>
+          <li>Buscar por señal, comuna, frecuencias (RX/TX/tono) o filtrar por banda y región.</li>
+          <li>Revisar datos de cada repetidora y descargar listas en CSV.</li>
+        </ul>
+      </section>
+      <section class="help-section">
+        <h3>Mapa de cobertura</h3>
+        <ul>
+          <li>Explora el mapa; cambia el tema claro/oscuro con el botón ☽.</li>
+          <li>Vista: círculos de cobertura, solo marcadores o ambos.</li>
+          <li>Filtros: banda (VHF/UHF), región y búsqueda por texto.</li>
+          <li>Clic en un punto: datos completos y nodos cercanos; desde el panel lateral puedes descargar un CSV de nodos cercanos.</li>
+        </ul>
+      </section>
+      <section class="help-section">
+        <h3>Lista de repetidores</h3>
+        <ul>
+          <li>Tabla agrupada por región con señal, banda, RX/TX, tono, potencia, club, comuna y vencimiento.</li>
+          <li>Mismos filtros y búsqueda (incluye frecuencias).</li>
+          <li>Descarga CSV de la lista completa o de los resultados filtrados desde el menú superior.</li>
+        </ul>
+      </section>
+      <p class="help-footer">Datos del listado oficial <a href="https://www.subtel.gob.cl/" target="_blank" rel="noopener">SUBTEL</a>. Desarrollado por <a href="https://cd3dxz.radio" target="_blank" rel="noopener">CD3DXZ</a>.</p>
     </div>
   </div>
-</header>
+</div>
 
 <div class="controls">
   <div class="search-wrap">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
     </svg>
-    <input type="text" id="search" placeholder="Buscar señal, club, comuna...">
+    <input type="text" id="search" placeholder="Buscar señal, club, comuna, frecuencias...">
   </div>
   <select id="filter-banda">
     <option value="">Todas las bandas</option>
     <option value="VHF">VHF</option>
     <option value="UHF">UHF</option>
   </select>
-  <select id="filter-zona">
-    <option value="">Todas las zonas</option>
+  <select id="filter-region">
+    <option value="">Todas las regiones</option>
   </select>
-  <div class="filter-count">Mostrando <span id="shown-count">172</span> de 172</div>
+  <div class="filter-count">Mostrando <span id="shown-count">172</span> de <span id="total-count">172</span> · <span id="regions-count">13</span> regiones · <span id="clubs-count">—</span> clubes</div>
 </div>
 
 <main id="main-content"></main>
@@ -497,20 +573,44 @@
 <script src="data.js"></script>
 <script src="export-csv.js"></script>
 <script>
-// DATA, ZONE_ORDER, VERSION loaded from data.js
+// NODES, REGION_COLORS, VERSION loaded from data.js
 if (typeof VERSION !== 'undefined') document.getElementById('app-version').textContent = VERSION;
+if (typeof NODES !== 'undefined' && document.getElementById('nodes-count')) document.getElementById('nodes-count').textContent = NODES.length;
 
-// Populate zone filter
-const filterZona = document.getElementById('filter-zona');
-ZONE_ORDER.forEach(z => {
-  const opt = document.createElement('option');
-  opt.value = z.id;
-  opt.textContent = z.label + ' — ' + z.region;
-  filterZona.appendChild(opt);
+function openHelp() {
+  var el = document.getElementById('help-overlay');
+  if (el) { el.classList.add('open'); el.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; }
+}
+function closeHelp() {
+  var el = document.getElementById('help-overlay');
+  if (el) { el.classList.remove('open'); el.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; }
+  try { document.cookie = 'ra-help-seen=1; path=/; max-age=31536000'; } catch (e) {}
+}
+document.getElementById('help-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeHelp();
 });
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && document.getElementById('help-overlay').classList.contains('open')) closeHelp();
+});
+if (!document.cookie.split(';').some(function(c) { return c.trim().startsWith('ra-help-seen='); })) {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function() { setTimeout(openHelp, 400); });
+  else setTimeout(openHelp, 400);
+}
+
+// Populate region filter
+const filterRegion = document.getElementById('filter-region');
+const regionNames = Object.keys(REGION_COLORS || {}).sort();
+regionNames.forEach(reg => {
+  const opt = document.createElement('option');
+  opt.value = reg;
+  opt.textContent = reg;
+  filterRegion.appendChild(opt);
+});
+if (document.getElementById('regions-count')) document.getElementById('regions-count').textContent = regionNames.length;
+if (document.getElementById('total-count')) document.getElementById('total-count').textContent = NODES.length;
 
 // Count unique clubs
-const clubs = new Set(DATA.map(d => d.nombre));
+const clubs = new Set(NODES.map(d => d.nombre));
 document.getElementById('clubs-count').textContent = clubs.size;
 
 // Vence status
@@ -538,22 +638,23 @@ function render(filtered) {
     return;
   }
 
-  // Group by zone maintaining order
-  const byZone = {};
-  ZONE_ORDER.forEach(z => { byZone[z.id] = []; });
+  // Group by region (sorted)
+  const byRegion = {};
+  regionNames.forEach(reg => { byRegion[reg] = []; });
   filtered.forEach(r => {
-    if (byZone[r.zona] !== undefined) byZone[r.zona].push(r);
+    const reg = r.region || '';
+    if (byRegion[reg] !== undefined) byRegion[reg].push(r);
   });
 
   let html = '';
-  ZONE_ORDER.forEach(z => {
-    const rows = byZone[z.id];
-    if (!rows.length) return;
+  regionNames.forEach(reg => {
+    const rows = byRegion[reg];
+    if (!rows || !rows.length) return;
 
     const labels = ['Señal','Banda','RX (MHz)','TX (MHz)','Tono','Pot. W','Club / Titular','Comuna','Ubicación','Vence'];
-    html += `<div class="zone-group" data-zone="${z.id}">
+    html += `<div class="zone-group" data-region="${reg}">
       <div class="zone-header">
-        <span class="zone-badge" style="border-color: ${ZONE_COLORS[z.id]||'#888'}; color: ${ZONE_COLORS[z.id]||'#888'}">${z.label}</span>
+        <span class="zone-badge" style="border-color: ${REGION_COLORS[reg]||'#888'}; color: ${REGION_COLORS[reg]||'#888'}">${reg}</span>
         <span class="zone-count"><span>${rows.length}</span> repetidor${rows.length !== 1 ? 'es' : ''}</span>
       </div>
       <table class="rpt-table">
@@ -576,7 +677,7 @@ function render(filtered) {
       const bc = bandaClass(r.banda);
       const bandaShort = r.banda.replace('/FM','');
       html += `<tr>
-        <td class="cell-signal" data-label="${labels[0]}">${r.senal || '—'}</td>
+        <td class="cell-signal" data-label="${labels[0]}">${r.signal || '—'}</td>
         <td data-label="${labels[1]}"><span class="badge-banda ${bc}">${bandaShort}</span></td>
         <td class="cell-freq freq-rx" data-label="${labels[2]}">${r.rx || '—'}</td>
         <td class="cell-freq freq-tx" data-label="${labels[3]}">${r.tx || '—'}</td>
@@ -598,20 +699,20 @@ function render(filtered) {
 function getFiltered() {
   const q = document.getElementById('search').value.trim().toLowerCase();
   const banda = document.getElementById('filter-banda').value;
-  const zona = document.getElementById('filter-zona').value;
+  const region = document.getElementById('filter-region').value;
 
-  return DATA.filter(r => {
-    if (zona && r.zona !== zona) return false;
+  return NODES.filter(r => {
+    if (region && r.region !== region) return false;
     if (banda && !r.banda.includes(banda)) return false;
     if (q) {
-      const haystack = [r.senal, r.nombre, r.comuna, r.ubicacion, r.region, r.zona].join(' ').toLowerCase();
+      const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda].filter(Boolean).join(' ').toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     return true;
   });
 }
 
-['search','filter-banda','filter-zona'].forEach(id => {
+['search','filter-banda','filter-region'].forEach(id => {
   document.getElementById(id).addEventListener('input', () => render(getFiltered()));
 });
 
@@ -642,7 +743,7 @@ document.addEventListener('click', function(e) {
   }
 });
 
-render(DATA);
+render(NODES);
 </script>
 </body>
 </html>

@@ -31,12 +31,20 @@ html, body {
 .header-signal { font-family: 'Share Tech Mono', monospace; font-size: 20px; color: var(--accent); letter-spacing: 0.08em; }
 .header-title { flex: 1; }
 .header-title h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 0.04em; color: var(--text-bright); text-transform: uppercase; }
+.header-title h1 a { color: inherit; text-decoration: none; }
+.header-title h1 a:hover { color: var(--accent); }
 .header-title p  { font-size: 13px; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; }
 .theme-btn {
   background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim);
   width: 40px; height: 40px; border-radius: 6px; cursor: pointer; font-size: 18px;
   display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0;
 }
+.help-btn {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim);
+  width: 40px; height: 40px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0;
+}
+.help-btn:hover { border-color: var(--accent); color: var(--accent); }
 .header-link { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: var(--text-dim); text-decoration: none; padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all .15s; }
 .header-link:hover { border-color: var(--accent); color: var(--accent); }
 .header-actions { display: flex; align-items: center; gap: 12px; }
@@ -152,16 +160,169 @@ input[type=text] { width: 200px; }
   background: rgba(0, 212, 255, 0.2); color: var(--text-bright);
   box-shadow: 0 0 10px rgba(0, 212, 255, 0.25);
 }
-.neighbor-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(30,45,61,0.3); cursor: pointer; }
+.neighbor-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 2px 10px;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(30,45,61,0.3);
+  cursor: pointer;
+}
 .neighbor-row:hover .neighbor-signal { color: var(--accent); }
-.neighbor-selected { background: rgba(0,212,255,0.06); margin: 0 -8px; padding: 8px; border-radius: 4px; }
+.neighbor-selected { background: rgba(0,212,255,0.06); margin: 0 -8px; padding: 6px 8px; border-radius: 4px; }
 .neighbor-selected .neighbor-signal { color: var(--accent); font-weight: 600; }
-.neighbor-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; align-self: flex-start; margin-top: 4px; }
-.neighbor-main { flex: 1; min-width: 0; }
-.neighbor-signal { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-bright); display: block; }
-.neighbor-details { font-size: 11px; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; margin-top: 2px; }
-.neighbor-zone   { font-size: 12px; color: var(--text-dim); }
-.neighbor-dist   { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--accent2); flex-shrink: 0; }
+.neighbor-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  grid-row: 1 / -1;
+  align-self: center;
+  margin-right: 2px;
+}
+.neighbor-main {
+  min-width: 0;
+  grid-column: 2;
+  grid-row: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  justify-content: center;
+}
+.neighbor-signal {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--text-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.neighbor-details {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: 'Share Tech Mono', monospace;
+  white-space: normal;
+  word-break: break-word;
+}
+.neighbor-dist {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--accent2);
+  flex-shrink: 0;
+  grid-column: 3;
+  grid-row: 1 / -1;
+  align-self: center;
+}
+@media (max-width: 768px) {
+  .neighbor-row { padding: 5px 0; gap: 0 8px; }
+  .neighbor-signal { font-size: 11px; }
+  .neighbor-details { font-size: 9px; }
+}
+
+/* ── HELP MODAL ── */
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+  box-sizing: border-box;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.help-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+.help-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  max-width: 480px;
+  width: 100%;
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.help-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.help-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+.help-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+.help-close:hover {
+  color: var(--accent);
+  background: rgba(0,212,255,0.08);
+}
+.help-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.help-lead {
+  margin: 0 0 16px;
+  color: var(--text-dim);
+}
+.help-section {
+  margin-bottom: 18px;
+}
+.help-section h3 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin: 0 0 8px;
+}
+.help-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+.help-section li {
+  margin-bottom: 6px;
+}
+.help-modal-body a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.help-modal-body a:hover { text-decoration: underline; }
+.help-footer {
+  margin: 16px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-dim);
+}
 
 /* ── LEGEND ── */
 #legend {
@@ -265,20 +426,27 @@ input[type=text] { width: 200px; }
   #stat-badge { padding: 4px 6px; font-size: 10px; }
   #legend { display: none; }
 }
+@media (max-width: 480px) {
+  .help-modal { max-height: calc(100vh - 24px); }
+  .help-modal-header, .help-modal-body { padding: 12px 16px; }
+  .help-title { font-size: 18px; }
+  .help-modal-body { font-size: 13px; }
+}
 </style>
 </head>
 <body>
 <div id="app">
 
 <!-- HEADER -->
-<div class="header">
+<header class="header">
   <div class="header-signal">◈ RA</div>
   <div class="header-title">
     <h1><a href="https://juantoledo.github.io/cobertura-radial-chile/" class="header-title-link">MAPA DE COBERTURA — REPETIDORAS</a></h1>
-    <p>RADIOAFICIONADOS CHILE · 172 ESTACIONES</p>
+    <p>RADIOAFICIONADOS CHILE · <span id="nodes-count">—</span> ESTACIONES</p>
   </div>
   <div class="header-actions">
     <button id="theme-toggle" onclick="toggleTheme()" aria-label="Modo claro" title="Cambiar tema" class="theme-btn">☽</button>
+    <button id="help-btn" onclick="openHelp()" aria-label="Ayuda" title="Cómo usar la app" class="help-btn">?</button>
     <a href="#" id="btn-download-csv" class="header-link btn-download" title="Descargar CSV">↓ CSV</a>
     <a href="lista.html" class="header-link">← LISTA</a>
     <a href="https://github.com/juantoledo/cobertura-radial-chile" class="header-link header-link-icon" target="_blank" rel="noopener" title="Ver en GitHub" aria-label="Ver en GitHub"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
@@ -286,9 +454,49 @@ input[type=text] { width: 200px; }
   <button class="menu-toggle" id="menu-toggle" aria-label="Menú" aria-expanded="false" aria-haspopup="true" title="Menú">☰</button>
   <div class="header-menu" id="header-menu">
     <button type="button" onclick="toggleTheme(); closeMenuMap();" class="theme-btn">☽ Tema claro/oscuro</button>
+    <button type="button" onclick="openHelp(); closeMenuMap();" class="help-btn" style="width:100%;justify-content:flex-start;padding:8px 10px;">? Ayuda</button>
     <a href="#" id="btn-download-csv-menu" class="header-link btn-download">↓ Descargar CSV</a>
     <a href="lista.html" class="header-link">📋 Ir a la lista</a>
     <a href="https://github.com/juantoledo/cobertura-radial-chile" class="header-link" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</header>
+
+<!-- HELP MODAL -->
+<div id="help-overlay" class="help-overlay" aria-hidden="true">
+  <div class="help-modal" role="dialog" aria-labelledby="help-title" aria-modal="true">
+    <div class="help-modal-header">
+      <h2 id="help-title" class="help-title">Cómo usar la app</h2>
+      <button type="button" class="help-close" onclick="closeHelp()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="help-modal-body">
+      <p class="help-lead">Mapa y lista de <strong>repetidoras de radioaficionados en Chile</strong> — datos oficiales SUBTEL/DGMN.</p>
+      <section class="help-section">
+        <h3>Para qué sirve</h3>
+        <ul>
+          <li>Ver en el mapa todas las repetidoras, cobertura teórica y ubicación.</li>
+          <li>Buscar por señal, comuna, frecuencias (RX/TX/tono) o filtrar por banda y región.</li>
+          <li>Revisar datos de cada repetidora y descargar listas en CSV.</li>
+        </ul>
+      </section>
+      <section class="help-section">
+        <h3>Mapa de cobertura</h3>
+        <ul>
+          <li>Explora el mapa; cambia el tema claro/oscuro con el botón ☽.</li>
+          <li>Vista: círculos de cobertura, solo marcadores o ambos.</li>
+          <li>Filtros: banda (VHF/UHF), región y búsqueda por texto.</li>
+          <li>Clic en un punto: datos completos y nodos cercanos; desde el panel lateral puedes descargar un CSV de nodos cercanos.</li>
+        </ul>
+      </section>
+      <section class="help-section">
+        <h3>Lista de repetidores</h3>
+        <ul>
+          <li>Tabla agrupada por región con señal, banda, RX/TX, tono, potencia, club, comuna y vencimiento.</li>
+          <li>Mismos filtros y búsqueda (incluye frecuencias).</li>
+          <li>Descarga CSV de la lista completa o de los resultados filtrados desde el menú superior.</li>
+        </ul>
+      </section>
+      <p class="help-footer">Datos del listado oficial <a href="https://www.subtel.gob.cl/" target="_blank" rel="noopener">SUBTEL</a>. Desarrollado por <a href="https://cd3dxz.radio" target="_blank" rel="noopener">CD3DXZ</a>.</p>
+    </div>
   </div>
 </div>
 
@@ -326,14 +534,14 @@ input[type=text] { width: 200px; }
     </select>
   </div>
   <div class="ctrl-group">
-    <span class="ctrl-label">ZONA</span>
-    <select id="fil-zona" onchange="applyFilters()">
+    <span class="ctrl-label">Región</span>
+    <select id="fil-region" onchange="applyFilters()">
       <option value="">TODAS</option>
     </select>
   </div>
   <div class="ctrl-group">
     <span class="ctrl-label">Búsqueda</span>
-    <input type="text" id="fil-search" placeholder="Buscar señal / comuna…" oninput="applyFilters()">
+    <input type="text" id="fil-search" placeholder="Buscar señal, comuna, frecuencias…" oninput="applyFilters()">
   </div>
   <div id="stat-badge">172 / 172</div>
 </div>
@@ -356,7 +564,7 @@ input[type=text] { width: 200px; }
 
   <!-- LEGEND -->
   <div id="legend">
-    <div class="legend-title">ZONAS</div>
+    <div class="legend-title">REGIONES</div>
   </div>
 </div>
 
@@ -368,13 +576,30 @@ input[type=text] { width: 200px; }
 </div><!-- #app -->
 
 <script>
-// ZONE_COLORS, REPEATERS, DATA, VERSION loaded from data.js
+// REGION_COLORS, NODES, VERSION loaded from data.js
 if (typeof VERSION !== 'undefined') document.getElementById('app-version').textContent = VERSION;
-const sigToNombre = {};
-if (typeof DATA !== 'undefined') {
-  DATA.forEach(d => { const s = d.senal || d.signal; if (s) sigToNombre[s] = d.nombre || ''; });
+if (typeof NODES !== 'undefined' && document.getElementById('nodes-count')) document.getElementById('nodes-count').textContent = NODES.length;
+
+function openHelp() {
+  var el = document.getElementById('help-overlay');
+  if (el) { el.classList.add('open'); el.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; }
 }
-function getClubName(signal) { return sigToNombre[signal] || ''; }
+function closeHelp() {
+  var el = document.getElementById('help-overlay');
+  if (el) { el.classList.remove('open'); el.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; }
+  try { document.cookie = 'ra-help-seen=1; path=/; max-age=31536000'; } catch (e) {}
+}
+document.getElementById('help-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeHelp();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && document.getElementById('help-overlay').classList.contains('open')) closeHelp();
+});
+if (!document.cookie.split(';').some(function(c) { return c.trim().startsWith('ra-help-seen='); })) {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function() { setTimeout(openHelp, 400); });
+  else setTimeout(openHelp, 400);
+}
+function getClubName(signal) { var n = NODES && NODES.find(function(x){ return x.signal === signal; }); return n ? (n.nombre || '') : ''; }
 
 // Pre-compute overlaps
 function haversine(la1,lo1,la2,lo2){
@@ -382,10 +607,10 @@ function haversine(la1,lo1,la2,lo2){
   const a=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
-REPEATERS.forEach((r,i)=>{
+NODES.forEach((r,i)=>{
   r._idx = i;
   r._neighbors = [];
-  REPEATERS.forEach((s,j)=>{
+  NODES.forEach((s,j)=>{
     if(i===j) return;
     const d = haversine(r.lat,r.lon,s.lat,s.lon);
     if(d < r.range_km + s.range_km) r._neighbors.push({idx:j, dist:Math.round(d)});
@@ -425,23 +650,23 @@ const markerLayer  = L.layerGroup().addTo(map);
 
 let currentMode = 'both';
 let selectedIdx = null;
-let visibleSet   = new Set(REPEATERS.map(r=>r._idx));
+let visibleSet   = new Set(NODES.map(r=>r._idx));
 
-// ── POPULATE ZONA FILTER ───────────────────────────────────────────────────
-const zoneIds = new Set(REPEATERS.map(r=>r.zona));
-const filZona = document.getElementById('fil-zona');
-ZONE_ORDER.filter(z=>zoneIds.has(z.id)).forEach(z=>{
+// ── POPULATE REGION FILTER ───────────────────────────────────────────────────
+const regionNames = Object.keys(REGION_COLORS || {}).sort();
+const filRegion = document.getElementById('fil-region');
+regionNames.forEach(reg => {
   const o = document.createElement('option');
-  o.value = z.id; o.textContent = z.label;
-  filZona.appendChild(o);
+  o.value = reg; o.textContent = reg;
+  filRegion.appendChild(o);
 });
 
 // ── LEGEND ─────────────────────────────────────────────────────────────────
 const legend = document.getElementById('legend');
-ZONE_ORDER.filter(z=>zoneIds.has(z.id)).forEach(z=>{
+regionNames.forEach(reg => {
   const row = document.createElement('div');
   row.className = 'legend-row';
-  row.innerHTML = '<div class="legend-dot" style="background:' + (ZONE_COLORS[z.id]||'#888') + '"></div><span class="legend-zone">' + z.label + '</span>';
+  row.innerHTML = '<div class="legend-dot" style="background:' + (REGION_COLORS[reg]||'#888') + '"></div><span class="legend-zone">' + reg + '</span>';
   legend.appendChild(row);
 });
 
@@ -455,12 +680,12 @@ function renderAll(){
   circleLayer.clearLayers();
   markerLayer.clearLayers();
 
-  REPEATERS.forEach(r=>{
+  NODES.forEach(r=>{
     const visible = visibleSet.has(r._idx);
-    const color   = ZONE_COLORS[r.zona] || '#888';
+    const color   = REGION_COLORS[r.region] || '#888';
     const rgb     = hexToRgb(color);
     const isSelected = r._idx === selectedIdx;
-    const isNeighbor = selectedIdx !== null && REPEATERS[selectedIdx]._neighbors.some(n=>n.idx===r._idx);
+    const isNeighbor = selectedIdx !== null && NODES[selectedIdx]._neighbors.some(n=>n.idx===r._idx);
 
     // ── Circle ──
     if(currentMode === 'circles' || currentMode === 'both'){
@@ -500,7 +725,7 @@ function renderAll(){
       marker.on('click', ()=>{ selectRepeater(r._idx); });
 
       // Tooltip
-      const club = getClubName(r.signal);
+      const club = r.nombre || getClubName(r.signal);
       const rx = r.rx || '—', tx = r.tx || '—', tono = r.tono ? r.tono + ' Hz' : '—';
       const tooltipHtml = '<div style="font-family:Share Tech Mono,monospace;font-size:12px;color:#00d4ff;background:#0d1520;border:1px solid #1a2d42;padding:6px 10px;border-radius:4px;">' +
         r.signal + (club ? '<br><span style="color:#c8d8e8;font-size:11px;">' + club + '</span>' : '') +
@@ -534,16 +759,19 @@ function setMode(mode){
 // ── FILTERS ────────────────────────────────────────────────────────────────
 function applyFilters(){
   const banda  = document.getElementById('fil-banda').value;
-  const zona   = document.getElementById('fil-zona').value;
+  const region  = document.getElementById('fil-region').value;
   const search = document.getElementById('fil-search').value.trim().toLowerCase();
   visibleSet = new Set();
-  REPEATERS.forEach(r=>{
+  NODES.forEach(r=>{
     if(banda && !r.banda.startsWith(banda)) return;
-    if(zona  && r.zona !== zona) return;
-    if(search && !r.signal.toLowerCase().includes(search) && !r.comuna.toLowerCase().includes(search) && !r.ubicacion.toLowerCase().includes(search)) return;
+    if(region && r.region !== region) return;
+    if(search){
+      const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda].filter(Boolean).join(' ').toLowerCase();
+      if(!haystack.includes(search)) return;
+    }
     visibleSet.add(r._idx);
   });
-  document.getElementById('stat-badge').textContent = visibleSet.size + ' / ' + REPEATERS.length;
+  document.getElementById('stat-badge').textContent = visibleSet.size + ' / ' + NODES.length;
   renderAll();
 }
 
@@ -555,18 +783,18 @@ function selectRepeater(idx){
 }
 
 function showSidebar(idx){
-  const r = REPEATERS[idx];
-  const color = ZONE_COLORS[r.zona] || '#888';
-  const club = getClubName(r.signal);
+  const r = NODES[idx];
+  const color = REGION_COLORS[r.region] || '#888';
+  const club = r.nombre || getClubName(r.signal);
   document.getElementById('sb-signal').textContent = r.signal;
   document.getElementById('sb-signal').style.color = color;
-  document.getElementById('sb-club').textContent = club || r.zona + ' · ' + r.comuna;
+  document.getElementById('sb-club').textContent = club || r.region + ' · ' + r.comuna;
 
   const body = document.getElementById('sb-body');
   const vence = r.vence || '—';
   const rows = [
     ['CLUB',      club || '—'],
-    ['ZONA',      r.zona],
+    ['Región',    r.region || '—'],
     ['COMUNA',    r.comuna || '—'],
     ['BANDA',     '<span style="color:'+(r.banda.startsWith('VHF')?'#29abe2':'#e91e8c')+'">' + r.banda + '</span>'],
     ['RX (MHz)',  r.rx || '—'],
@@ -586,11 +814,11 @@ function showSidebar(idx){
   // Neighbors (selected item first, then sorted by distance)
   const allNeighbors = [{idx: idx, dist: 0}, ...r._neighbors].sort((a,b)=>a.dist-b.dist);
   if(allNeighbors.length > 0){
-    html += '<div class="sb-section-title">VECINOS CON SOLAPAMIENTO <a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar vecinos como CSV">↓ CSV</a></div>';
+    html += '<div class="sb-section-title">NODOS CERCANOS <a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar nodos cercanos como CSV">↓ CSV</a></div>';
     const shown = allNeighbors.slice(0, 21);
     html += shown.map(n=>{
-      const nb = REPEATERS[n.idx];
-      const nc = ZONE_COLORS[nb.zona]||'#888';
+      const nb = NODES[n.idx];
+      const nc = REGION_COLORS[nb.region]||'#888';
       const rx = nb.rx || '—', tx = nb.tx || '—', tono = nb.tono ? nb.tono+' Hz' : '—';
       const details = 'RX '+rx+' · TX '+tx+' · '+tono;
       const isSelected = n.idx === idx;
@@ -601,7 +829,6 @@ function showSidebar(idx){
           '<span class="neighbor-signal">'+nb.signal+(isSelected?' (este)':'')+'</span>' +
           '<div class="neighbor-details"><span>'+details+'</span></div>' +
         '</div>' +
-        '<span class="neighbor-zone">'+nb.zona+'</span>' +
         '<span class="neighbor-dist">'+distStr+'</span>' +
         '</div>';
     }).join('');
@@ -614,20 +841,20 @@ function showSidebar(idx){
 
 function downloadNeighborsCSV(){
   if(selectedIdx == null) return;
-  const r = REPEATERS[selectedIdx];
+  const r = NODES[selectedIdx];
   const allNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || [])].sort((a,b)=>a.dist-b.dist);
   if(allNeighbors.length === 0) return;
   const esc = v => (v == null || v === '') ? '' : (''+v).includes(',') || (''+v).includes('"') ? '"' + (''+v).replace(/"/g, '""') + '"' : ''+v;
-  const headers = ['Repetidor','Señal vecino','Club','Zona','Comuna','RX (MHz)','TX (MHz)','Tono (Hz)','Banda','Distancia (km)'];
+  const headers = ['Repetidor','Señal nodo cercano','Club','Región','Comuna','RX (MHz)','TX (MHz)','Tono (Hz)','Banda','Distancia (km)'];
   const rows = allNeighbors.map(n=>{
-    const nb = REPEATERS[n.idx];
-    return [r.signal, nb.signal, getClubName(nb.signal), nb.zona, nb.comuna || '', nb.rx || '', nb.tx || '', nb.tono || '', nb.banda || '', n.dist];
+    const nb = NODES[n.idx];
+    return [r.signal, nb.signal, nb.nombre || getClubName(nb.signal), nb.region, nb.comuna || '', nb.rx || '', nb.tx || '', nb.tono || '', nb.banda || '', n.dist];
   });
   const csv = [headers.join(','), ...rows.map(row=>row.map(esc).join(','))].join('\n');
   const blob = new Blob(['\ufeff'+csv], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'vecinos-' + r.signal.replace(/\s+/g,'-') + '.csv';
+  a.download = 'nodos-cercanos-' + r.signal.replace(/\s+/g,'-') + '.csv';
   a.click();
   URL.revokeObjectURL(a.href);
 }
@@ -669,9 +896,9 @@ document.addEventListener('click', function(e) {
 document.querySelectorAll('#btn-download-csv, #btn-download-csv-menu').forEach(btn => {
   btn.addEventListener('click', function(e) {
     e.preventDefault();
-    const visibleSignals = new Set(REPEATERS.filter((r,i)=>visibleSet.has(i)).map(r=>r.signal));
-    const rows = DATA.filter(d=>visibleSignals.has(d.senal||d.signal));
-    exportRepeatersCSV(rows.length ? rows : DATA);
+    const visibleSignals = new Set(NODES.filter((r,i)=>visibleSet.has(i)).map(r=>r.signal));
+    const rows = NODES.filter(n=>visibleSignals.has(n.signal));
+    exportRepeatersCSV(rows.length ? rows : NODES);
     closeMenuMap();
   });
 });
