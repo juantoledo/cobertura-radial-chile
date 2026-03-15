@@ -206,7 +206,7 @@ function render(filtered) {
     });
   }
 
-  const labels = ['Señal','Banda','RX (MHz)','TX (MHz)','Tono','Pot. W','Club / Titular','Comuna','Ubicación','Vence'];
+  const labels = ['Señal','Banda','RX (MHz)','TX (MHz)','Tono','Pot. W','Club / Titular','Comuna','Ubicación','Vence','Compartir'];
   if (showDistance) labels.splice(2, 0, 'Distancia');
 
   let html = '';
@@ -232,6 +232,7 @@ function render(filtered) {
           <th>Comuna</th>
           <th>Ubicación</th>
           <th>Vence</th>
+          <th>Compartir</th>
         </tr></thead>
         <tbody>`;
 
@@ -252,6 +253,7 @@ function render(filtered) {
         <td class="cell-comuna" data-label="${labels[showDistance ? 8 : 7]}">${r.comuna || '—'}</td>
         <td class="cell-ub" data-label="${labels[showDistance ? 9 : 8]}" title="${r.ubicacion}">${r.ubicacion || '—'}</td>
         <td class="cell-vence ${vc}" data-label="${labels[showDistance ? 10 : 9]}">${r.vence || '—'}</td>
+        <td class="cell-share" data-label="Compartir"><button type="button" class="share-btn" data-signal="${(r.signal||'').replace(/"/g,'&quot;')}" aria-label="Compartir ${(r.signal||'').replace(/"/g,'&quot;')}" title="Compartir detalles">↗</button></td>
       </tr>`;
     });
 
@@ -313,6 +315,44 @@ function getFiltered() {
   return result;
 }
 
+function shareStation(signal) {
+  const r = NODES.find(n => n.signal === signal);
+  if (!r) return;
+  const lines = [
+    r.signal + (r.nombre ? ' — ' + r.nombre : ''),
+    'Banda: ' + (r.banda || '—'),
+    'RX: ' + (r.rx || '—') + ' MHz · TX: ' + (r.tx || '—') + ' MHz',
+    'Tono: ' + (r.tono ? r.tono + ' Hz' : '—'),
+    'Comuna: ' + (r.comuna || '—') + ' · Región: ' + (r.region || '—'),
+    'Ubicación: ' + (r.ubicacion || '—'),
+    'Radiomap — https://juantoledo.github.io/cobertura-radial-chile/'
+  ];
+  const text = lines.join('\n');
+  const title = 'Radiomap — ' + (r.signal || 'Repetidora');
+  if (navigator.share) {
+    navigator.share({ title, text, url: 'https://juantoledo.github.io/cobertura-radial-chile/' }).catch(() => {});
+  } else {
+    fallbackCopy(text);
+  }
+}
+function fallbackCopy(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (typeof alert === 'function') alert('Detalles copiados al portapapeles.');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('Detalles copiados al portapapeles.');
+  });
+}
+document.getElementById('main-content').addEventListener('click', function (e) {
+  const btn = e.target.closest('.share-btn');
+  if (btn && btn.dataset.signal !== undefined) shareStation(btn.dataset.signal);
+});
 ['search','filter-banda','filter-region'].forEach(id => {
   const el = document.getElementById(id);
   ['input','change'].forEach(ev => el.addEventListener(ev, () => render(getFiltered())));

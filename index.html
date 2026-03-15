@@ -475,7 +475,7 @@ function showSidebar(idx){
   // Neighbors (selected item first, then sorted by distance)
   const allNeighbors = [{idx: idx, dist: 0}, ...r._neighbors].sort((a,b)=>a.dist-b.dist);
   if(allNeighbors.length > 0){
-    html += '<div class="sb-section-title">NODOS CERCANOS <a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar nodos cercanos como CSV">↓ CSV</a></div>';
+    html += '<div class="sb-section-title">NODOS CERCANOS <span class="sb-neighbor-actions"><a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar nodos cercanos como CSV">↓ CSV</a><a href="#" class="sb-share-neighbors" onclick="shareNeighbors();return false" title="Compartir lista">↗ Compartir</a></span></div>';
     const shown = allNeighbors.slice(0, 21);
     html += shown.map(n=>{
       const nb = NODES[n.idx];
@@ -518,6 +518,43 @@ function downloadNeighborsCSV(){
   a.download = 'nodos-cercanos-' + r.signal.replace(/\s+/g,'-') + '.csv';
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+function shareNeighbors(){
+  if(selectedIdx == null) return;
+  const r = NODES[selectedIdx];
+  const allNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || [])].sort((a,b)=>a.dist-b.dist);
+  if(allNeighbors.length === 0) return;
+  const title = 'Nodos Cercanos a ' + (r.signal || 'Repetidora');
+  const lines = [
+    title,
+    '',
+    ...allNeighbors.map(n=>{
+      const nb = NODES[n.idx];
+      const distStr = n.dist === 0 ? '0 km' : n.dist + ' km';
+      return (nb.signal || '—') + (nb.nombre ? ' — ' + nb.nombre : '') + ' · ' + distStr + '\n  RX ' + (nb.rx || '—') + ' · TX ' + (nb.tx || '—') + ' · ' + (nb.tono ? nb.tono + ' Hz' : '—') + '\n  ' + (nb.comuna || '—') + ' · ' + (nb.region || '—');
+    }),
+    '',
+    'Radiomap — https://juantoledo.github.io/cobertura-radial-chile/'
+  ];
+  const text = lines.join('\n');
+  const url = 'https://juantoledo.github.io/cobertura-radial-chile/';
+  if(navigator.share){
+    navigator.share({ title, text, url }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(text).then(()=>{
+      alert('Lista copiada al portapapeles.');
+    }).catch(()=>{
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      alert('Lista copiada al portapapeles.');
+    });
+  }
 }
 
 function closeSidebar(){
