@@ -1,4 +1,4 @@
-# Repetidoras RA Chile
+# Radiomap
 
 **Mapa y lista de repetidoras de radioaficionados en Chile** — dónde están, qué cubren y cómo contactar. Datos oficiales SUBTEL/DGMN.
 

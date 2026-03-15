@@ -13,7 +13,7 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Lista de Repetidores — Radioaficionados Chile</title>
+<title>Radiomap — Lista de repetidoras</title>
 <script>(function(){try{var m=document.cookie.match(/(^|\s)ra-theme=([^;]+)/);var t=m&&m[2]?(m[2]):(typeof matchMedia!=='undefined'&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
@@ -22,24 +22,27 @@
 <body class="page-list">
 
 <header class="header">
-  <div class="header-signal">◈ RA</div>
+  <div class="header-signal">Radiomap</div>
   <div class="header-title">
-    <h1><a href="https://juantoledo.github.io/cobertura-radial-chile/" class="header-title-link">LISTA DE REPETIDORAS</a></h1>
-    <p>RADIOAFICIONADOS CHILE · <span id="nodes-count">—</span> ESTACIONES</p>
+    <p>Repetidoras Chile · <span id="nodes-count">—</span> estaciones</p>
   </div>
+  <nav class="header-nav" aria-label="Navegación principal">
+    <a href="lista.html" class="header-link header-link-nav current">LISTA</a>
+    <a href="index.html" class="header-link header-link-nav">MAPA</a>
+    <button id="btn-nearme" onclick="toggleNearMe()" class="location-btn" aria-label="Cerca de mí" title="Mostrar repetidoras cerca de mi ubicación">📍</button>
+  </nav>
   <div class="header-actions">
     <button id="theme-toggle" onclick="toggleTheme()" aria-label="Modo claro" title="Cambiar tema" class="theme-btn">☽</button>
     <button id="help-btn" onclick="openHelp()" aria-label="Ayuda" title="Cómo usar la app" class="help-btn">?</button>
     <a href="#" id="btn-download-csv" class="header-link btn-download" title="Descargar CSV">↓ CSV</a>
-    <a href="index.html" class="header-link">MAPA →</a>
     <a href="https://github.com/juantoledo/cobertura-radial-chile" class="header-link header-link-icon" target="_blank" rel="noopener" title="Ver en GitHub" aria-label="Ver en GitHub"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
   </div>
   <button class="menu-toggle" id="menu-toggle" aria-label="Menú" aria-expanded="false" aria-haspopup="true" title="Menú">☰</button>
   <div class="header-menu" id="header-menu">
     <button type="button" onclick="toggleTheme(); closeMenu();" class="theme-btn">☽ Tema claro/oscuro</button>
     <button type="button" onclick="openHelp(); closeMenu();" class="help-btn">? Ayuda</button>
+    <button type="button" onclick="toggleNearMe(); closeMenu();" class="location-btn">📍 Cerca de mí</button>
     <a href="#" id="btn-download-csv-menu" class="header-link btn-download">↓ Descargar CSV</a>
-    <a href="index.html" class="header-link">🗺️ Ir al mapa</a>
     <a href="https://github.com/juantoledo/cobertura-radial-chile" class="header-link" target="_blank" rel="noopener">GitHub</a>
   </div>
 </header>
@@ -52,11 +55,12 @@
       <button type="button" class="help-close" onclick="closeHelp()" aria-label="Cerrar">✕</button>
     </div>
     <div class="help-modal-body">
-      <p class="help-lead">Mapa y lista de <strong>repetidoras de radioaficionados en Chile</strong> — datos oficiales SUBTEL/DGMN.</p>
+      <p class="help-lead"><strong>Radiomap</strong> — mapa y lista de repetidoras de radioaficionados en Chile. Datos oficiales SUBTEL/DGMN.</p>
       <section class="help-section">
         <h3>Para qué sirve</h3>
         <ul>
           <li>Ver en el mapa todas las repetidoras, cobertura teórica y ubicación.</li>
+          <li>Usar el botón 📍 para mostrar solo repetidoras cerca de tu ubicación (100 km).</li>
           <li>Buscar por señal, comuna, frecuencias (RX/TX/tono) o filtrar por banda y región.</li>
           <li>Revisar datos de cada repetidora y descargar listas en CSV.</li>
         </ul>
@@ -98,7 +102,7 @@
   <select id="filter-region">
     <option value="">Todas las regiones</option>
   </select>
-  <div class="filter-count">Mostrando <span id="shown-count">172</span> de <span id="total-count">172</span> · <span id="regions-count">13</span> regiones · <span id="clubs-count">—</span> clubes</div>
+  <div class="filter-count">Mostrando <span id="shown-count">172</span> de <span id="total-count">172</span> · <span id="regions-count">13</span> regiones · <span id="clubs-count">—</span> clubes<span id="filter-nearme"></span></div>
 </div>
 
 <main id="main-content"></main>
@@ -110,6 +114,7 @@
 </footer>
 
 <script src="data.js"></script>
+<script src="location-filter.js"></script>
 <script src="export-csv.js"></script>
 <script>
 // NODES, REGION_COLORS, VERSION loaded from data.js
@@ -145,13 +150,6 @@ regionNames.forEach(reg => {
   opt.textContent = reg || 'Sin región en el archivo de Subtel';
   filterRegion.appendChild(opt);
 });
-if (document.getElementById('regions-count')) document.getElementById('regions-count').textContent = regionNames.length;
-if (document.getElementById('total-count')) document.getElementById('total-count').textContent = NODES.length;
-
-// Count unique clubs
-const clubs = new Set(NODES.map(d => d.nombre));
-document.getElementById('clubs-count').textContent = clubs.size;
-
 // Vence status (fechas en dd-mm-yyyy o yyyy-mm-dd)
 function parseDate(s) {
   if (!s) return null;
@@ -178,11 +176,18 @@ function bandaClass(banda) {
 function render(filtered) {
   const main = document.getElementById('main-content');
   document.getElementById('shown-count').textContent = filtered.length;
+  document.getElementById('total-count').textContent = NODES.length;
+  document.getElementById('regions-count').textContent = filtered.length ? new Set(filtered.map(r => r.region || '')).size : 0;
+  document.getElementById('clubs-count').textContent = filtered.length ? new Set(filtered.map(r => r.nombre).filter(Boolean)).size : 0;
+  document.getElementById('filter-nearme').textContent = getNearMeLocation() ? ' · cerca de mí' : '';
 
   if (filtered.length === 0) {
     main.innerHTML = '<div class="no-results">No se encontraron resultados para la búsqueda actual.</div>';
     return;
   }
+
+  const nearMe = getNearMeLocation();
+  const showDistance = !!nearMe;
 
   // Group by region (sorted)
   const byRegion = {};
@@ -192,12 +197,23 @@ function render(filtered) {
     if (byRegion[reg] !== undefined) byRegion[reg].push(r);
   });
 
+  let regionsToShow = regionNames.filter(reg => byRegion[reg] && byRegion[reg].length > 0);
+  if (nearMe && regionsToShow.length > 1) {
+    regionsToShow.sort((a, b) => {
+      const minA = Math.min(...byRegion[a].map(r => r._dist ?? 9999));
+      const minB = Math.min(...byRegion[b].map(r => r._dist ?? 9999));
+      return minA - minB;
+    });
+  }
+
+  const labels = ['Señal','Banda','RX (MHz)','TX (MHz)','Tono','Pot. W','Club / Titular','Comuna','Ubicación','Vence'];
+  if (showDistance) labels.splice(2, 0, 'Distancia');
+
   let html = '';
-  regionNames.forEach(reg => {
+  regionsToShow.forEach(reg => {
     const rows = byRegion[reg];
     if (!rows || !rows.length) return;
 
-    const labels = ['Señal','Banda','RX (MHz)','TX (MHz)','Tono','Pot. W','Club / Titular','Comuna','Ubicación','Vence'];
     html += `<div class="zone-group" data-region="${reg}">
       <div class="zone-header">
         <span class="zone-badge" style="border-color: ${REGION_COLORS[reg]||'#5e35b1'}; color: ${REGION_COLORS[reg]||'#5e35b1'}">${reg || 'Sin región en el archivo de Subtel'}</span>
@@ -207,6 +223,7 @@ function render(filtered) {
         <thead><tr>
           <th>Señal</th>
           <th>Banda</th>
+          ${showDistance ? '<th>Distancia</th>' : ''}
           <th>RX (MHz)</th>
           <th>TX (MHz)</th>
           <th>Tono</th>
@@ -222,17 +239,19 @@ function render(filtered) {
       const vc = venceClass(r.vence);
       const bc = bandaClass(r.banda);
       const bandaShort = r.banda.replace('/FM','');
+      const distCell = showDistance ? `<td class="cell-dist" data-label="Distancia">${r._dist != null ? r._dist + ' km' : '—'}</td>` : '';
       html += `<tr>
         <td class="cell-signal" data-label="${labels[0]}">${r.signal || '—'}</td>
         <td data-label="${labels[1]}"><span class="badge-banda ${bc}">${bandaShort}</span></td>
-        <td class="cell-freq freq-rx" data-label="${labels[2]}">${r.rx || '—'}</td>
-        <td class="cell-freq freq-tx" data-label="${labels[3]}">${r.tx || '—'}</td>
-        <td class="cell-tone" data-label="${labels[4]}">${r.tono || '—'}</td>
-        <td class="cell-pot" data-label="${labels[5]}"><span>${r.potencia || '—'}</span> W</td>
-        <td class="cell-club" data-label="${labels[6]}"><strong>${r.nombre}</strong><small>${r.region}</small></td>
-        <td class="cell-comuna" data-label="${labels[7]}">${r.comuna || '—'}</td>
-        <td class="cell-ub" data-label="${labels[8]}" title="${r.ubicacion}">${r.ubicacion || '—'}</td>
-        <td class="cell-vence ${vc}" data-label="${labels[9]}">${r.vence || '—'}</td>
+        ${distCell}
+        <td class="cell-freq freq-rx" data-label="${labels[showDistance ? 3 : 2]}">${r.rx || '—'}</td>
+        <td class="cell-freq freq-tx" data-label="${labels[showDistance ? 4 : 3]}">${r.tx || '—'}</td>
+        <td class="cell-tone" data-label="${labels[showDistance ? 5 : 4]}">${r.tono || '—'}</td>
+        <td class="cell-pot" data-label="${labels[showDistance ? 6 : 5]}"><span>${r.potencia || '—'}</span> W</td>
+        <td class="cell-club" data-label="${labels[showDistance ? 7 : 6]}"><strong>${r.nombre}</strong><small>${r.region}</small></td>
+        <td class="cell-comuna" data-label="${labels[showDistance ? 8 : 7]}">${r.comuna || '—'}</td>
+        <td class="cell-ub" data-label="${labels[showDistance ? 9 : 8]}" title="${r.ubicacion}">${r.ubicacion || '—'}</td>
+        <td class="cell-vence ${vc}" data-label="${labels[showDistance ? 10 : 9]}">${r.vence || '—'}</td>
       </tr>`;
     });
 
@@ -242,12 +261,40 @@ function render(filtered) {
   main.innerHTML = html;
 }
 
+function toggleNearMe() {
+  const loc = getNearMeLocation();
+  if (loc) {
+    clearNearMeLocation();
+    updateNearMeButtonState();
+    render(getFiltered());
+    return;
+  }
+  if (!navigator.geolocation) {
+    alert('Tu navegador no soporta geolocalización.');
+    return;
+  }
+  const btn = document.getElementById('btn-nearme');
+  if (btn) btn.disabled = true;
+  requestNearMeLocation(
+    function () {
+      updateNearMeButtonState();
+      render(getFiltered());
+      if (btn) btn.disabled = false;
+    },
+    function () {
+      if (btn) btn.disabled = false;
+      alert('No se pudo obtener tu ubicación. Verifica que el permiso esté concedido.');
+    }
+  );
+}
+
 function getFiltered() {
   const q = document.getElementById('search').value.trim().toLowerCase();
   const banda = document.getElementById('filter-banda').value;
   const region = document.getElementById('filter-region').value;
+  const nearMe = getNearMeLocation();
 
-  return NODES.filter(r => {
+  let result = NODES.filter(r => {
     if (region === '__sin_region__') { if (r.region) return false; }
     else if (region && r.region !== region) return false;
     if (banda && !r.banda.includes(banda)) return false;
@@ -255,13 +302,22 @@ function getFiltered() {
       const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda].filter(Boolean).join(' ').toLowerCase();
       if (!haystack.includes(q)) return false;
     }
+    if (nearMe && haversine(nearMe.lat, nearMe.lon, r.lat, r.lon) > NEAR_ME_RADIUS_KM) return false;
     return true;
   });
+
+  if (nearMe && result.length > 0) {
+    result = result.slice().map(r => ({ ...r, _dist: Math.round(haversine(nearMe.lat, nearMe.lon, r.lat, r.lon)) }));
+    result.sort((a, b) => a._dist - b._dist);
+  }
+  return result;
 }
 
 ['search','filter-banda','filter-region'].forEach(id => {
-  document.getElementById(id).addEventListener('input', () => render(getFiltered()));
+  const el = document.getElementById(id);
+  ['input','change'].forEach(ev => el.addEventListener(ev, () => render(getFiltered())));
 });
+updateNearMeButtonState();
 
 function closeMenu() {
   document.getElementById('header-menu').classList.remove('open');
@@ -274,10 +330,21 @@ document.getElementById('menu-toggle').addEventListener('click', function() {
   this.setAttribute('aria-expanded', open);
 });
 
+function getExportCriteria() {
+  const banda = document.getElementById('filter-banda');
+  const region = document.getElementById('filter-region');
+  const search = document.getElementById('search');
+  return {
+    banda: banda ? banda.value : '',
+    region: region ? region.value : '',
+    search: search ? search.value.trim() : '',
+    nearMe: !!getNearMeLocation()
+  };
+}
 document.querySelectorAll('#btn-download-csv, #btn-download-csv-menu').forEach(btn => {
   btn.addEventListener('click', function(e) {
     e.preventDefault();
-    exportRepeatersCSV(getFiltered());
+    exportRepeatersCSV(getFiltered(), getExportCriteria());
     closeMenu();
   });
 });
@@ -290,7 +357,7 @@ document.addEventListener('click', function(e) {
   }
 });
 
-render(NODES);
+render(getFiltered());
 </script>
 </body>
 </html>
