@@ -2,6 +2,8 @@
  * Dark/Light theme — follows system preference by default
  * User override saved in cookie (ra-theme)
  */
+(function(){try{var m=document.cookie.match(/(^|\s)ra-theme=([^;]+)/);var t=m&&m[2]?(m[2]):(typeof matchMedia!=='undefined'&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();
+
 (function() {
   const COOKIE_KEY = 'ra-theme';
 
@@ -45,7 +47,6 @@
     }
   }
 
-  // Apply on load — use stored override or system preference
   setTheme(getTheme(), false);
 
   if (document.readyState === 'loading') {
@@ -54,7 +55,6 @@
     updateToggleButton();
   }
 
-  // React to system preference changes when user hasn't overridden
   try {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
       if (!getStoredTheme()) setTheme(getSystemTheme(), false);

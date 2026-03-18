@@ -1,0 +1,366 @@
+/**
+ * Map view — Leaflet map, circles, markers, sidebar, filters
+ * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js, export-csv.js, theme.js, help.js
+ */
+(function() {
+  if (typeof NODES === 'undefined' || !NODES.length) return;
+
+  if (typeof VERSION !== 'undefined') document.getElementById('app-version') && (document.getElementById('app-version').textContent = VERSION);
+  document.getElementById('nodes-count') && (document.getElementById('nodes-count').textContent = NODES.length);
+
+  function getClubName(signal) { var n = NODES && NODES.find(function(x){ return x.signal === signal; }); return n ? (n.nombre || '') : ''; }
+  window.getClubName = getClubName;
+
+  NODES.forEach((r,i)=>{
+    r._idx = i;
+    r._neighbors = [];
+    NODES.forEach((s,j)=>{
+      if(i===j) return;
+      const d = haversine(r.lat,r.lon,s.lat,s.lon);
+      if(d < r.range_km + s.range_km) r._neighbors.push({idx:j, dist:Math.round(d)});
+    });
+    r._neighbors.sort((a,b)=>a.dist-b.dist);
+  });
+
+  const map = L.map('map', {
+    center: [-33.5, -70.6],
+    zoom: 5,
+    zoomControl: true,
+    attributionControl: true,
+  });
+
+  const tileOpts = {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  };
+  let currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', tileOpts).addTo(map);
+
+  function setMapTiles(theme) {
+    map.removeLayer(currentTileLayer);
+    currentTileLayer = L.tileLayer(
+      theme === 'light' ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      tileOpts
+    ).addTo(map);
+  }
+  setMapTiles(getTheme());
+  window.onThemeChange = function(theme) { setMapTiles(theme); };
+
+  const circleLayer = L.layerGroup().addTo(map);
+  const markerLayer = L.layerGroup().addTo(map);
+
+  let currentMode = 'both';
+  let selectedIdx = null;
+  let visibleSet = new Set(NODES.map(r=>r._idx));
+
+  const regionNames = Object.keys(REGION_COLORS || {}).sort();
+  const filterRegion = document.getElementById('filter-region');
+  regionNames.forEach(reg => {
+    const o = document.createElement('option');
+    o.value = reg === '' ? '__sin_region__' : reg;
+    o.textContent = reg || 'Sin región en el archivo de Subtel';
+    filterRegion.appendChild(o);
+  });
+
+  function hexToRgb(hex){
+    const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+    return r+','+g+','+b;
+  }
+
+  function renderAll(){
+    circleLayer.clearLayers();
+    markerLayer.clearLayers();
+
+    NODES.forEach(r=>{
+      const visible = visibleSet.has(r._idx);
+      const color = REGION_COLORS[r.region] || REGION_COLORS[''] || '#5e35b1';
+      const rgb = hexToRgb(color);
+      const isSelected = r._idx === selectedIdx;
+      const isNeighbor = selectedIdx !== null && NODES[selectedIdx]._neighbors.some(n=>n.idx===r._idx);
+
+      if(currentMode === 'circles' || currentMode === 'both'){
+        let fillOp, strokeOp, weight, dashArr;
+        if(selectedIdx === null){ fillOp = 0.07; strokeOp = 0.35; weight = 1; dashArr = null; }
+        else if(isSelected){ fillOp = 0.18; strokeOp = 0.9; weight = 2; dashArr = null; }
+        else if(isNeighbor){ fillOp = 0.04; strokeOp = 0.2; weight = 1; dashArr = '4 4'; }
+        else { fillOp = 0.02; strokeOp = 0.07; weight = 0.5; dashArr = null; }
+
+        const circle = L.circle([r.lat, r.lon], {
+          radius: r.range_km * 1000,
+          color: 'rgba('+rgb+','+strokeOp+')',
+          fillColor: 'rgba('+rgb+','+fillOp+')',
+          fillOpacity: 1, weight: weight, dashArray: dashArr, interactive: false,
+        });
+        if(visible) circle.addTo(circleLayer);
+      }
+
+      if(currentMode === 'markers' || currentMode === 'both'){
+        const size = isSelected ? 14 : 9;
+        const icon = L.divIcon({
+          className: '',
+          html: '<div class="rpt-marker' + (isSelected?' selected':'') + '" style="background:' + color + ';width:'+size+'px;height:'+size+'px;border-radius:50%;border:2px solid rgba(255,255,255,'+(isSelected?'0.9':'0.35')+');box-shadow:0 0 '+(isSelected?'8px':'3px')+' rgba('+rgb+',0.6);"></div>',
+          iconSize: [size, size], iconAnchor: [size/2, size/2],
+        });
+        const marker = L.marker([r.lat, r.lon], { icon, zIndexOffset: isSelected ? 1000 : 0 });
+        marker.on('click', ()=>{ selectRepeater(r._idx); });
+        const club = r.nombre || getClubName(r.signal);
+        const rx = r.rx || '—', tx = r.tx || '—', tono = r.tono ? r.tono + ' Hz' : '—';
+        const tooltipHtml = '<div class="rpt-tooltip-inner" style="font-family:Share Tech Mono,monospace;color:#00d4ff;background:#0d1520;border:1px solid #1a2d42;padding:8px 12px;border-radius:4px;">' +
+          r.signal + (club ? '<br><span class="rpt-tooltip-club">' + club + '</span>' : '') +
+          '<br><span class="rpt-tooltip-meta">' + r.comuna + ' · ' + r.banda + '</span>' +
+          '<br><span class="rpt-tooltip-meta">RX ' + rx + ' · TX ' + tx + ' · ' + tono + '</span></div>';
+        marker.bindTooltip(tooltipHtml, { permanent: false, direction: 'top', opacity: 1, className: 'rpt-tooltip' });
+        if(visible) marker.addTo(markerLayer);
+      } else {
+        const icon = L.divIcon({
+          className: '',
+          html: '<div style="width:16px;height:16px;border-radius:50%;cursor:pointer;"></div>',
+          iconSize: [16,16], iconAnchor: [8,8],
+        });
+        const clickTarget = L.marker([r.lat, r.lon], { icon, opacity: 0 });
+        clickTarget.on('click', ()=>selectRepeater(r._idx));
+        if(visible) clickTarget.addTo(markerLayer);
+      }
+    });
+  }
+
+  function setMode(mode){
+    currentMode = mode;
+    ['circles','markers','both'].forEach(m=>{
+      document.getElementById('btn-'+m).classList.toggle('active', m===mode);
+    });
+    renderAll();
+  }
+
+  let userMarker = null;
+
+  function toggleNearMe(){
+    const loc = getNearMeLocation();
+    if(loc){
+      clearNearMeLocation();
+      if(userMarker) { map.removeLayer(userMarker); userMarker = null; }
+      updateNearMeButtonState();
+      applyFilters();
+      return;
+    }
+    if(!navigator.geolocation){ alert('Tu navegador no soporta geolocalización.'); return; }
+    const btn = document.getElementById('btn-nearme');
+    if(btn) btn.disabled = true;
+    requestNearMeLocation(
+      function(lat, lon){
+        if(userMarker) map.removeLayer(userMarker);
+        userMarker = L.marker([lat, lon], {
+          icon: L.divIcon({
+            className: 'user-location-marker',
+            html: '<div style="width:16px;height:16px;border-radius:50%;background:#00d4ff;border:3px solid #fff;box-shadow:0 0 8px rgba(0,212,255,0.6);"></div>',
+            iconSize: [16,16], iconAnchor: [8,8]
+          })
+        }).addTo(map).bindTooltip('Tu ubicación', { permanent: false, direction: 'top' });
+        updateNearMeButtonState();
+        applyFilters();
+        if(btn) btn.disabled = false;
+      },
+      function(){
+        if(btn) btn.disabled = false;
+        alert('No se pudo obtener tu ubicación. Verifica que el permiso esté concedido.');
+      }
+    );
+  }
+  window.toggleNearMe = toggleNearMe;
+
+  function applyFilters(){
+    const banda = document.getElementById('filter-banda').value;
+    const region = document.getElementById('filter-region').value;
+    const search = document.getElementById('search').value.trim().toLowerCase();
+    const nearMe = getNearMeLocation();
+    visibleSet = new Set();
+    const visibleNodes = [];
+    NODES.forEach(r=>{
+      if(banda && !r.banda.includes(banda)) return;
+      if(region === '__sin_region__') { if(r.region) return; }
+      else if(region && r.region !== region) return;
+      if(search){
+        const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda].filter(Boolean).join(' ').toLowerCase();
+        if(!haystack.includes(search)) return;
+      }
+      if(nearMe && haversine(nearMe.lat, nearMe.lon, r.lat, r.lon) > NEAR_ME_RADIUS_KM) return;
+      visibleSet.add(r._idx);
+      visibleNodes.push(r);
+    });
+    document.getElementById('shown-count').textContent = visibleSet.size;
+    document.getElementById('total-count').textContent = NODES.length;
+    document.getElementById('regions-count').textContent = new Set(visibleNodes.map(r => r.region || '')).size;
+    document.getElementById('clubs-count').textContent = new Set(visibleNodes.map(r => r.nombre).filter(Boolean)).size;
+    document.getElementById('filter-nearme').textContent = nearMe ? ' · cerca de mí' : '';
+    renderAll();
+    if (nearMe) {
+      if (visibleNodes.length > 0) {
+        const bounds = L.latLngBounds(visibleNodes.map(r => [r.lat, r.lon]));
+        bounds.extend([nearMe.lat, nearMe.lon]);
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
+      } else {
+        map.setView([nearMe.lat, nearMe.lon], 10);
+      }
+    }
+  }
+
+  function selectRepeater(idx){
+    selectedIdx = idx;
+    renderAll();
+    showSidebar(idx);
+  }
+
+  function showSidebar(idx){
+    const r = NODES[idx];
+    const color = REGION_COLORS[r.region] || REGION_COLORS[''] || '#5e35b1';
+    const club = r.nombre || getClubName(r.signal);
+    document.getElementById('sb-signal').textContent = r.signal;
+    document.getElementById('sb-signal').style.color = color;
+    document.getElementById('sb-club').textContent = club || r.region + ' · ' + r.comuna;
+
+    const body = document.getElementById('sb-body');
+    const vence = r.vence || '—';
+    const rows = [
+      ['CLUB', club || '—'], ['Región', r.region || '—'], ['COMUNA', r.comuna || '—'],
+      ['BANDA', '<span style="color:'+(r.banda.startsWith('VHF')?'#29abe2':'#e91e8c')+'">' + r.banda + '</span>'],
+      ['RX (MHz)', r.rx || '—'], ['TX (MHz)', r.tx || '—'], ['TONO', r.tono ? r.tono + ' Hz' : '—'],
+      ['POTENCIA', r.potencia ? r.potencia + ' W' : '—'], ['GANANCIA', r.ganancia ? r.ganancia + ' dBi' : '—'],
+      ['COBERTURA', r.range_km + ' km'], ['UBICACIÓN', r.ubicacion || '—'], ['VENCE', vence],
+    ];
+
+    let html = rows.map(([k,v])=>'<div class="sb-row"><span class="sb-key">'+k+'</span><span class="sb-val">'+v+'</span></div>').join('');
+
+    const allNeighbors = [{idx: idx, dist: 0}, ...r._neighbors].sort((a,b)=>a.dist-b.dist);
+    if(allNeighbors.length > 0){
+      html += '<div class="sb-section-title">NODOS CERCANOS <span class="sb-neighbor-actions"><a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar nodos cercanos como CSV">↓ CSV</a><a href="#" class="sb-share-neighbors" onclick="shareNeighbors();return false" title="Compartir lista">↗ Compartir</a></span></div>';
+      const shown = allNeighbors.slice(0, 21);
+      html += shown.map(n=>{
+        const nb = NODES[n.idx];
+        const nc = REGION_COLORS[nb.region]||REGION_COLORS['']||'#5e35b1';
+        const rx = nb.rx || '—', tx = nb.tx || '—', tono = nb.tono ? nb.tono+' Hz' : '—';
+        const details = 'RX '+rx+' · TX '+tx+' · '+tono;
+        const isSelected = n.idx === idx;
+        const distStr = n.dist === 0 ? '0 km' : n.dist+' km';
+        return '<div class="neighbor-row'+(isSelected?' neighbor-selected':'')+'" onclick="selectRepeater('+n.idx+')">' +
+          '<div class="neighbor-dot" style="background:'+nc+'"></div>' +
+          '<div class="neighbor-main"><span class="neighbor-signal">'+nb.signal+(isSelected?' (este)':'')+'</span><div class="neighbor-details"><span>'+details+'</span></div></div>' +
+          '<span class="neighbor-dist">'+distStr+'</span></div>';
+      }).join('');
+      if(allNeighbors.length > 21) html += '<div class="neighbor-more" style="color:var(--text-dim);padding:6px 0;">… y '+(allNeighbors.length-21)+' más</div>';
+    }
+
+    body.innerHTML = html;
+    document.getElementById('sidebar').classList.add('open');
+  }
+
+  function downloadNeighborsCSV(){
+    if(selectedIdx == null) return;
+    const r = NODES[selectedIdx];
+    const allNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || [])].sort((a,b)=>a.dist-b.dist);
+    if(allNeighbors.length === 0) return;
+    const esc = v => (v == null || v === '') ? '' : (''+v).includes(',') || (''+v).includes('"') ? '"' + (''+v).replace(/"/g, '""') + '"' : ''+v;
+    const headers = ['Repetidor','Señal nodo cercano','Club','Región','Comuna','RX (MHz)','TX (MHz)','Tono (Hz)','Banda','Distancia (km)'];
+    const rows = allNeighbors.map(n=>{
+      const nb = NODES[n.idx];
+      return [r.signal, nb.signal, nb.nombre || getClubName(nb.signal), nb.region, nb.comuna || '', nb.rx || '', nb.tx || '', nb.tono || '', nb.banda || '', n.dist];
+    });
+    const csv = [headers.join(','), ...rows.map(row=>row.map(esc).join(','))].join('\n');
+    const blob = new Blob(['\ufeff'+csv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'nodos-cercanos-' + r.signal.replace(/\s+/g,'-') + '.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function shareNeighbors(){
+    if(selectedIdx == null) return;
+    const r = NODES[selectedIdx];
+    const allNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || [])].sort((a,b)=>a.dist-b.dist);
+    if(allNeighbors.length === 0) return;
+    const title = 'Nodos Cercanos a ' + (r.signal || 'Repetidora');
+    const stationBlocks = allNeighbors.map(n=>{
+      const nb = NODES[n.idx];
+      const distStr = n.dist === 0 ? '0 km' : n.dist + ' km';
+      return (nb.signal || '—') + (nb.nombre ? ' — ' + nb.nombre : '') + ' · ' + distStr + '\n  RX ' + (nb.rx || '—') + ' · TX ' + (nb.tx || '—') + ' · ' + (nb.tono ? nb.tono + ' Hz' : '—') + '\n  ' + (nb.comuna || '—') + ' · ' + (nb.region || '—');
+    });
+    const text = [title, '', stationBlocks.join('\n\n----\n\n'), '', 'Radiomap — https://www.radiomap.cl/'].join('\n');
+    if(navigator.share){
+      navigator.share({ title, text, url: 'https://www.radiomap.cl/' }).catch(()=>{});
+    } else {
+      navigator.clipboard.writeText(text).then(()=>{ alert('Lista copiada al portapapeles.'); }).catch(()=>{
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        alert('Lista copiada al portapapeles.');
+      });
+    }
+  }
+
+  function closeSidebar(){
+    document.getElementById('sidebar').classList.remove('open');
+    selectedIdx = null;
+    renderAll();
+  }
+
+  map.on('click', function(){ if(selectedIdx !== null) closeSidebar(); });
+
+  function closeMenuMap() {
+    const menu = document.getElementById('header-menu');
+    const toggle = document.getElementById('menu-toggle');
+    if (menu) menu.classList.remove('open');
+    if (toggle) toggle.setAttribute('aria-expanded', 'false');
+  }
+
+  document.getElementById('menu-toggle').addEventListener('click', function() {
+    const menu = document.getElementById('header-menu');
+    const open = menu.classList.toggle('open');
+    this.setAttribute('aria-expanded', open);
+  });
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('header-menu');
+    const toggle = document.getElementById('menu-toggle');
+    if (menu && menu.classList.contains('open') && !menu.contains(e.target) && !toggle.contains(e.target)) closeMenuMap();
+  });
+
+  function getExportCriteria() {
+    const banda = document.getElementById('filter-banda');
+    const region = document.getElementById('filter-region');
+    const search = document.getElementById('search');
+    return { banda: banda ? banda.value : '', region: region ? region.value : '', search: search ? search.value.trim() : '', nearMe: !!getNearMeLocation() };
+  }
+  document.querySelectorAll('#btn-download-csv, #btn-download-csv-menu').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const visibleSignals = new Set(NODES.filter((r,i)=>visibleSet.has(i)).map(r=>r.signal));
+      const rows = NODES.filter(n=>visibleSignals.has(n.signal));
+      exportRepeatersCSV(rows.length ? rows : NODES, getExportCriteria());
+      closeMenuMap();
+    });
+  });
+
+  window.setMode = setMode;
+  window.selectRepeater = selectRepeater;
+  window.downloadNeighborsCSV = downloadNeighborsCSV;
+  window.shareNeighbors = shareNeighbors;
+  window.closeSidebar = closeSidebar;
+  window.closeMenuMap = closeMenuMap;
+
+  updateNearMeButtonState();
+
+  const nearMeOnLoad = getNearMeLocation();
+  if(nearMeOnLoad){
+    applyFilters();
+    userMarker = L.marker([nearMeOnLoad.lat, nearMeOnLoad.lon], {
+      icon: L.divIcon({
+        className: 'user-location-marker',
+        html: '<div style="width:16px;height:16px;border-radius:50%;background:#00d4ff;border:3px solid #fff;box-shadow:0 0 8px rgba(0,212,255,0.6);"></div>',
+        iconSize: [16,16], iconAnchor: [8,8]
+      })
+    }).addTo(map).bindTooltip('Tu ubicación', { permanent: false, direction: 'top' });
+  } else {
+    applyFilters();
+    map.fitBounds([[-55, -76], [-17, -66]]);
+  }
+})();

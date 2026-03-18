@@ -20,8 +20,8 @@ Ideal para planificar rutas, elegir repetidora o tener a mano el listado actuali
 
 ### Mapa de cobertura
 
-![Mapa de cobertura](static/map.png)
-![Mapa de cobertura](static/map2.png)
+![Mapa de cobertura](images/map.png)
+![Mapa de cobertura](images/map2.png)
 
 - Explora el mapa (modo oscuro/claro).
 - Activa círculos de cobertura, solo marcadores o ambos.
@@ -30,7 +30,7 @@ Ideal para planificar rutas, elegir repetidora o tener a mano el listado actuali
 
 ### Lista de repetidores
 
-![Lista de repetidores](static/list.png)
+![Lista de repetidores](images/list.png)
 
 - Tabla por región con señal, banda, RX/TX, tono, potencia, club, comuna y vencimiento.
 - Mismos filtros y búsqueda (incluye frecuencias).
@@ -42,9 +42,7 @@ En ambas vistas puedes cambiar el tema (claro/oscuro) y exportar a CSV desde el 
 
 ## Datos
 
-La información proviene del **listado oficial de repetidoras** de la [Subsecretaría de Telecomunicaciones (SUBTEL)](https://www.subtel.gob.cl/), por ejemplo:
-
-- [Listado RAF Repetidoras 29-10-2025](https://www.subtel.gob.cl/wp-content/uploads/2025/10/Listado_RAF_Repetidoras_29_10_2025.xlsx)
+La información proviene del **listado oficial de repetidoras** de la [Subsecretaría de Telecomunicaciones (SUBTEL)](https://www.subtel.gob.cl/). La fuente de datos es `data/curated_stations.csv`, que puede curarse para corregir errores del origen.
 
 Las regiones siguen la división administrativa de Chile (SUBTEL/DGMN).
 
