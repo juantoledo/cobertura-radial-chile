@@ -13,6 +13,7 @@ OUT_PATH = Path(__file__).resolve().parent.parent / "data" / "data.js"
 
 DEFAULT_REGION_COLORS = {
     "": "#5e35b1",
+    "REGIÓN DE ARICA Y PARINACOTA": "#e53935",
     "REGIÓN DE ANTOFAGASTA": "#ff6b35",
     "REGIÓN DE ATACAMA": "#f7931e",
     "REGIÓN DE COQUIMBO": "#ffcd05",
@@ -26,6 +27,7 @@ DEFAULT_REGION_COLORS = {
     "REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS": "#43a047",
     "REGIÓN DEL MAULE": "#1e88e5",
     "REGIÓN METROPOLITANA DE SANTIAGO": "#5e35b1",
+    "REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA": "#1565c0",
 }
 
 NUMERIC_KEYS = ("lat", "lon", "range_km")
@@ -41,6 +43,8 @@ def parse_row(row: dict) -> dict:
                 node[k] = float(v)
             except ValueError:
                 node[k] = v
+        elif k == "isEcholink":
+            node[k] = v.lower() in ("1", "true", "yes")
         else:
             node[k] = v
     return node
@@ -60,6 +64,10 @@ def read_version_and_colors() -> tuple[str, dict]:
             if rc:
                 try:
                     region_colors = json.loads(rc.group(1))
+                    # Merge any missing regions from default (e.g. new regions from CSV)
+                    for k, v in DEFAULT_REGION_COLORS.items():
+                        if k not in region_colors:
+                            region_colors[k] = v
                 except json.JSONDecodeError:
                     pass
             break

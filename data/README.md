@@ -33,4 +33,4 @@ El script lee `curated_stations.csv` y produce `data.js`. Se ejecuta en CI antes
 
 ## Formato de curated_stations.csv
 
-Columnas: `signal`, `nombre`, `comuna`, `ubicacion`, `lat`, `lon`, `range_km`, `potencia`, `ganancia`, `banda`, `rx`, `tx`, `tono`, `region`, `otorga`, `vence`.
+Columnas: `signal`, `nombre`, `comuna`, `ubicacion`, `lat`, `lon`, `range_km`, `potencia`, `ganancia`, `banda`, `rx`, `tx`, `tono`, `region`, `otorga`, `vence`, `isEcholink`, `echoLinkConference`. `isEcholink`: 1/true/yes para Sí. `echoLinkConference`: nombre de la conferencia Echolink.

@@ -11,13 +11,19 @@
   function getClubName(signal) { var n = NODES && NODES.find(function(x){ return x.signal === signal; }); return n ? (n.nombre || '') : ''; }
   window.getClubName = getClubName;
 
+  const DEFAULT_RANGE_KM = 25; // for nodes without range_km (e.g. Echolink)
+  const getRange = (n) => (typeof n.range_km === 'number' && !isNaN(n.range_km)) ? n.range_km : DEFAULT_RANGE_KM;
   NODES.forEach((r,i)=>{
     r._idx = i;
     r._neighbors = [];
+    if (r.lat == null || r.lon == null || (typeof r.lat !== 'number') || (typeof r.lon !== 'number')) return;
+    const rRange = getRange(r);
     NODES.forEach((s,j)=>{
       if(i===j) return;
+      if (s.lat == null || s.lon == null || (typeof s.lat !== 'number') || (typeof s.lon !== 'number')) return;
+      const sRange = getRange(s);
       const d = haversine(r.lat,r.lon,s.lat,s.lon);
-      if(d < r.range_km + s.range_km) r._neighbors.push({idx:j, dist:Math.round(d)});
+      if(d < rRange + sRange) r._neighbors.push({idx:j, dist:Math.round(d)});
     });
     r._neighbors.sort((a,b)=>a.dist-b.dist);
   });
@@ -49,7 +55,7 @@
   const circleLayer = L.layerGroup().addTo(map);
   const markerLayer = L.layerGroup().addTo(map);
 
-  let currentMode = 'both';
+  let currentMode = 'markers';
   let selectedIdx = null;
   let visibleSet = new Set(NODES.map(r=>r._idx));
 
@@ -61,22 +67,62 @@
     o.textContent = reg || 'Sin región en el archivo de Subtel';
     filterRegion.appendChild(o);
   });
+  const filterConf = document.getElementById('filter-echolink-conference');
+  if (filterConf) {
+    const conferences = [...new Set(NODES.filter(r=>r.isEcholink).map(r=>r.echoLinkConference || '').filter(Boolean))].sort();
+    conferences.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c;
+      o.textContent = c;
+      filterConf.appendChild(o);
+    });
+  }
 
   function hexToRgb(hex){
     const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
     return r+','+g+','+b;
   }
 
+  const SPREAD_RADIUS_DEG = 0.0005; // ~55m — offset for co-located markers
+  function buildDisplayPositions(){
+    const locGroups = new Map();
+    NODES.forEach(r=>{
+      if (r.lat == null || r.lon == null || !visibleSet.has(r._idx)) return;
+      const key = r.lat.toFixed(6) + '_' + r.lon.toFixed(6);
+      if (!locGroups.has(key)) locGroups.set(key, []);
+      locGroups.get(key).push(r._idx);
+    });
+    const displayPos = new Map();
+    locGroups.forEach((indices)=>{
+      if (indices.length <= 1) {
+        indices.forEach(i=> displayPos.set(i, [NODES[i].lat, NODES[i].lon]));
+      } else {
+        indices.forEach((idx, j)=>{
+          const r = NODES[idx];
+          const angle = (2 * Math.PI * j) / indices.length;
+          const latRad = r.lat * Math.PI / 180;
+          const dLat = SPREAD_RADIUS_DEG * Math.cos(angle);
+          const dLon = SPREAD_RADIUS_DEG * Math.sin(angle) / Math.cos(latRad);
+          displayPos.set(idx, [r.lat + dLat, r.lon + dLon]);
+        });
+      }
+    });
+    return displayPos;
+  }
+
   function renderAll(){
     circleLayer.clearLayers();
     markerLayer.clearLayers();
+    const displayPos = buildDisplayPositions();
 
     NODES.forEach(r=>{
+      if (r.lat == null || r.lon == null) return;
       const visible = visibleSet.has(r._idx);
       const color = REGION_COLORS[r.region] || REGION_COLORS[''] || '#5e35b1';
       const rgb = hexToRgb(color);
       const isSelected = r._idx === selectedIdx;
       const isNeighbor = selectedIdx !== null && NODES[selectedIdx]._neighbors.some(n=>n.idx===r._idx);
+      const [mLat, mLon] = displayPos.has(r._idx) ? displayPos.get(r._idx) : [r.lat, r.lon];
 
       if(currentMode === 'circles' || currentMode === 'both'){
         let fillOp, strokeOp, weight, dashArr;
@@ -96,19 +142,23 @@
 
       if(currentMode === 'markers' || currentMode === 'both'){
         const size = isSelected ? 14 : 9;
+        const isEch = r.isEcholink;
+        const shape = isEch ? 'border-radius:3px' : 'border-radius:50%';
+        const inner = isEch ? '<span style="color:rgba(255,255,255,0.95);font:600 '+(size*0.6)+'px/1 sans-serif;pointer-events:none">e</span>' : '';
         const icon = L.divIcon({
           className: '',
-          html: '<div class="rpt-marker' + (isSelected?' selected':'') + '" style="background:' + color + ';width:'+size+'px;height:'+size+'px;border-radius:50%;border:2px solid rgba(255,255,255,'+(isSelected?'0.9':'0.35')+');box-shadow:0 0 '+(isSelected?'8px':'3px')+' rgba('+rgb+',0.6);"></div>',
+          html: '<div class="rpt-marker' + (isSelected?' selected':'') + (isEch?' rpt-marker-echolink':'') + '" style="background:' + color + ';width:'+size+'px;height:'+size+'px;'+shape+';border:2px solid rgba(255,255,255,'+(isSelected?'0.9':'0.35')+');box-shadow:0 0 '+(isSelected?'8px':'3px')+' rgba('+rgb+',0.6);display:flex;align-items:center;justify-content:center;">'+inner+'</div>',
           iconSize: [size, size], iconAnchor: [size/2, size/2],
         });
-        const marker = L.marker([r.lat, r.lon], { icon, zIndexOffset: isSelected ? 1000 : 0 });
+        const marker = L.marker([mLat, mLon], { icon, zIndexOffset: isSelected ? 1000 : 0 });
         marker.on('click', ()=>{ selectRepeater(r._idx); });
         const club = r.nombre || getClubName(r.signal);
         const rx = r.rx || '—', tx = r.tx || '—', tono = r.tono ? r.tono + ' Hz' : '—';
+        const echolinkLine = r.isEcholink ? '<br><span class="rpt-tooltip-meta">Echolink' + (r.echoLinkConference ? ' · ' + r.echoLinkConference : '') + '</span>' : '';
         const tooltipHtml = '<div class="rpt-tooltip-inner" style="font-family:Share Tech Mono,monospace;color:#00d4ff;background:#0d1520;border:1px solid #1a2d42;padding:8px 12px;border-radius:4px;">' +
           r.signal + (club ? '<br><span class="rpt-tooltip-club">' + club + '</span>' : '') +
           '<br><span class="rpt-tooltip-meta">' + r.comuna + ' · ' + r.banda + '</span>' +
-          '<br><span class="rpt-tooltip-meta">RX ' + rx + ' · TX ' + tx + ' · ' + tono + '</span></div>';
+          '<br><span class="rpt-tooltip-meta">RX ' + rx + ' · TX ' + tx + ' · ' + tono + '</span>' + echolinkLine + '</div>';
         marker.bindTooltip(tooltipHtml, { permanent: false, direction: 'top', opacity: 1, className: 'rpt-tooltip' });
         if(visible) marker.addTo(markerLayer);
       } else {
@@ -117,7 +167,7 @@
           html: '<div style="width:16px;height:16px;border-radius:50%;cursor:pointer;"></div>',
           iconSize: [16,16], iconAnchor: [8,8],
         });
-        const clickTarget = L.marker([r.lat, r.lon], { icon, opacity: 0 });
+        const clickTarget = L.marker([mLat, mLon], { icon, opacity: 0 });
         clickTarget.on('click', ()=>selectRepeater(r._idx));
         if(visible) clickTarget.addTo(markerLayer);
       }
@@ -126,7 +176,7 @@
 
   function setMode(mode){
     currentMode = mode;
-    ['circles','markers','both'].forEach(m=>{
+    ['markers','circles','both'].forEach(m=>{
       document.getElementById('btn-'+m).classList.toggle('active', m===mode);
     });
     renderAll();
@@ -171,6 +221,8 @@
   function applyFilters(){
     const banda = document.getElementById('filter-banda').value;
     const region = document.getElementById('filter-region').value;
+    const echolink = document.getElementById('filter-echolink').value;
+    const echolinkConference = (document.getElementById('filter-echolink-conference') || {}).value || '';
     const search = document.getElementById('search').value.trim().toLowerCase();
     const nearMe = getNearMeLocation();
     visibleSet = new Set();
@@ -179,11 +231,14 @@
       if(banda && !r.banda.includes(banda)) return;
       if(region === '__sin_region__') { if(r.region) return; }
       else if(region && r.region !== region) return;
+      if(echolink === 'only' && !r.isEcholink) return;
+      if(echolink === 'no' && r.isEcholink) return;
+      if(echolinkConference && echolink !== 'no' && r.echoLinkConference !== echolinkConference) return;
       if(search){
-        const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda].filter(Boolean).join(' ').toLowerCase();
+        const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda, r.echoLinkConference].filter(Boolean).join(' ').toLowerCase();
         if(!haystack.includes(search)) return;
       }
-      if(nearMe && haversine(nearMe.lat, nearMe.lon, r.lat, r.lon) > NEAR_ME_RADIUS_KM) return;
+      if(nearMe && (r.lat == null || r.lon == null || haversine(nearMe.lat, nearMe.lon, r.lat, r.lon) > NEAR_ME_RADIUS_KM)) return;
       visibleSet.add(r._idx);
       visibleNodes.push(r);
     });
@@ -193,9 +248,11 @@
     document.getElementById('clubs-count').textContent = new Set(visibleNodes.map(r => r.nombre).filter(Boolean)).size;
     document.getElementById('filter-nearme').textContent = nearMe ? ' · cerca de mí' : '';
     renderAll();
+    if (selectedIdx !== null) showSidebar(selectedIdx);
     if (nearMe) {
-      if (visibleNodes.length > 0) {
-        const bounds = L.latLngBounds(visibleNodes.map(r => [r.lat, r.lon]));
+      const withCoords = visibleNodes.filter(r => r.lat != null && r.lon != null);
+      if (withCoords.length > 0) {
+        const bounds = L.latLngBounds(withCoords.map(r => [r.lat, r.lon]));
         bounds.extend([nearMe.lat, nearMe.lon]);
         map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
       } else {
@@ -203,6 +260,7 @@
       }
     }
   }
+  window.applyFilters = applyFilters;
 
   function selectRepeater(idx){
     selectedIdx = idx;
@@ -225,28 +283,32 @@
       ['BANDA', '<span style="color:'+(r.banda.startsWith('VHF')?'#29abe2':'#e91e8c')+'">' + r.banda + '</span>'],
       ['RX (MHz)', r.rx || '—'], ['TX (MHz)', r.tx || '—'], ['TONO', r.tono ? r.tono + ' Hz' : '—'],
       ['POTENCIA', r.potencia ? r.potencia + ' W' : '—'], ['GANANCIA', r.ganancia ? r.ganancia + ' dBi' : '—'],
-      ['COBERTURA', r.range_km + ' km'], ['UBICACIÓN', r.ubicacion || '—'], ['VENCE', vence],
+      ['COBERTURA', r.range_km ? r.range_km + ' km' : '—'], ['UBICACIÓN', r.ubicacion || '—'], ['VENCE', vence],
     ];
+    if (r.isEcholink) {
+      rows.push(['ECHOLINK', '<span class="badge-echolink">Sí</span>' + (r.echoLinkConference ? ' · ' + r.echoLinkConference : '')]);
+    }
 
     let html = rows.map(([k,v])=>'<div class="sb-row"><span class="sb-key">'+k+'</span><span class="sb-val">'+v+'</span></div>').join('');
 
-    const allNeighbors = [{idx: idx, dist: 0}, ...r._neighbors].sort((a,b)=>a.dist-b.dist);
-    if(allNeighbors.length > 0){
+    const filteredNeighbors = [{idx: idx, dist: 0}, ...r._neighbors.filter(n=>visibleSet.has(n.idx))].sort((a,b)=>a.dist-b.dist);
+    if(filteredNeighbors.length > 0){
       html += '<div class="sb-section-title">NODOS CERCANOS <span class="sb-neighbor-actions"><a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar nodos cercanos como CSV">↓ CSV</a><a href="#" class="sb-share-neighbors" onclick="shareNeighbors();return false" title="Compartir lista">↗ Compartir</a></span></div>';
-      const shown = allNeighbors.slice(0, 21);
-      html += shown.map(n=>{
+      html += filteredNeighbors.map(n=>{
         const nb = NODES[n.idx];
         const nc = REGION_COLORS[nb.region]||REGION_COLORS['']||'#5e35b1';
         const rx = nb.rx || '—', tx = nb.tx || '—', tono = nb.tono ? nb.tono+' Hz' : '—';
         const details = 'RX '+rx+' · TX '+tx+' · '+tono;
         const isSelected = n.idx === idx;
         const distStr = n.dist === 0 ? '0 km' : n.dist+' km';
+        const dotEl = nb.isEcholink
+          ? '<div class="neighbor-echolink" style="background:'+nc+'" title="Echolink">e</div>'
+          : '<div class="neighbor-dot" style="background:'+nc+'"></div>';
         return '<div class="neighbor-row'+(isSelected?' neighbor-selected':'')+'" onclick="selectRepeater('+n.idx+')">' +
-          '<div class="neighbor-dot" style="background:'+nc+'"></div>' +
+          dotEl +
           '<div class="neighbor-main"><span class="neighbor-signal">'+nb.signal+(isSelected?' (este)':'')+'</span><div class="neighbor-details"><span>'+details+'</span></div></div>' +
           '<span class="neighbor-dist">'+distStr+'</span></div>';
       }).join('');
-      if(allNeighbors.length > 21) html += '<div class="neighbor-more" style="color:var(--text-dim);padding:6px 0;">… y '+(allNeighbors.length-21)+' más</div>';
     }
 
     body.innerHTML = html;
@@ -256,11 +318,11 @@
   function downloadNeighborsCSV(){
     if(selectedIdx == null) return;
     const r = NODES[selectedIdx];
-    const allNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || [])].sort((a,b)=>a.dist-b.dist);
-    if(allNeighbors.length === 0) return;
+    const filteredNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || []).filter(n=>visibleSet.has(n.idx))].sort((a,b)=>a.dist-b.dist);
+    if(filteredNeighbors.length === 0) return;
     const esc = v => (v == null || v === '') ? '' : (''+v).includes(',') || (''+v).includes('"') ? '"' + (''+v).replace(/"/g, '""') + '"' : ''+v;
     const headers = ['Repetidor','Señal nodo cercano','Club','Región','Comuna','RX (MHz)','TX (MHz)','Tono (Hz)','Banda','Distancia (km)'];
-    const rows = allNeighbors.map(n=>{
+    const rows = filteredNeighbors.map(n=>{
       const nb = NODES[n.idx];
       return [r.signal, nb.signal, nb.nombre || getClubName(nb.signal), nb.region, nb.comuna || '', nb.rx || '', nb.tx || '', nb.tono || '', nb.banda || '', n.dist];
     });
@@ -276,10 +338,10 @@
   function shareNeighbors(){
     if(selectedIdx == null) return;
     const r = NODES[selectedIdx];
-    const allNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || [])].sort((a,b)=>a.dist-b.dist);
-    if(allNeighbors.length === 0) return;
+    const filteredNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || []).filter(n=>visibleSet.has(n.idx))].sort((a,b)=>a.dist-b.dist);
+    if(filteredNeighbors.length === 0) return;
     const title = 'Nodos Cercanos a ' + (r.signal || 'Repetidora');
-    const stationBlocks = allNeighbors.map(n=>{
+    const stationBlocks = filteredNeighbors.map(n=>{
       const nb = NODES[n.idx];
       const distStr = n.dist === 0 ? '0 km' : n.dist + ' km';
       return (nb.signal || '—') + (nb.nombre ? ' — ' + nb.nombre : '') + ' · ' + distStr + '\n  RX ' + (nb.rx || '—') + ' · TX ' + (nb.tx || '—') + ' · ' + (nb.tono ? nb.tono + ' Hz' : '—') + '\n  ' + (nb.comuna || '—') + ' · ' + (nb.region || '—');
@@ -327,8 +389,10 @@
   function getExportCriteria() {
     const banda = document.getElementById('filter-banda');
     const region = document.getElementById('filter-region');
+    const echolink = document.getElementById('filter-echolink');
+    const echolinkConference = document.getElementById('filter-echolink-conference');
     const search = document.getElementById('search');
-    return { banda: banda ? banda.value : '', region: region ? region.value : '', search: search ? search.value.trim() : '', nearMe: !!getNearMeLocation() };
+    return { banda: banda ? banda.value : '', region: region ? region.value : '', echolink: echolink ? echolink.value : '', echoLinkConference: echolinkConference ? echolinkConference.value : '', search: search ? search.value.trim() : '', nearMe: !!getNearMeLocation() };
   }
   document.querySelectorAll('#btn-download-csv, #btn-download-csv-menu').forEach(btn => {
     btn.addEventListener('click', function(e) {

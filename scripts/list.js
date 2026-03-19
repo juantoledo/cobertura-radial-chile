@@ -16,6 +16,16 @@
     opt.textContent = reg || 'Sin región en el archivo de Subtel';
     filterRegion.appendChild(opt);
   });
+  const filterConf = document.getElementById('filter-echolink-conference');
+  if (filterConf) {
+    const conferences = [...new Set(NODES.filter(r=>r.isEcholink).map(r=>r.echoLinkConference || '').filter(Boolean))].sort();
+    conferences.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c;
+      o.textContent = c;
+      filterConf.appendChild(o);
+    });
+  }
 
   function parseDate(s) {
     if (!s) return null;
@@ -95,16 +105,17 @@
       rows.forEach(r => {
         const vc = venceClass(r.vence);
         const bc = bandaClass(r.banda);
-        const bandaShort = r.banda.replace('/FM','');
+        const bandaShort = (r.banda || '').replace('/FM','');
+        const echolinkBadge = r.isEcholink ? `<span class="badge-echolink" title="${(r.echoLinkConference || '').replace(/"/g,'&quot;')}">Echolink</span>` : '';
         const distCell = showDistance ? `<td class="cell-dist" data-label="Distancia">${r._dist != null ? r._dist + ' km' : '—'}</td>` : '';
         html += `<tr>
-          <td class="cell-signal" data-label="${labels[0]}">${r.signal || '—'}</td>
+          <td class="cell-signal" data-label="${labels[0]}">${r.signal || '—'} ${echolinkBadge}</td>
           <td data-label="${labels[1]}"><span class="badge-banda ${bc}">${bandaShort}</span></td>
           ${distCell}
           <td class="cell-freq freq-rx" data-label="${labels[showDistance ? 3 : 2]}">${r.rx || '—'}</td>
           <td class="cell-freq freq-tx" data-label="${labels[showDistance ? 4 : 3]}">${r.tx || '—'}</td>
           <td class="cell-tone" data-label="${labels[showDistance ? 5 : 4]}">${r.tono || '—'}</td>
-          <td class="cell-pot" data-label="${labels[showDistance ? 6 : 5]}"><span>${r.potencia || '—'}</span> W</td>
+          <td class="cell-pot" data-label="${labels[showDistance ? 6 : 5]}">${r.potencia ? r.potencia + ' W' : '—'}</td>
           <td class="cell-club" data-label="${labels[showDistance ? 7 : 6]}"><strong>${r.nombre}</strong><small>${r.region}</small></td>
           <td class="cell-comuna" data-label="${labels[showDistance ? 8 : 7]}">${r.comuna || '—'}</td>
           <td class="cell-ub" data-label="${labels[showDistance ? 9 : 8]}" title="${r.ubicacion}">${r.ubicacion || '—'}</td>
@@ -151,23 +162,28 @@
     const q = document.getElementById('search').value.trim().toLowerCase();
     const banda = document.getElementById('filter-banda').value;
     const region = document.getElementById('filter-region').value;
+    const echolink = document.getElementById('filter-echolink').value;
+    const echolinkConference = (document.getElementById('filter-echolink-conference') || {}).value || '';
     const nearMe = getNearMeLocation();
 
     let result = NODES.filter(r => {
       if (region === '__sin_region__') { if (r.region) return false; }
       else if (region && r.region !== region) return false;
       if (banda && !r.banda.includes(banda)) return false;
+      if (echolink === 'only' && !r.isEcholink) return false;
+      if (echolink === 'no' && r.isEcholink) return false;
+      if (echolinkConference && echolink !== 'no' && r.echoLinkConference !== echolinkConference) return false;
       if (q) {
-        const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda].filter(Boolean).join(' ').toLowerCase();
+        const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda, r.echoLinkConference].filter(Boolean).join(' ').toLowerCase();
         if (!haystack.includes(q)) return false;
       }
-      if (nearMe && haversine(nearMe.lat, nearMe.lon, r.lat, r.lon) > NEAR_ME_RADIUS_KM) return false;
+      if (nearMe && (r.lat == null || r.lon == null || haversine(nearMe.lat, nearMe.lon, r.lat, r.lon) > NEAR_ME_RADIUS_KM)) return false;
       return true;
     });
 
     if (nearMe && result.length > 0) {
-      result = result.slice().map(r => ({ ...r, _dist: Math.round(haversine(nearMe.lat, nearMe.lon, r.lat, r.lon)) }));
-      result.sort((a, b) => a._dist - b._dist);
+      result = result.slice().map(r => ({ ...r, _dist: (r.lat != null && r.lon != null) ? Math.round(haversine(nearMe.lat, nearMe.lon, r.lat, r.lon)) : null }));
+      result.sort((a, b) => (a._dist ?? 9999) - (b._dist ?? 9999));
     }
     return result;
   }
@@ -180,10 +196,11 @@
       'Banda: ' + (r.banda || '—'),
       'RX: ' + (r.rx || '—') + ' MHz · TX: ' + (r.tx || '—') + ' MHz',
       'Tono: ' + (r.tono ? r.tono + ' Hz' : '—'),
+      (r.isEcholink ? 'Echolink' + (r.echoLinkConference ? ': ' + r.echoLinkConference : '') : ''),
       'Comuna: ' + (r.comuna || '—') + ' · Región: ' + (r.region || '—'),
       'Ubicación: ' + (r.ubicacion || '—'),
       'Radiomap — https://www.radiomap.cl/'
-    ];
+    ].filter(Boolean);
     const text = lines.join('\n');
     const title = 'Radiomap — ' + (r.signal || 'Repetidora');
     if (navigator.share) {
@@ -212,9 +229,9 @@
     if (btn && btn.dataset.signal !== undefined) shareStation(btn.dataset.signal);
   });
 
-  ['search','filter-banda','filter-region'].forEach(id => {
+  ['search','filter-banda','filter-region','filter-echolink','filter-echolink-conference'].forEach(id => {
     const el = document.getElementById(id);
-    ['input','change'].forEach(ev => el.addEventListener(ev, () => render(getFiltered())));
+    if (el) ['input','change'].forEach(ev => el.addEventListener(ev, () => render(getFiltered())));
   });
 
   updateNearMeButtonState();
@@ -233,10 +250,14 @@
   function getExportCriteria() {
     const banda = document.getElementById('filter-banda');
     const region = document.getElementById('filter-region');
+    const echolink = document.getElementById('filter-echolink');
+    const echolinkConference = document.getElementById('filter-echolink-conference');
     const search = document.getElementById('search');
     return {
       banda: banda ? banda.value : '',
       region: region ? region.value : '',
+      echolink: echolink ? echolink.value : '',
+      echoLinkConference: echolinkConference ? echolinkConference.value : '',
       search: search ? search.value.trim() : '',
       nearMe: !!getNearMeLocation()
     };

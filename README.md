@@ -1,6 +1,6 @@
 # Radiomap
 
-**Mapa y lista de repetidoras de radioaficionados en Chile** — dónde están, qué cubren y cómo contactar. Datos oficiales SUBTEL/DGMN.
+**Mapa y lista de repetidoras de radioaficionados en Chile** — dónde están, qué cubren y cómo contactar. Incluye repetidoras SUBTEL y nodos Echolink (Red Chile, Red Echolink Chile, RCDR). Datos oficiales SUBTEL/DGMN.
 
 [**→ Abrir la aplicación**](https://www.radiomap.cl/)
 
@@ -8,9 +8,10 @@
 
 ## Para qué sirve
 
-- **Ver en el mapa** todas las repetidoras, su cobertura teórica y su ubicación.
-- **Buscar por señal, comuna, frecuencias (RX/TX/tono)** o filtrar por banda y región.
-- **Revisar datos** de cada repetidora (club, potencia, vencimiento) y descargar listas en CSV.
+- **Ver en el mapa** todas las repetidoras y nodos Echolink, su cobertura teórica y ubicación.
+- **Buscar por señal, comuna, frecuencias (RX/TX/tono)** o filtrar por banda, región y tipo (Radioclubes / Echolink).
+- **Revisar datos** de cada nodo (club, potencia, vencimiento, conferencia Echolink) y descargar listas en CSV.
+- **Botón 📍** para mostrar solo nodos cerca de tu ubicación (100 km).
 
 Ideal para planificar rutas, elegir repetidora o tener a mano el listado actualizado.
 
@@ -23,26 +24,27 @@ Ideal para planificar rutas, elegir repetidora o tener a mano el listado actuali
 ![Mapa de cobertura](images/map.png)
 ![Mapa de cobertura](images/map2.png)
 
-- Explora el mapa (modo oscuro/claro).
-- Activa círculos de cobertura, solo marcadores o ambos.
-- Filtra por banda (VHF/UHF), región o escribe en la búsqueda (señal, comuna, frecuencia…).
-- Haz clic en un punto para ver datos completos y nodos cercanos; desde ahí puedes descargar un CSV de nodos cercanos.
+- Explora el mapa (modo oscuro/claro con ☽).
+- **Vista** (iconos): marcador, círculo de cobertura o ambos.
+- **Filtros**: banda (VHF/UHF), región, tipo (Todos los Tipos / Solo Echolink / Solo Radioclubes) y conferencia Echolink.
+- Búsqueda por texto: señal, comuna, frecuencia…
+- **Clic en un punto**: datos completos y nodos cercanos en el panel lateral. Los Radioclubes muestran un punto de color; los Echolink un cuadrado con «e». Desde ahí puedes descargar CSV de nodos cercanos o compartir la lista.
 
 ### Lista de repetidores
 
 ![Lista de repetidores](images/list.png)
 
-- Tabla por región con señal, banda, RX/TX, tono, potencia, club, comuna y vencimiento.
+- Tabla agrupada por región con señal, banda, RX/TX, tono, potencia, club, comuna y vencimiento.
 - Mismos filtros y búsqueda (incluye frecuencias).
-- Descarga CSV de la lista completa o de los resultados filtrados.
+- **Descarga CSV** siempre visible en el header (también en móvil).
 
-En ambas vistas puedes cambiar el tema (claro/oscuro) y exportar a CSV desde el menú superior.
+En ambas vistas puedes cambiar el tema (claro/oscuro) y exportar a CSV. Interfaz optimizada para móvil (controles compactos, header adaptable).
 
 ---
 
 ## Datos
 
-La información proviene del **listado oficial de repetidoras** de la [Subsecretaría de Telecomunicaciones (SUBTEL)](https://www.subtel.gob.cl/). La fuente de datos es `data/curated_stations.csv`, que puede curarse para corregir errores del origen.
+La información proviene del **listado oficial de repetidoras** de la [Subsecretaría de Telecomunicaciones (SUBTEL)](https://www.subtel.gob.cl/), más nodos **Echolink** (Red Chile, Red Echolink Chile, RCDR). La fuente de datos es `data/curated_stations.csv`, que puede curarse para corregir errores del origen.
 
 Las regiones siguen la división administrativa de Chile (SUBTEL/DGMN).
 
