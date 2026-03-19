@@ -26,6 +26,7 @@
       filterConf.appendChild(o);
     });
   }
+  if (typeof loadFilterState === 'function') loadFilterState();
 
   function parseDate(s) {
     if (!s) return null;
@@ -108,7 +109,8 @@
         const bandaShort = (r.banda || '').replace('/FM','');
         const echolinkBadge = r.isEcholink ? `<span class="badge-echolink" title="${(r.echoLinkConference || '').replace(/"/g,'&quot;')}">Echolink</span>` : '';
         const distCell = showDistance ? `<td class="cell-dist" data-label="Distancia">${r._dist != null ? r._dist + ' km' : '—'}</td>` : '';
-        html += `<tr>
+        const sigAttr = (r.signal || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+        html += `<tr data-signal="${sigAttr}">
           <td class="cell-signal" data-label="${labels[0]}">${r.signal || '—'} ${echolinkBadge}</td>
           <td data-label="${labels[1]}"><span class="badge-banda ${bc}">${bandaShort}</span></td>
           ${distCell}
@@ -120,7 +122,7 @@
           <td class="cell-comuna" data-label="${labels[showDistance ? 8 : 7]}">${r.comuna || '—'}</td>
           <td class="cell-ub" data-label="${labels[showDistance ? 9 : 8]}" title="${r.ubicacion}">${r.ubicacion || '—'}</td>
           <td class="cell-vence ${vc}" data-label="${labels[showDistance ? 10 : 9]}">${r.vence || '—'}</td>
-          <td class="cell-share" data-label="Compartir"><button type="button" class="share-btn" data-signal="${(r.signal||'').replace(/"/g,'&quot;')}" aria-label="Compartir ${(r.signal||'').replace(/"/g,'&quot;')}" title="Compartir detalles">↗</button></td>
+          <td class="cell-share" data-label="Compartir"><button type="button" class="share-btn" data-signal="${(r.signal||'').replace(/"/g,'&quot;')}" aria-label="Compartir ${(r.signal||'').replace(/"/g,'&quot;')}" title="Compartir detalles"><span class="material-symbols-outlined" aria-hidden="true">share</span></button></td>
         </tr>`;
       });
 
@@ -128,6 +130,21 @@
     });
 
     main.innerHTML = html;
+    highlightSharedSignalRow(main);
+  }
+
+  function highlightSharedSignalRow(main) {
+    try {
+      const sig = new URLSearchParams(window.location.search).get('signal');
+      if (!sig || !main) return;
+      const esc = typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(sig) : sig.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      const tr = main.querySelector('tr[data-signal="' + esc + '"]');
+      if (!tr) return;
+      tr.classList.add('row-shared-highlight');
+      requestAnimationFrame(function () {
+        tr.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      });
+    } catch (e) { /* ignore */ }
   }
 
   function toggleNearMe() {
@@ -231,7 +248,10 @@
 
   ['search','filter-banda','filter-region','filter-echolink','filter-echolink-conference'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) ['input','change'].forEach(ev => el.addEventListener(ev, () => render(getFiltered())));
+    if (el) ['input','change'].forEach(ev => el.addEventListener(ev, () => {
+      if (typeof saveFilterState === 'function') saveFilterState();
+      render(getFiltered());
+    }));
   });
 
   updateNearMeButtonState();
@@ -277,6 +297,10 @@
       closeMenu();
     }
   });
+
+  window.__radiomapAfterClearFilters = function () {
+    render(getFiltered());
+  };
 
   render(getFiltered());
 })();

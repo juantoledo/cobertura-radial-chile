@@ -77,6 +77,7 @@
       filterConf.appendChild(o);
     });
   }
+  if (typeof loadFilterState === 'function') loadFilterState();
 
   function hexToRgb(hex){
     const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
@@ -218,7 +219,8 @@
   }
   window.toggleNearMe = toggleNearMe;
 
-  function applyFilters(){
+  function applyFilters(opts){
+    opts = opts || {};
     const banda = document.getElementById('filter-banda').value;
     const region = document.getElementById('filter-region').value;
     const echolink = document.getElementById('filter-echolink').value;
@@ -247,9 +249,10 @@
     document.getElementById('regions-count').textContent = new Set(visibleNodes.map(r => r.region || '')).size;
     document.getElementById('clubs-count').textContent = new Set(visibleNodes.map(r => r.nombre).filter(Boolean)).size;
     document.getElementById('filter-nearme').textContent = nearMe ? ' · cerca de mí' : '';
+    if (typeof saveFilterState === 'function') saveFilterState();
     renderAll();
     if (selectedIdx !== null) showSidebar(selectedIdx);
-    if (nearMe) {
+    if (!opts.skipFitBounds && nearMe) {
       const withCoords = visibleNodes.filter(r => r.lat != null && r.lon != null);
       if (withCoords.length > 0) {
         const bounds = L.latLngBounds(withCoords.map(r => [r.lat, r.lon]));
@@ -289,11 +292,11 @@
       rows.push(['ECHOLINK', '<span class="badge-echolink">Sí</span>' + (r.echoLinkConference ? ' · ' + r.echoLinkConference : '')]);
     }
 
-    let html = rows.map(([k,v])=>'<div class="sb-row"><span class="sb-key">'+k+'</span><span class="sb-val">'+v+'</span></div>').join('');
+    let html = '<div class="sb-detail-grid">' + rows.map(([k,v])=>'<div class="sb-row"><span class="sb-key">'+k+'</span><span class="sb-val">'+v+'</span></div>').join('') + '</div>';
 
     const filteredNeighbors = [{idx: idx, dist: 0}, ...r._neighbors.filter(n=>visibleSet.has(n.idx))].sort((a,b)=>a.dist-b.dist);
     if(filteredNeighbors.length > 0){
-      html += '<div class="sb-section-title">NODOS CERCANOS <span class="sb-neighbor-actions"><a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar nodos cercanos como CSV">↓ CSV</a><a href="#" class="sb-share-neighbors" onclick="shareNeighbors();return false" title="Compartir lista">↗ Compartir</a></span></div>';
+      html += '<div class="sb-section-title">NODOS CERCANOS <span class="sb-neighbor-actions"><a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar nodos cercanos como CSV"><span class="material-symbols-outlined" aria-hidden="true">download</span> CSV</a><a href="#" class="sb-share-neighbors" onclick="shareNeighbors();return false" title="Compartir lista"><span class="material-symbols-outlined" aria-hidden="true">share</span> Compartir</a></span></div>';
       html += filteredNeighbors.map(n=>{
         const nb = NODES[n.idx];
         const nc = REGION_COLORS[nb.region]||REGION_COLORS['']||'#5e35b1';
@@ -411,20 +414,68 @@
   window.closeSidebar = closeSidebar;
   window.closeMenuMap = closeMenuMap;
 
+  window.__radiomapAfterClearFilters = function () {
+    if (userMarker) {
+      map.removeLayer(userMarker);
+      userMarker = null;
+    }
+    closeSidebar();
+    applyFilters();
+  };
+
+  window.__radiomapGetMapShareState = function () {
+    const c = map.getCenter();
+    return {
+      lat: c.lat,
+      lng: c.lng,
+      zoom: map.getZoom(),
+      mode: currentMode,
+      signal: selectedIdx != null && NODES[selectedIdx] ? NODES[selectedIdx].signal : null
+    };
+  };
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const sharedMapOk = urlParams.has('mlat') && urlParams.has('mlon') && urlParams.has('zoom');
+  const mlat = sharedMapOk ? parseFloat(urlParams.get('mlat'), 10) : NaN;
+  const mlon = sharedMapOk ? parseFloat(urlParams.get('mlon'), 10) : NaN;
+  const mzoom = sharedMapOk ? parseInt(urlParams.get('zoom'), 10) : NaN;
+  const sharedMapValid = sharedMapOk && !isNaN(mlat) && !isNaN(mlon) && !isNaN(mzoom);
+
+  const modeParam = urlParams.get('mode');
+  if (modeParam && ['markers', 'circles', 'both'].includes(modeParam)) {
+    currentMode = modeParam;
+    ['markers', 'circles', 'both'].forEach(m => {
+      const el = document.getElementById('btn-' + m);
+      if (el) el.classList.toggle('active', m === modeParam);
+    });
+  }
+
   updateNearMeButtonState();
 
   const nearMeOnLoad = getNearMeLocation();
-  if(nearMeOnLoad){
-    applyFilters();
+  if (nearMeOnLoad) {
     userMarker = L.marker([nearMeOnLoad.lat, nearMeOnLoad.lon], {
       icon: L.divIcon({
         className: 'user-location-marker',
         html: '<div style="width:16px;height:16px;border-radius:50%;background:#00d4ff;border:3px solid #fff;box-shadow:0 0 8px rgba(0,212,255,0.6);"></div>',
-        iconSize: [16,16], iconAnchor: [8,8]
+        iconSize: [16, 16], iconAnchor: [8, 8]
       })
     }).addTo(map).bindTooltip('Tu ubicación', { permanent: false, direction: 'top' });
-  } else {
-    applyFilters();
+  }
+
+  applyFilters({ skipFitBounds: sharedMapValid });
+
+  if (sharedMapValid) {
+    map.setView([mlat, mlon], mzoom);
+  } else if (!nearMeOnLoad) {
     map.fitBounds([[-55, -76], [-17, -66]]);
+  }
+
+  const sigParam = urlParams.get('signal');
+  if (sigParam) {
+    const idx = NODES.findIndex(n => n.signal === sigParam);
+    if (idx >= 0) {
+      requestAnimationFrame(function () { selectRepeater(idx); });
+    }
   }
 })();

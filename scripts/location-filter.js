@@ -48,3 +48,89 @@ function requestNearMeLocation(onSuccess, onError) {
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
   );
 }
+
+/** Filter state sync between map and list views */
+const FILTER_KEYS = ['search', 'filter-banda', 'filter-region', 'filter-echolink', 'filter-echolink-conference'];
+const URL_PARAM_MAP = { 'search': 'search', 'filter-banda': 'banda', 'filter-region': 'region', 'filter-echolink': 'echolink', 'filter-echolink-conference': 'echolinkConference' };
+
+function saveFilterState() {
+  try {
+    const state = {};
+    FILTER_KEYS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) state[id] = el.value || '';
+    });
+    sessionStorage.setItem('ra-filter-state', JSON.stringify(state));
+  } catch (e) { /* ignore */ }
+}
+
+function urlHasShareParams() {
+  const params = new URLSearchParams(window.location.search);
+  const keys = ['search', 'banda', 'region', 'echolink', 'echolinkConference', 'near', 'mlat', 'mlon', 'zoom', 'mode', 'signal'];
+  return keys.some(k => params.has(k));
+}
+
+function loadFilterState() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const useUrl = urlHasShareParams();
+    const state = {};
+
+    if (useUrl) {
+      FILTER_KEYS.forEach(id => {
+        const paramKey = URL_PARAM_MAP[id];
+        state[id] = paramKey != null && params.get(paramKey) != null ? params.get(paramKey) : '';
+      });
+      if (params.has('near')) {
+        const near = params.get('near');
+        const parts = String(near).split(',');
+        const la = parseFloat(parts[0], 10);
+        const lo = parseFloat(parts[1], 10);
+        if (!isNaN(la) && !isNaN(lo)) setNearMeLocation(la, lo);
+      } else {
+        clearNearMeLocation();
+      }
+    } else {
+      const s = sessionStorage.getItem('ra-filter-state');
+      if (s) Object.assign(state, JSON.parse(s));
+    }
+
+    FILTER_KEYS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && state[id] !== undefined) el.value = state[id];
+    });
+  } catch (e) { /* ignore */ }
+}
+
+/**
+ * Reset search, selects, near-me, session filter state; strip share params from URL.
+ * Map/list pages set window.__radiomapAfterClearFilters to refresh UI (markers, table).
+ */
+function clearAllFilters() {
+  try {
+    FILTER_KEYS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.tagName === 'SELECT') {
+        el.selectedIndex = 0;
+      } else {
+        el.value = '';
+      }
+    });
+    clearNearMeLocation();
+    updateNearMeButtonState();
+    saveFilterState();
+    try {
+      if (window.location.search) {
+        var path = window.location.pathname || '/';
+        var hash = window.location.hash || '';
+        window.history.replaceState(null, '', path + hash);
+      }
+    } catch (e2) { /* ignore */ }
+    if (typeof window.__radiomapAfterClearFilters === 'function') {
+      window.__radiomapAfterClearFilters();
+    }
+  } catch (e) { /* ignore */ }
+}
+
+window.clearAllFilters = clearAllFilters;

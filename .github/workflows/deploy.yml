@@ -87,6 +87,11 @@ jobs:
       - name: Build data.js from CSV
         run: python scripts/csv-to-datajs.py
 
+      - name: Inject cache-busting version into HTML
+        run: |
+          V=$(grep "const VERSION" data/data.js | sed "s/.*'\([^']*\)'.*/\1/")
+          sed -i "s/__VERSION__/$V/g" index.html lista.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

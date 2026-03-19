@@ -40,11 +40,19 @@
   }
 
   function updateToggleButton() {
-    const btn = document.getElementById('theme-toggle');
-    if (btn) {
-      btn.setAttribute('aria-label', getTheme() === 'dark' ? 'Modo claro' : 'Modo oscuro');
-      btn.innerHTML = getTheme() === 'dark' ? '☀' : '☽';
+    var dark = getTheme() === 'dark';
+    var label = dark ? 'Modo claro' : 'Modo oscuro';
+    var icon = dark ? 'light_mode' : 'dark_mode';
+    var iconSpan = '<span class="material-symbols-outlined" aria-hidden="true">' + icon + '</span>';
+    var main = document.getElementById('theme-toggle');
+    if (main) {
+      main.setAttribute('aria-label', label);
+      main.innerHTML = iconSpan;
     }
+    document.querySelectorAll('.menu-theme-toggle').forEach(function (btn) {
+      btn.setAttribute('aria-label', label);
+      btn.innerHTML = '<span class="menu-item-icon">' + iconSpan + '</span> Tema claro / oscuro';
+    });
   }
 
   setTheme(getTheme(), false);
