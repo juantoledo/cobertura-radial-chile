@@ -1,6 +1,6 @@
 /**
  * Map view — Leaflet map, circles, markers, sidebar, filters
- * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js, export-csv.js, theme.js, help.js
+ * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getVisibleNodeIndices), export-csv.js, theme.js, help.js
  */
 (function() {
   if (typeof NODES === 'undefined' || !NODES.length) return;
@@ -236,29 +236,10 @@
 
   function applyFilters(opts){
     opts = opts || {};
-    const banda = document.getElementById('filter-banda').value;
-    const region = document.getElementById('filter-region').value;
-    const echolink = document.getElementById('filter-echolink').value;
-    const echolinkConference = (document.getElementById('filter-echolink-conference') || {}).value || '';
-    const search = document.getElementById('search').value.trim().toLowerCase();
     const nearMe = getNearMeLocation();
-    visibleSet = new Set();
-    const visibleNodes = [];
-    NODES.forEach(r=>{
-      if(banda && !r.banda.includes(banda)) return;
-      if(region === '__sin_region__') { if(r.region) return; }
-      else if(region && r.region !== region) return;
-      if(echolink === 'only' && !r.isEcholink) return;
-      if(echolink === 'no' && r.isEcholink) return;
-      if(echolinkConference && echolink !== 'no' && r.echoLinkConference !== echolinkConference) return;
-      if(search){
-        const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda, r.echoLinkConference].filter(Boolean).join(' ').toLowerCase();
-        if(!haystack.includes(search)) return;
-      }
-      if(nearMe && (r.lat == null || r.lon == null || haversine(nearMe.lat, nearMe.lon, r.lat, r.lon) > NEAR_ME_RADIUS_KM)) return;
-      visibleSet.add(r._idx);
-      visibleNodes.push(r);
-    });
+    const visibleIndices = getVisibleNodeIndices();
+    visibleSet = new Set(visibleIndices);
+    const visibleNodes = visibleIndices.map(function (i) { return NODES[i]; });
     if (selectedIdx !== null && !visibleSet.has(selectedIdx)) {
       selectedIdx = null;
       const sb = document.getElementById('sidebar');

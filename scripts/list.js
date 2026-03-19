@@ -1,6 +1,6 @@
 /**
  * List view — table by region, filters, share
- * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js, share-view.js (buildShareViewURL), export-csv.js, theme.js, help.js
+ * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getFilteredNodes), share-view.js (buildShareViewURL), export-csv.js, theme.js, help.js
  */
 (function() {
   if (typeof NODES === 'undefined' || !NODES.length) return;
@@ -127,9 +127,13 @@
     bodyEl.innerHTML = dl;
 
     try {
-      const u = new URL('index.html', window.location.href);
-      u.searchParams.set('signal', signal);
-      mapLink.href = u.pathname + u.search + (u.hash || '');
+      mapLink.href = typeof buildMapViewURLForStation === 'function'
+        ? buildMapViewURLForStation(signal)
+        : (function () {
+            const u = new URL('index.html', window.location.href);
+            u.searchParams.set('signal', signal);
+            return u.pathname + u.search + (u.hash || '');
+          })();
     } catch (e) {
       mapLink.href = 'index.html?signal=' + encodeURIComponent(signal);
     }
@@ -293,33 +297,9 @@
   window.toggleNearMe = toggleNearMe;
 
   function getFiltered() {
-    const q = document.getElementById('search').value.trim().toLowerCase();
-    const banda = document.getElementById('filter-banda').value;
-    const region = document.getElementById('filter-region').value;
-    const echolink = document.getElementById('filter-echolink').value;
-    const echolinkConference = (document.getElementById('filter-echolink-conference') || {}).value || '';
-    const nearMe = getNearMeLocation();
-
-    let result = NODES.filter(r => {
-      if (region === '__sin_region__') { if (r.region) return false; }
-      else if (region && r.region !== region) return false;
-      if (banda && !r.banda.includes(banda)) return false;
-      if (echolink === 'only' && !r.isEcholink) return false;
-      if (echolink === 'no' && r.isEcholink) return false;
-      if (echolinkConference && echolink !== 'no' && r.echoLinkConference !== echolinkConference) return false;
-      if (q) {
-        const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda, r.echoLinkConference].filter(Boolean).join(' ').toLowerCase();
-        if (!haystack.includes(q)) return false;
-      }
-      if (nearMe && (r.lat == null || r.lon == null || haversine(nearMe.lat, nearMe.lon, r.lat, r.lon) > NEAR_ME_RADIUS_KM)) return false;
-      return true;
-    });
-
-    if (nearMe && result.length > 0) {
-      result = result.slice().map(r => ({ ...r, _dist: (r.lat != null && r.lon != null) ? Math.round(haversine(nearMe.lat, nearMe.lon, r.lat, r.lon)) : null }));
-      result.sort((a, b) => (a._dist ?? 9999) - (b._dist ?? 9999));
-    }
-    return result;
+    return typeof getFilteredNodes === 'function'
+      ? getFilteredNodes({ sortByDistance: true })
+      : [];
   }
 
   /**

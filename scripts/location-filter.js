@@ -1,5 +1,6 @@
 /**
  * Shared near-me (geolocation) filter logic for map and list views
+ * Requires global NODES (data/data.js) for getVisibleNodeIndices / getFilteredNodes
  */
 const NEAR_ME_RADIUS_KM = 100;
 
@@ -136,23 +137,103 @@ function clearAllFilters() {
 window.clearAllFilters = clearAllFilters;
 
 /**
+ * Current filter form values (same element IDs on map + list pages).
+ */
+function getFilterCriteria() {
+  try {
+    const search = document.getElementById('search');
+    const q = search && search.value.trim() ? search.value.trim().toLowerCase() : '';
+    const bandaEl = document.getElementById('filter-banda');
+    const regionEl = document.getElementById('filter-region');
+    const echolinkEl = document.getElementById('filter-echolink');
+    const ecEl = document.getElementById('filter-echolink-conference');
+    return {
+      q,
+      banda: bandaEl ? bandaEl.value : '',
+      region: regionEl ? regionEl.value : '',
+      echolink: echolinkEl ? echolinkEl.value : '',
+      echolinkConference: ecEl ? (ecEl.value || '') : ''
+    };
+  } catch (e) {
+    return { q: '', banda: '', region: '', echolink: '', echolinkConference: '' };
+  }
+}
+
+/**
+ * Whether a node passes band/region/echolink/search/near-me rules.
+ * @param {object} r - node from NODES
+ * @param {object} c - from getFilterCriteria()
+ * @param {object|null} nearMe - from getNearMeLocation() or null
+ */
+function nodeMatchesFilterCriteria(r, c, nearMe) {
+  const region = c.region;
+  if (region === '__sin_region__') {
+    if (r.region) return false;
+  } else if (region && r.region !== region) {
+    return false;
+  }
+  if (c.banda && !r.banda.includes(c.banda)) return false;
+  if (c.echolink === 'only' && !r.isEcholink) return false;
+  if (c.echolink === 'no' && r.isEcholink) return false;
+  if (c.echolinkConference && c.echolink !== 'no' && r.echoLinkConference !== c.echolinkConference) return false;
+  if (c.q) {
+    const haystack = [r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda, r.echoLinkConference].filter(Boolean).join(' ').toLowerCase();
+    if (!haystack.includes(c.q)) return false;
+  }
+  if (nearMe && (r.lat == null || r.lon == null || haversine(nearMe.lat, nearMe.lon, r.lat, r.lon) > NEAR_ME_RADIUS_KM)) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Indices in NODES that match current filters (for map visibleSet).
+ */
+function getVisibleNodeIndices() {
+  if (typeof NODES === 'undefined' || !NODES.length) return [];
+  const c = getFilterCriteria();
+  const nearMe = getNearMeLocation();
+  const indices = [];
+  for (let i = 0; i < NODES.length; i++) {
+    if (nodeMatchesFilterCriteria(NODES[i], c, nearMe)) indices.push(i);
+  }
+  return indices;
+}
+
+/**
+ * Filtered node objects. List view uses sortByDistance to add _dist and sort when «cerca de mí» is on.
+ * @param {{ sortByDistance?: boolean }} opts
+ */
+function getFilteredNodes(opts) {
+  opts = opts || {};
+  const indices = getVisibleNodeIndices();
+  let result = indices.map(function (i) { return NODES[i]; });
+  const nearMe = getNearMeLocation();
+  if (opts.sortByDistance && nearMe && result.length > 0) {
+    result = result.map(function (r) {
+      return Object.assign({}, r, {
+        _dist: (r.lat != null && r.lon != null) ? Math.round(haversine(nearMe.lat, nearMe.lon, r.lat, r.lon)) : null
+      });
+    });
+    result.sort(function (a, b) { return (a._dist ?? 9999) - (b._dist ?? 9999); });
+  }
+  return result;
+}
+
+window.getFilterCriteria = getFilterCriteria;
+window.nodeMatchesFilterCriteria = nodeMatchesFilterCriteria;
+window.getVisibleNodeIndices = getVisibleNodeIndices;
+window.getFilteredNodes = getFilteredNodes;
+
+/**
  * Which filters are active — used for guided empty states (list + map).
  */
 function getActiveFilterFlags() {
   try {
-    const searchEl = document.getElementById('search');
-    const q = searchEl && searchEl.value.trim();
-    const banda = document.getElementById('filter-banda');
-    const region = document.getElementById('filter-region');
-    const echolink = document.getElementById('filter-echolink');
-    const ec = document.getElementById('filter-echolink-conference');
-    const hasBanda = banda && banda.value;
-    const hasRegion = region && region.value;
-    const hasEcholink = echolink && echolink.value;
-    const hasEc = ec && ec.value;
+    const c = getFilterCriteria();
     return {
-      hasSearch: !!q,
-      hasFilters: !!(hasBanda || hasRegion || hasEcholink || hasEc),
+      hasSearch: !!c.q,
+      hasFilters: !!(c.banda || c.region || c.echolink || c.echolinkConference),
       hasNear: typeof getNearMeLocation === 'function' && !!getNearMeLocation()
     };
   } catch (e) {

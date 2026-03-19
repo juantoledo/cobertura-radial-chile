@@ -1,11 +1,10 @@
 /**
  * Build / open shareable URLs: filters, near-me, map position & mode, list vs map page.
- * Requires: location-filter.js
+ * Requires: location-filter.js, data/data.js (NODES) for buildMapViewURLForStation
  */
 (function () {
-  function buildShareViewURL() {
-    var url = new URL(window.location.href);
-    url.hash = '';
+  /** Filters + near (no map position) — shared by buildShareViewURL and buildMapViewURLForStation */
+  function buildShareQueryParams() {
     var p = new URLSearchParams();
 
     var search = document.getElementById('search');
@@ -27,6 +26,48 @@
     if (nm && typeof nm.lat === 'number' && typeof nm.lon === 'number') {
       p.set('near', nm.lat.toFixed(5) + ',' + nm.lon.toFixed(5));
     }
+
+    return p;
+  }
+
+  /** Heuristic zoom from coverage radius (map init uses mlat/mlon/zoom) */
+  function zoomForStationNode(r) {
+    if (!r) return 5;
+    var rk = r.range_km;
+    if (typeof rk !== 'number' || isNaN(rk)) {
+      return r.isEcholink ? 7 : 8;
+    }
+    if (rk >= 100) return 6;
+    if (rk >= 50) return 7;
+    if (rk >= 25) return 8;
+    if (rk >= 15) return 9;
+    return 10;
+  }
+
+  /**
+   * Link to index.html with current filters, signal, and map centered on the station (mlat/mlon/zoom).
+   */
+  function buildMapViewURLForStation(signal) {
+    var base = new URL('index.html', window.location.href);
+    base.hash = '';
+    var p = buildShareQueryParams();
+    if (signal) p.set('signal', signal);
+    if (typeof NODES !== 'undefined' && NODES.length && signal) {
+      var r = NODES.find(function (n) { return n.signal === signal; });
+      if (r && r.lat != null && r.lon != null && typeof r.lat === 'number' && typeof r.lon === 'number') {
+        p.set('mlat', r.lat.toFixed(5));
+        p.set('mlon', r.lon.toFixed(5));
+        p.set('zoom', String(zoomForStationNode(r)));
+      }
+    }
+    base.search = p.toString();
+    return base.toString();
+  }
+
+  function buildShareViewURL() {
+    var url = new URL(window.location.href);
+    url.hash = '';
+    var p = buildShareQueryParams();
 
     if (typeof window.__radiomapGetMapShareState === 'function') {
       var m = window.__radiomapGetMapShareState();
@@ -72,6 +113,7 @@
   }
 
   window.buildShareViewURL = buildShareViewURL;
+  window.buildMapViewURLForStation = buildMapViewURLForStation;
   window.shareThisView = shareThisView;
   window.fallbackCopyShareUrl = fallbackCopyShareUrl;
 
