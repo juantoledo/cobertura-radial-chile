@@ -37,13 +37,18 @@ def parse_row(row: dict) -> dict:
     """Convierte fila CSV a objeto NODE."""
     node = {}
     for k, v in row.items():
-        v = (v or "").strip()
+        if k is None:
+            continue
+        if not isinstance(v, str):
+            v = ""
+        else:
+            v = v.strip()
         if k in NUMERIC_KEYS and v:
             try:
                 node[k] = float(v)
             except ValueError:
                 node[k] = v
-        elif k == "isEcholink":
+        elif k in ("isEcholink", "isDMR"):
             node[k] = v.lower() in ("1", "true", "yes")
         else:
             node[k] = v

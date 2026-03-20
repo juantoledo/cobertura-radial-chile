@@ -52,13 +52,22 @@ Tras editar el CSV en local, conviene regenerar `data.js` antes de probar la app
 | `region` | Región (texto alineado a división SUBTEL/DGMN). |
 | `otorga`, `vence` | Fechas de otorgamiento y vencimiento de la autorización. |
 | `isEcholink` | `1`, `true` o `yes` = nodo Echolink; vacío u otro = no. |
-| `echoLinkConference` | Nombre de la conferencia o red Echolink (ej. `Red Chile`, `RCDR`, `SUR`). Vacío si no aplica. |
+| `conference` | Nombre de la **conferencia o red** (Echolink, DMR u otro): ej. `Red Chile`, `RCDR`, `SUR`, `Zona DMR CL`. Vacío si no aplica. |
+| `isDMR` | `1`, `true` o `yes` = estación / repetidor DMR; vacío u otro = no. |
+| `color` | Código o etiqueta de **color** (CC) DMR. Vacío si no aplica. Varios valores: **separar con espacio** (ej. `1`). |
+| `slot` | **Slot** de tiempo DMR. Varios slots: **solo espacios** (ej. `1 2`), sin «y». |
+| `tg` | **Talkgroups** DMR. Varios TG: **solo espacios** (ej. `730 7300444 7301`), sin guiones. Sin filtro dedicado en la app. |
 | `website` | URL pública del club o red asociada a esa fila (ver abajo). |
 
-### `isEcholink` y `echoLinkConference`
+### `isEcholink` y `conference`
 
 - **`isEcholink`**: valor verdadero con `1`, `true` o `yes` (insensible a mayúsculas).
-- **`echoLinkConference`**: texto libre para agrupar nodos de la misma conferencia o red.
+- **`conference`**: texto libre para agrupar nodos de la misma conferencia o red (no solo Echolink: también DMR, p. ej. red [Zona DMR CL](https://zonadmr.cl/nodos/)).
+
+### `isDMR`, `color`, `slot` y `tg`
+
+- **`isDMR`**: misma convención booleana que `isEcholink`.
+- **`color`**, **`slot`** y **`tg`**: texto libre; en la interfaz se muestran como **chips** separando por espacios. Participan en la **búsqueda** y en la exportación CSV. Si `isDMR` está vacío, suelen dejarse vacíos.
 
 ### `website` — sitio web del club o red
 
@@ -82,9 +91,10 @@ Columna opcional. Si está vacía, la interfaz no muestra enlace junto a la señ
 
 - En mapa y lista solo se enlazan URLs **`http:`** o **`https:`** validadas en el cliente.
 - El campo participa en la **búsqueda por texto** y se incluye en la **exportación CSV** desde la app.
+- Los campos DMR (`isDMR`, `color`, `slot`, `tg`): el **tipo** DMR se elige en el mismo desplegable que Echolink/radioclubes; `color`, `slot` y `tg` entran en **búsqueda** y **exportación CSV**, sin filtros dedicados (tampoco en enlaces compartidos). La columna **`conference`** tiene filtro y parámetro de URL `conference` (enlaces antiguos pueden usar `echolinkConference`).
 
 ---
 
 ## Referencia rápida de columnas (una línea)
 
-`signal`, `nombre`, `comuna`, `ubicacion`, `lat`, `lon`, `range_km`, `potencia`, `ganancia`, `banda`, `rx`, `tx`, `tono`, `region`, `otorga`, `vence`, `isEcholink`, `echoLinkConference`, `website`.
+`signal`, `nombre`, `comuna`, `ubicacion`, `lat`, `lon`, `range_km`, `potencia`, `ganancia`, `banda`, `rx`, `tx`, `tono`, `region`, `otorga`, `vence`, `isEcholink`, `conference`, `isDMR`, `color`, `slot`, `tg`, `website`.

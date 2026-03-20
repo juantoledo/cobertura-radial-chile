@@ -88,13 +88,13 @@
       <button type="button" class="help-close" onclick="closeHelp()" aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
     </div>
     <div class="help-modal-body">
-      <p class="help-lead"><strong>Radiomap</strong> — mapa y lista de repetidoras y nodos Echolink en Chile. Datos oficiales SUBTEL/DGMN.</p>
+      <p class="help-lead"><strong>Radiomap</strong> — mapa y lista de repetidoras, nodos Echolink y estaciones DMR en Chile.</p>
       <section class="help-section">
         <h3>Para qué sirve</h3>
         <ul>
-          <li>Ver en el mapa repetidoras y nodos Echolink, cobertura teórica y ubicación.</li>
+          <li>Ver en el mapa repetidoras, nodos Echolink y estaciones DMR, cobertura teórica y ubicación.</li>
           <li>Botón 📍 para mostrar solo nodos cerca de tu ubicación (100 km).</li>
-          <li>Buscar por señal, comuna, frecuencias (RX/TX/tono) o filtrar por banda, región y tipo (Radioclubes/Echolink).</li>
+          <li>Buscar por señal, comuna, frecuencias (RX/TX/tono) o filtrar por banda, región y tipo (Echolink / DMR / radioclubes).</li>
           <li>Revisar datos de cada nodo y descargar listas en CSV (botón ↓ CSV siempre visible).</li>
           <li><strong>↗ Compartir</strong>: copia un enlace con los filtros actuales, cerca de mí (si está activo), posición del mapa y la repetidora abierta en el panel (si hay una).</li>
         </ul>
@@ -104,8 +104,8 @@
         <ul>
           <li>Explora el mapa; cambia el tema claro/oscuro con ☽.</li>
           <li>Vista (iconos): marcador, círculo de cobertura o ambos.</li>
-          <li>Filtros: banda (VHF/UHF), región, tipo (Todos / Solo Echolink / Solo Radioclubes) y conferencia Echolink.</li>
-          <li>Clic en un punto: datos y nodos cercanos en el panel. Radioclubes = punto de color; Echolink = cuadrado con «e». Descarga CSV o comparte desde el panel.</li>
+          <li>Filtros: banda, región, tipo y conferencia/red — listas con casillas; «Todas» en cada una quita el filtro de ese criterio (varias opciones = OR).</li>
+          <li>Clic en un punto: datos y nodos cercanos en el panel. Radioclubes = círculo; Echolink = cuadrado «e»; DMR = rombo «d». Descarga CSV o comparte desde el panel.</li>
         </ul>
       </section>
       <section class="help-section">
@@ -116,7 +116,6 @@
           <li>Descarga CSV desde el header (siempre visible, también en móvil).</li>
         </ul>
       </section>
-      <p class="help-footer">Datos del listado oficial <a href="https://www.subtel.gob.cl/" target="_blank" rel="noopener">SUBTEL</a>.</p>
       <p class="help-meta">Versión <span id="app-version">—</span>. Agénticamente desarrollado por <a href="https://cd3dxz.radio" target="_blank" rel="noopener">CD3DXZ</a>.</p>
     </div>
   </div>
@@ -156,22 +155,43 @@
     <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
     <input type="text" id="search" placeholder="Buscar señal, club, comuna, frecuencias..." oninput="applyFilters()">
   </div>
-  <select id="filter-banda" onchange="applyFilters()">
-    <option value="">Todas las bandas</option>
-    <option value="VHF">VHF</option>
-    <option value="UHF">UHF</option>
-  </select>
-  <select id="filter-region" onchange="applyFilters()">
-    <option value="">Todas las regiones</option>
-  </select>
-  <select id="filter-echolink" onchange="applyFilters()">
-    <option value="">Todos los Tipos</option>
-    <option value="only">Solo Echolink</option>
-    <option value="no">Solo Radioclubes</option>
-  </select>
-  <select id="filter-echolink-conference" onchange="applyFilters()">
-    <option value="">Todas las conferencias</option>
-  </select>
+  <details class="filter-dropdown">
+    <summary class="filter-dropdown__summary"><span id="filter-banda-summary">Todas las bandas</span></summary>
+    <div class="filter-dropdown__panel">
+      <div class="filter-checkbox-list filter-checkbox-list--compact" id="filter-banda">
+        <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
+        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="VHF"> VHF</label>
+        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="UHF"> UHF</label>
+      </div>
+    </div>
+  </details>
+  <details class="filter-dropdown">
+    <summary class="filter-dropdown__summary"><span id="filter-region-summary">Todas las regiones</span></summary>
+    <div class="filter-dropdown__panel">
+      <div class="filter-checkbox-list" id="filter-region">
+        <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
+      </div>
+    </div>
+  </details>
+  <details class="filter-dropdown">
+    <summary class="filter-dropdown__summary"><span id="filter-type-summary">Todos los tipos</span></summary>
+    <div class="filter-dropdown__panel">
+      <div class="filter-checkbox-list filter-checkbox-list--compact" id="filter-type">
+        <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
+        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="echolink"> Echolink</label>
+        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="dmr"> DMR</label>
+        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="radioclub"> Radioclubes</label>
+      </div>
+    </div>
+  </details>
+  <details class="filter-dropdown">
+    <summary class="filter-dropdown__summary"><span id="filter-conference-summary">Todas las conferencias</span></summary>
+    <div class="filter-dropdown__panel">
+      <div class="filter-checkbox-list" id="filter-conference">
+        <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
+      </div>
+    </div>
+  </details>
   <button type="button" id="btn-clear-filters" class="btn-clear-filters" onclick="clearAllFilters()" title="Quitar búsqueda, filtros y cerca de mí" aria-label="Limpiar filtros"><span class="material-symbols-outlined" aria-hidden="true">filter_alt_off</span> Limpiar filtros</button>
   <div class="filter-count">Mostrando <span id="shown-count">172</span> de <span id="total-count">172</span> · <span id="regions-count">13</span> regiones · <span id="clubs-count">—</span> clubes<span id="filter-nearme"></span></div>
 </div>

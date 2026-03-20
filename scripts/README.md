@@ -27,10 +27,12 @@ python scripts/csv-to-datajs.py
 
 Se ejecuta automáticamente en CI antes del deploy.
 
+La minificación de JS para Pages está definida en `.github/workflows/deploy.yml` (Terser vía `npx`, sin mangling).
+
 ---
 
 ## Formato de curated_stations.csv
 
-Columnas: `signal`, `nombre`, `comuna`, `ubicacion`, `lat`, `lon`, `range_km`, `potencia`, `ganancia`, `banda`, `rx`, `tx`, `tono`, `region`, `otorga`, `vence`.
+Columnas (orden): ver `data/README.md` — incluye `isEcholink`, `conference`, `isDMR`, `color`, `slot`, `tg`, `website`, etc.
 
 Los datos provienen del [listado oficial SUBTEL](https://www.subtel.gob.cl/) y pueden curarse para corregir errores de la fuente.
