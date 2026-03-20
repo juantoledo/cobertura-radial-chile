@@ -47,13 +47,9 @@
 <div class="sticky-top">
 <header class="header">
   <a href="https://www.radiomap.cl/" class="header-signal">Radiomap</a>
-  <div class="header-title">
-    <p>Repetidoras Chile · <span id="nodes-count">—</span> estaciones</p>
-  </div>
   <nav class="header-nav" aria-label="Navegación principal">
-    <a href="lista.html" class="header-link header-link-nav current">LISTA</a>
-    <a href="index.html" class="header-link header-link-nav">MAPA</a>
-    <button type="button" id="btn-nearme" onclick="toggleNearMe()" class="location-btn" aria-label="Cerca de mí" title="Mostrar repetidoras cerca de mi ubicación"><span class="material-symbols-outlined" aria-hidden="true">my_location</span></button>
+    <a href="index.html" class="header-link header-link-nav header-link-nav--map">MAPA</a>
+    <a href="lista.html" class="header-link header-link-nav header-link-nav--list current">LISTA</a>
   </nav>
   <div class="header-actions">
     <button type="button" id="theme-toggle" onclick="toggleTheme()" aria-label="Modo claro" title="Cambiar tema" class="theme-btn"></button>
@@ -115,9 +111,12 @@
 </div>
 
 <div class="controls">
-  <div class="search-wrap">
-    <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
-    <input type="text" id="search" placeholder="Buscar señal, club, comuna, frecuencias...">
+  <div class="search-nearme-wrap">
+    <div class="search-wrap">
+      <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
+      <input type="text" id="search" placeholder="Buscar señal, club, comuna, frecuencias...">
+    </div>
+    <button type="button" id="btn-nearme" onclick="toggleNearMe()" class="location-btn location-btn--controls" aria-label="Cerca de mí" title="Mostrar repetidoras cerca de mi ubicación"><span class="material-symbols-outlined" aria-hidden="true">my_location</span></button>
   </div>
   <details class="filter-dropdown">
     <summary class="filter-dropdown__summary"><span id="filter-banda-summary">Todas las bandas</span></summary>

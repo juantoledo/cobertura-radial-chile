@@ -6,8 +6,6 @@
   if (typeof NODES === 'undefined' || !NODES.length) return;
 
   if (typeof VERSION !== 'undefined') document.getElementById('app-version') && (document.getElementById('app-version').textContent = VERSION);
-  document.getElementById('nodes-count') && (document.getElementById('nodes-count').textContent = NODES.length);
-
   function getClubName(signal) { var n = NODES && NODES.find(function(x){ return x.signal === signal; }); return n ? (n.nombre || '') : ''; }
   window.getClubName = getClubName;
 
