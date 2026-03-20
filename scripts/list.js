@@ -1,6 +1,6 @@
 /**
  * List view — table by region, filters, share
- * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getFilteredNodes), share-view.js (buildShareViewURL), export-csv.js, theme.js, help.js
+ * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getFilteredNodes), dmr-ui.js (buildDmrDetailHtml), share-view.js (buildShareViewURL), export-csv.js, theme.js, help.js
  */
 (function() {
   if (typeof NODES === 'undefined' || !NODES.length) return;
@@ -99,40 +99,6 @@
     return String(v);
   }
 
-  /** Safe HTML for list modal <dd> (DMR chips — matches theme .dmr-* / .station-detail-dd-dmr). */
-  function buildStationDetailDmrHtml(r) {
-    const parts = ['<span class="station-detail-dmr-yes">Sí</span>', '<span class="badge-dmr">DMR</span>'];
-    const conf = (r.conference || '').trim();
-    if (conf) {
-      parts.push(
-        '<span class="dmr-field"><span class="dmr-field-label">Conferencia / red</span><span class="dmr-token">' +
-          escapeHtml(conf) +
-          '</span></span>'
-      );
-    }
-    function tokenField(label, val, tokenClass) {
-      if (val == null || String(val).trim() === '') return;
-      const tokens = String(val)
-        .trim()
-        .split(/\s+/)
-        .map(function (t) {
-          return '<span class="dmr-token ' + tokenClass + '">' + escapeHtml(t) + '</span>';
-        })
-        .join('');
-      parts.push(
-        '<span class="dmr-field"><span class="dmr-field-label">' +
-          escapeHtml(label) +
-          '</span><span class="dmr-tokens">' +
-          tokens +
-          '</span></span>'
-      );
-    }
-    tokenField('Color', r.color, 'dmr-token--cc');
-    tokenField('Slot', r.slot, 'dmr-token--slot');
-    tokenField('TG', r.tg, 'dmr-token--tg');
-    return parts.join('');
-  }
-
   function openStationDetail(signal) {
     if (!signal) return;
     const r = NODES.find(n => n.signal === signal);
@@ -203,7 +169,11 @@
       ]);
     }
     if (r.isDMR && !r.isEcholink) {
-      rows.push([['DMR', 'station-detail-dd-dmr'], buildStationDetailDmrHtml(r), 'html']);
+      const dmrHtml =
+        typeof window.buildDmrDetailHtml === 'function'
+          ? window.buildDmrDetailHtml(r, 'modal')
+          : '<span class="badge-dmr">DMR</span>';
+      rows.push([['DMR', 'station-detail-dd-dmr'], dmrHtml, 'html']);
     }
 
     let dl = '<dl class="station-detail-grid">';

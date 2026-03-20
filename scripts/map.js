@@ -1,6 +1,6 @@
 /**
  * Map view — Leaflet map, circles, markers, sidebar, filters
- * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getVisibleNodeIndices), export-csv.js, theme.js, help.js
+ * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getVisibleNodeIndices), dmr-ui.js (buildDmrDetailHtml), export-csv.js, theme.js, help.js
  */
 (function() {
   if (typeof NODES === 'undefined' || !NODES.length) return;
@@ -352,8 +352,13 @@
       rows.push(['ECHOLINK', '<span class="badge-echolink">Sí</span>' + (ccf ? ' · ' + escapeHtmlText(ccf) : '')]);
     }
     if (r.isDMR && !r.isEcholink) {
-      const ccf = (r.conference || '').trim();
-      rows.push(['DMR', '<span class="badge-dmr">Sí</span>' + (ccf ? ' · ' + escapeHtmlText(ccf) : '')]);
+      rows.push([
+        'DMR',
+        typeof buildDmrDetailHtml === 'function'
+          ? buildDmrDetailHtml(r, 'sidebar')
+          : '<span class="badge-dmr">DMR</span>' +
+            ((r.conference || '').trim() ? ' · ' + escapeHtmlText((r.conference || '').trim()) : ''),
+      ]);
     }
 
     let html = '<div class="sb-detail-grid">' + rows.map(([k,v])=>'<div class="sb-row"><span class="sb-key">'+k+'</span><span class="sb-val">'+v+'</span></div>').join('') + '</div>';
