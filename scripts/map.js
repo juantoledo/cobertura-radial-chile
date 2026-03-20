@@ -338,6 +338,12 @@
         const nc = REGION_COLORS[nb.region]||REGION_COLORS['']||'#5e35b1';
         const rx = nb.rx || '—', tx = nb.tx || '—', tono = nb.tono ? nb.tono+' Hz' : '—';
         const details = 'RX '+rx+' · TX '+tx+' · '+tono;
+        const clubName = (nb.nombre || getClubName(nb.signal) || '').trim();
+        const comuna = (nb.comuna || '').trim();
+        const metaLabel = [clubName, comuna].filter(Boolean).join(' · ');
+        const metaHtml = metaLabel
+          ? '<div class="neighbor-meta" title="' + escapeAttr(metaLabel) + '">' + escapeHtmlText(metaLabel) + '</div>'
+          : '';
         const isSelected = n.idx === idx;
         const distStr = n.dist === 0 ? '0 km' : n.dist+' km';
         const dotEl = nb.isEcholink
@@ -345,7 +351,9 @@
           : '<div class="neighbor-dot" style="background:'+nc+'"></div>';
         return '<div class="neighbor-row'+(isSelected?' neighbor-selected':'')+'" onclick="selectRepeater('+n.idx+')">' +
           dotEl +
-          '<div class="neighbor-main"><span class="neighbor-signal">'+nb.signal+(isSelected?' (este)':'')+'</span><div class="neighbor-details"><span>'+details+'</span></div></div>' +
+          '<div class="neighbor-main"><span class="neighbor-signal">'+escapeHtmlText(nb.signal)+(isSelected?' (este)':'')+'</span>' +
+          metaHtml +
+          '<div class="neighbor-details"><span>'+details+'</span></div></div>' +
           '<span class="neighbor-dist">'+distStr+'</span></div>';
       }).join('');
     }
