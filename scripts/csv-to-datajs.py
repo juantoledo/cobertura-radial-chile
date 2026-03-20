@@ -11,23 +11,38 @@ from pathlib import Path
 CSV_PATH = Path(__file__).resolve().parent.parent / "data" / "curated_stations.csv"
 OUT_PATH = Path(__file__).resolve().parent.parent / "data" / "data.js"
 
+# Orden norte → sur (misma lógica que sortRegionKeysChile en location-filter.js)
 DEFAULT_REGION_COLORS = {
     "REGIÓN DE ARICA Y PARINACOTA": "#e53935",
+    "REGIÓN DE TARAPACÁ": "#e91e8c",
     "REGIÓN DE ANTOFAGASTA": "#ff6b35",
     "REGIÓN DE ATACAMA": "#f7931e",
     "REGIÓN DE COQUIMBO": "#ffcd05",
-    "REGIÓN DE LA ARAUCANÍA": "#8dc63f",
-    "REGIÓN DE LOS LAGOS": "#29abe2",
-    "REGIÓN DE LOS RÍOS": "#00d4ff",
-    "REGIÓN DE NUBLE": "#9b59b6",
-    "REGIÓN DE TARAPACÁ": "#e91e8c",
     "REGIÓN DE VALPARAÍSO": "#00bcd4",
-    "REGIÓN DEL BIOBÍO": "#00897b",
+    "REGIÓN METROPOLITANA DE SANTIAGO": "#5e35b1",
     "REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS": "#43a047",
     "REGIÓN DEL MAULE": "#1e88e5",
-    "REGIÓN METROPOLITANA DE SANTIAGO": "#5e35b1",
+    "REGIÓN DE NUBLE": "#9b59b6",
+    "REGIÓN DEL BIOBÍO": "#00897b",
+    "REGIÓN DE LA ARAUCANÍA": "#8dc63f",
+    "REGIÓN DE LOS RÍOS": "#00d4ff",
+    "REGIÓN DE LOS LAGOS": "#29abe2",
     "REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA": "#1565c0",
 }
+
+# Mismo orden que CHILE_REGIONS_ADMIN_ORDER en scripts/location-filter.js
+CHILE_REGION_ORDER = list(DEFAULT_REGION_COLORS.keys())
+
+
+def ordered_region_colors(region_colors: dict) -> dict:
+    """Orden administrativo norte → sur; regiones desconocidas al final por nombre."""
+    rank = {k: i for i, k in enumerate(CHILE_REGION_ORDER)}
+    keys = sorted(
+        region_colors.keys(),
+        key=lambda k: (rank.get(k, 10000), k),
+    )
+    return {k: region_colors[k] for k in keys}
+
 
 NUMERIC_KEYS = ("lat", "lon", "range_km")
 
@@ -89,6 +104,7 @@ def main():
 
     version, region_colors = read_version_and_colors()
     region_colors.pop("", None)
+    region_colors = ordered_region_colors(region_colors)
 
     out = f"""// Repetidoras Chile — datos centralizados (generado desde curated_stations.csv)
 const VERSION = '{version}';

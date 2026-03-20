@@ -38,6 +38,10 @@
   --uhf: #e91e8c;
   --green: #39d353;
   --yellow: #f0c040;
+  /* Google Fonts — loaded in index.html / lista.html */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Inter Tight', 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
   /* Typography scale — rem for WCAG scalability; min 12px for small text */
   --fs-xxs: 0.75rem;   /* 12px — minimum for badges/labels */
   --fs-xs: 0.875rem;   /* 14px */
@@ -62,9 +66,11 @@
 html, body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--fs-base);
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 body.page-map { height: 100%; overflow: hidden; }
 body.page-list { min-height: 100vh; }
@@ -80,9 +86,15 @@ body { padding-bottom: 36px; }
   gap: 20px;
   flex-shrink: 0;
 }
-body.page-list .sticky-top { position: sticky; top: 0; z-index: 100; background: var(--surface); }
+body.page-list .sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  overflow: visible;
+}
 .header-signal {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-lg);
   color: var(--accent);
   letter-spacing: 0.08em;
@@ -101,7 +113,7 @@ a.header-signal:focus-visible {
 }
 .header-title { flex: 1; }
 .header-title h1 {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: var(--font-display);
   font-size: var(--fs-2xl);
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -113,7 +125,7 @@ a.header-signal:focus-visible {
 .header-title p {
   font-size: var(--fs-sm);
   color: var(--text-dim);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
 }
 .header-title-link { color: inherit; text-decoration: none; cursor: default; }
 .header-title-link:hover { color: inherit; }
@@ -176,7 +188,7 @@ a.header-signal:focus-visible {
   background: rgba(0, 212, 255, 0.1);
 }
 .header-link {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   color: var(--text-dim);
   text-decoration: none;
@@ -223,7 +235,7 @@ a.header-signal:focus-visible {
 .header-link-icon svg { width: 22px; height: 22px; vertical-align: middle; }
 /* Text + icon actions (Compartir, CSV) — same height as icon buttons */
 .header-action-link {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   color: var(--text-dim);
   text-decoration: none;
@@ -261,7 +273,12 @@ a.header-signal:focus-visible {
 .menu-toggle { display: none; }
 
 /* ── Map page: layout & methodology ───────────────────────────────────────── */
-#app { display: flex; flex-direction: column; height: 100vh; }
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: visible;
+}
 .methodology-bar {
   background: rgba(8,12,20,0.92);
   border-bottom: 1px solid var(--border);
@@ -274,7 +291,7 @@ a.header-signal:focus-visible {
   line-height: 1.5;
 }
 .meth-label {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -288,7 +305,7 @@ a.header-signal:focus-visible {
 .meth-sep { color: #2a4060; font-size: var(--fs-sm); }
 .meth-text { color: var(--text-dim); font-size: var(--fs-sm); }
 .meth-text strong { color: var(--text); }
-.meth-warn { color: #ff6b35cc; font-family: 'Barlow', sans-serif; letter-spacing: 0.03em; }
+.meth-warn { color: #ff6b35cc; font-family: var(--font-sans); letter-spacing: 0.03em; }
 .meth-info {
   position: relative;
   cursor: help;
@@ -335,10 +352,11 @@ a.header-signal:focus-visible {
   gap: 12px;
   flex-shrink: 0;
   flex-wrap: wrap;
+  overflow: visible;
 }
 .ctrl-group { display: flex; align-items: center; gap: 8px; }
 .ctrl-label {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   color: var(--text-dim);
   letter-spacing: 0.08em;
@@ -350,7 +368,7 @@ select, input[type=text] {
   color: var(--text);
   border-radius: 4px;
   padding: 7px 10px;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   outline: none;
   transition: border-color 0.15s;
@@ -365,7 +383,7 @@ input[type=text] { width: 200px; }
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   box-sizing: border-box;
   /* Stable footprint: width does not jump when summary text changes (ellipsis inside summary). */
@@ -373,6 +391,10 @@ input[type=text] { width: 200px; }
   width: var(--filter-dropdown-trigger);
   min-width: 0;
   max-width: var(--filter-dropdown-trigger);
+  overflow: visible;
+}
+.filter-dropdown[open] {
+  z-index: 12050;
 }
 .filter-dropdown__summary {
   list-style: none;
@@ -423,7 +445,8 @@ input[type=text] { width: 200px; }
   min-width: max(100%, 15.75rem);
   width: max-content;
   max-width: min(340px, 92vw);
-  max-height: min(48vh, 300px);
+  /* Fallback before JS fixes to viewport; script sets max-height inline when open. */
+  max-height: min(50dvh, 320px);
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--surface);
@@ -432,6 +455,11 @@ input[type=text] { width: 200px; }
   margin-top: 4px;
   box-shadow: 0 10px 28px rgba(0,0,0,0.38);
   box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+/* Panel moved to position:fixed by location-filter.js so it is never clipped by sticky/overflow */
+.filter-dropdown__panel.radiomap-filter-panel--fixed {
+  margin-top: 0;
 }
 .filter-checkbox-list {
   display: flex;
@@ -449,7 +477,7 @@ input[type=text] { width: 200px; }
   font-size: var(--fs-xs);
   line-height: 1.35;
   color: var(--text);
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-sans);
 }
 .filter-checkbox-row:hover { background: rgba(0, 212, 255, 0.06); }
 .filter-checkbox-row input {
@@ -465,10 +493,10 @@ input[type=text] { width: 200px; }
   padding-bottom: 6px;
 }
 body.page-list .filter-dropdown {
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-sans);
 }
 body.page-list .filter-dropdown__summary {
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--fs-sm);
 }
 .ctrl-sep { width: 1px; height: 28px; background: var(--border); }
@@ -498,7 +526,7 @@ body.page-list .filter-dropdown__summary {
 }
 #stat-badge {
   margin-left: auto;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   color: var(--text-dim);
   background: var(--surface2);
@@ -558,7 +586,7 @@ body.page-list .filter-dropdown__summary {
   flex: 1;
   min-width: 0;
 }
-.sidebar-signal { font-family: 'Share Tech Mono', monospace; font-size: var(--fs-lg); color: var(--accent); }
+.sidebar-signal { font-family: var(--font-mono); font-size: var(--fs-lg); color: var(--accent); }
 .sidebar-signal.sidebar-signal--with-web {
   display: flex;
   align-items: center;
@@ -623,7 +651,7 @@ body.page-list .filter-dropdown__summary {
 }
 .sb-key {
   color: var(--text-dim);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-xs);
   letter-spacing: 0.06em;
   flex-shrink: 0;
@@ -631,7 +659,7 @@ body.page-list .filter-dropdown__summary {
 }
 .sb-val {
   color: var(--text-bright);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   text-align: right;
   min-width: 0;
@@ -641,7 +669,7 @@ body.page-list .filter-dropdown__summary {
   line-height: 1.35;
 }
 .sb-section-title {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -774,7 +802,7 @@ body.page-list .filter-dropdown__summary {
   line-height: 1.2;
 }
 .neighbor-signal {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-xs);
   color: var(--text-bright);
   white-space: nowrap;
@@ -784,7 +812,7 @@ body.page-list .filter-dropdown__summary {
 .neighbor-meta {
   font-size: var(--fs-xxs);
   color: var(--text-dim);
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-sans);
   font-weight: 500;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -796,7 +824,7 @@ body.page-list .filter-dropdown__summary {
 .neighbor-details {
   font-size: var(--fs-xxs);
   color: var(--text-dim);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -806,7 +834,7 @@ body.page-list .filter-dropdown__summary {
 .neighbor-details span { display: block; overflow: hidden; text-overflow: ellipsis; }
 .neighbor-more { font-size: var(--fs-xs); }
 .neighbor-dist {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-xxs);
   color: var(--accent2);
   flex-shrink: 0;
@@ -845,7 +873,7 @@ body.page-list .filter-dropdown__summary {
   margin-bottom: 10px;
 }
 #legend.legend-collapsed .legend-header { margin-bottom: 0; }
-#legend .legend-title { font-family: 'Share Tech Mono', monospace; font-size: var(--fs-sm); color: var(--text-dim); letter-spacing: 0.1em; flex-shrink: 0; }
+#legend .legend-title { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text-dim); letter-spacing: 0.1em; flex-shrink: 0; }
 #legend .legend-toggle {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -897,7 +925,15 @@ body.page-list .filter-dropdown__summary {
 #map .leaflet-tooltip-bottom.rpt-tooltip:before { border-bottom-color: var(--border) !important; }
 #map .leaflet-tooltip-left.rpt-tooltip:before { border-left-color: var(--border) !important; }
 #map .leaflet-tooltip-right.rpt-tooltip:before { border-right-color: var(--border) !important; }
-.rpt-tooltip-inner { font-size: var(--fs-sm); }
+.rpt-tooltip-inner {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
 .rpt-tooltip-club { color: #c8d8e8; font-size: var(--fs-xs); }
 .rpt-tooltip-meta { color: #5a7a9a; font-size: var(--fs-xs); }
 
@@ -942,7 +978,7 @@ body.page-list input[type="text"] {
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   padding: 7px 10px 7px 32px;
   outline: none;
@@ -959,7 +995,7 @@ body.page-list select,
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--fs-sm);
   padding: 7px 10px;
   outline: none;
@@ -972,7 +1008,7 @@ body.page-list select:focus { border-color: var(--accent); }
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--fs-sm);
   font-weight: 500;
   padding: 7px 14px;
@@ -995,7 +1031,7 @@ body.page-list select:focus { border-color: var(--accent); }
   background: rgba(0, 212, 255, 0.06);
 }
 .filter-count {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   color: var(--text-dim);
   margin-left: auto;
@@ -1014,7 +1050,7 @@ body.page-list main { padding: 24px 32px; }
   border-bottom: 1px solid var(--border);
 }
 .zone-badge {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: var(--font-display);
   font-size: var(--fs-sm);
   font-weight: 700;
   text-transform: uppercase;
@@ -1027,7 +1063,7 @@ body.page-list main { padding: 24px 32px; }
 .zone-region { font-size: var(--fs-sm); color: var(--text-dim); font-style: italic; }
 .zone-count {
   margin-left: auto;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   color: var(--text-dim);
 }
@@ -1039,7 +1075,7 @@ body.page-list main { padding: 24px 32px; }
 }
 .rpt-table thead tr { background: var(--surface2); }
 .rpt-table th {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-xs);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -1067,7 +1103,7 @@ body.page-list main { padding: 24px 32px; }
   vertical-align: middle;
 }
 .cell-signal {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   color: var(--accent);
   font-size: var(--fs-sm);
   display: flex;
@@ -1090,13 +1126,13 @@ body.page-list main { padding: 24px 32px; }
 .station-website-link .material-symbols-outlined {
   font-size: 18px;
 }
-.cell-freq { font-family: 'Share Tech Mono', monospace; font-size: var(--fs-md); white-space: nowrap; }
+.cell-freq { font-family: var(--font-mono); font-size: var(--fs-md); white-space: nowrap; }
 .freq-tx { color: var(--green); }
 .freq-rx { color: var(--yellow); }
-.cell-tone { font-family: 'Share Tech Mono', monospace; font-size: var(--fs-md); color: var(--text-dim); }
+.cell-tone { font-family: var(--font-mono); font-size: var(--fs-md); color: var(--text-dim); }
 .badge-banda {
   display: inline-block;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-xs);
   padding: 2px 6px;
   border-radius: 3px;
@@ -1107,7 +1143,7 @@ body.page-list main { padding: 24px 32px; }
 .badge-uhf { border-color: #ff9500; color: #ff9500; }
 .badge-echolink {
   display: inline-block;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-xxs);
   padding: 1px 4px;
   border-radius: 3px;
@@ -1118,7 +1154,7 @@ body.page-list main { padding: 24px 32px; }
 }
 .badge-dmr {
   display: inline-block;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-xxs);
   padding: 1px 4px;
   border-radius: 3px;
@@ -1137,7 +1173,7 @@ body.page-list main { padding: 24px 32px; }
 }
 .dmr-token {
   display: inline-block;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-xxs);
   padding: 2px 6px;
   border-radius: 4px;
@@ -1171,7 +1207,7 @@ body.page-list main { padding: 24px 32px; }
   max-width: 100%;
 }
 .dmr-field-label {
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -1220,19 +1256,21 @@ body.page-list main { padding: 24px 32px; }
 }
 .cell-club strong { display: block; color: var(--text); font-weight: 500; }
 .cell-club small { font-size: var(--fs-sm); color: var(--text-dim); }
-.cell-pot { font-family: 'Share Tech Mono', monospace; font-size: var(--fs-sm); color: var(--text-dim); text-align: right; }
+.cell-pot { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text-dim); text-align: right; }
 .cell-pot span { color: var(--text); }
 .cell-ub {
   font-size: var(--fs-sm);
   color: var(--text-dim);
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow: visible;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: none;
+  line-height: 1.4;
 }
 .cell-comuna { font-size: var(--fs-sm); color: var(--text); }
-.cell-vence { font-family: 'Share Tech Mono', monospace; font-size: var(--fs-sm); white-space: nowrap; }
-.cell-dist { font-family: 'Share Tech Mono', monospace; font-size: var(--fs-sm); color: var(--accent); font-weight: 600; white-space: nowrap; }
+.cell-vence { font-family: var(--font-mono); font-size: var(--fs-sm); white-space: nowrap; }
+.cell-dist { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--accent); font-weight: 600; white-space: nowrap; }
 .cell-share { text-align: center; }
 .share-btn {
   background: var(--surface2);
@@ -1260,7 +1298,7 @@ body.page-list main { padding: 24px 32px; }
   text-align: center;
   padding: 48px;
   color: var(--text-dim);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
 }
 .no-results::before { content: '// '; color: var(--border); }
 
@@ -1276,7 +1314,7 @@ body.page-list main { padding: 24px 32px; }
 }
 .no-results--guided::before { content: none; }
 .no-results-title {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: var(--font-display);
   font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--text-bright);
@@ -1284,7 +1322,7 @@ body.page-list main { padding: 24px 32px; }
   letter-spacing: 0.04em;
 }
 .no-results-lead {
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--fs-sm);
   color: var(--text);
   margin: 0 0 14px;
@@ -1371,7 +1409,7 @@ body.page-map .map-empty-overlay .no-results--guided {
   flex-shrink: 0;
 }
 .help-title {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: var(--font-display);
   font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--text-bright);
@@ -1406,7 +1444,7 @@ body.page-map .map-empty-overlay .no-results--guided {
 .help-lead { margin: 0 0 16px; color: var(--text-dim); }
 .help-section { margin-bottom: 18px; }
 .help-section h3 {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1428,7 +1466,7 @@ body.page-map .map-empty-overlay .no-results--guided {
   margin: 10px 0 0;
   font-size: var(--fs-xs);
   color: var(--text-dim);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   line-height: 1.45;
 }
 .help-meta #app-version { color: var(--accent); }
@@ -1478,7 +1516,7 @@ body.page-map .map-empty-overlay .no-results--guided {
   flex: 1;
 }
 .station-detail-signal {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-md);
   font-weight: 700;
   color: var(--text-bright);
@@ -1555,7 +1593,7 @@ body.page-map .map-empty-overlay .no-results--guided {
   grid-column: 1 / -1;
 }
 .station-detail-grid dt {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1571,7 +1609,7 @@ body.page-map .map-empty-overlay .no-results--guided {
   line-height: 1.35;
 }
 .station-detail-grid dd.station-detail-freq {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-sm);
   font-weight: 600;
 }
@@ -1637,7 +1675,7 @@ body.page-list .rpt-table tbody tr.rpt-row {
   right: 0;
   z-index: 9999;
   padding: 6px 20px;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-xs);
   color: var(--text-dim);
   text-align: center;
@@ -1656,7 +1694,7 @@ body.page-list .rpt-table tbody tr.rpt-row {
 .app-footer-note {
   font-size: var(--fs-xxs);
   opacity: 0.9;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-sans);
   font-weight: 400;
   letter-spacing: 0.02em;
 }
@@ -2146,7 +2184,6 @@ html[data-theme="light"] .rpt-table tbody tr { border-bottom-color: rgba(0,0,0,0
   body.page-list .controls,
   body.page-list main { padding-left: 16px; padding-right: 16px; }
   body.page-list .header-stats { display: none; }
-  body.page-list .cell-ub,
   body.page-list .cell-club small { display: none; }
 }
 @media (max-width: 480px) {
@@ -2229,7 +2266,7 @@ html[data-theme="light"] .rpt-table tbody tr { border-bottom-color: rgba(0,0,0,0
     font-weight: 700;
     letter-spacing: 0.03em;
     color: var(--text-bright);
-    font-family: 'Share Tech Mono', monospace;
+    font-family: var(--font-mono);
   }
   body.page-list .rpt-table tbody tr.rpt-row td[data-label="Señal"]::before { display: none; }
   body.page-list .rpt-table tbody tr.rpt-row td[data-label="Banda"] {
@@ -2293,56 +2330,74 @@ html[data-theme="light"] .rpt-table tbody tr { border-bottom-color: rgba(0,0,0,0
   body.page-list .rpt-table tbody tr.rpt-row td[data-label="Tono"]::before { content: 'Tono'; }
   body.page-list .rpt-table tbody tr.rpt-row td[data-label="RX (MHz)"],
   body.page-list .rpt-table tbody tr.rpt-row td[data-label="TX (MHz)"] {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: var(--font-mono);
     font-size: var(--fs-lg);
     font-weight: 700;
     color: var(--accent);
   }
   body.page-list .rpt-table tbody tr.rpt-row td[data-label="Tono"] {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: var(--font-mono);
     font-size: var(--fs-lg);
     font-weight: 700;
     color: var(--text-bright);
   }
   /* Potencia oculta en móvil (ahorra línea) */
   body.page-list .rpt-table tbody tr.rpt-row td.cell-pot { display: none; }
-  body.page-list .rpt-table .cell-ub { display: none; }
+  /* Ubicación: ancho completo, texto íntegro (varias líneas) */
+  body.page-list .rpt-table tbody tr.rpt-row td.cell-ub {
+    display: flex;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    white-space: normal;
+    overflow: visible;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: none;
+    font-size: var(--fs-xxs);
+    line-height: 1.4;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(30, 45, 61, 0.45);
+  }
+  body.page-list .rpt-table tbody tr.rpt-row:has(> td[data-label="Distancia"]) td.cell-ub {
+    grid-row: 4;
+  }
   /* Club + fila comuna/vence */
   body.page-list .rpt-table tbody tr.rpt-row:not(:has(> td[data-label="Distancia"])) td.cell-club {
     grid-column: 1 / -1;
-    grid-row: 3;
+    grid-row: 4;
     margin-top: 2px;
     padding-top: 2px;
   }
   body.page-list .rpt-table tbody tr.rpt-row:has(> td[data-label="Distancia"]) td.cell-club {
     grid-column: 1 / -1;
-    grid-row: 4;
+    grid-row: 5;
     margin-top: 2px;
     padding-top: 2px;
   }
   /* Comuna ocupa 2 cols; vence solo col 3 alineado a la derecha (sin hueco central) */
   body.page-list .rpt-table tbody tr.rpt-row:not(:has(> td[data-label="Distancia"])) td.cell-comuna {
     grid-column: 1 / 3;
-    grid-row: 4;
+    grid-row: 5;
     align-self: start;
     min-width: 0;
   }
   body.page-list .rpt-table tbody tr.rpt-row:not(:has(> td[data-label="Distancia"])) td.cell-vence {
     grid-column: 3;
-    grid-row: 4;
+    grid-row: 5;
     justify-self: end;
     align-self: start;
     text-align: right;
   }
   body.page-list .rpt-table tbody tr.rpt-row:has(> td[data-label="Distancia"]) td.cell-comuna {
     grid-column: 1 / 3;
-    grid-row: 5;
+    grid-row: 6;
     align-self: start;
     min-width: 0;
   }
   body.page-list .rpt-table tbody tr.rpt-row:has(> td[data-label="Distancia"]) td.cell-vence {
     grid-column: 3;
-    grid-row: 5;
+    grid-row: 6;
     justify-self: end;
     align-self: start;
     text-align: right;
@@ -2373,7 +2428,7 @@ html[data-theme="light"] .rpt-table tbody tr { border-bottom-color: rgba(0,0,0,0
   /* Compartir */
   body.page-list .rpt-table tbody tr.rpt-row:not(:has(> td[data-label="Distancia"])) td.cell-share {
     grid-column: 1 / -1;
-    grid-row: 5;
+    grid-row: 6;
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
@@ -2383,7 +2438,7 @@ html[data-theme="light"] .rpt-table tbody tr { border-bottom-color: rgba(0,0,0,0
   }
   body.page-list .rpt-table tbody tr.rpt-row:has(> td[data-label="Distancia"]) td.cell-share {
     grid-column: 1 / -1;
-    grid-row: 6;
+    grid-row: 7;
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
@@ -2434,11 +2489,10 @@ html[data-theme="light"] .rpt-table tbody tr { border-bottom-color: rgba(0,0,0,0
   body.page-list .rpt-table tbody tr.rpt-row td.cell-club small { display: none; }
   body.page-list .rpt-table tbody tr.rpt-row td.cell-comuna { display: none; }
   body.page-list .rpt-table tbody tr.rpt-row td.cell-vence { grid-column: 1 / -1; justify-self: stretch; text-align: left; }
-  body.page-list .rpt-table tbody tr.rpt-row:not(:has(> td[data-label="Distancia"])) td.cell-vence { grid-row: 4; }
-  body.page-list .rpt-table tbody tr.rpt-row:has(> td[data-label="Distancia"]) td.cell-vence { grid-row: 5; }
-  body.page-list .rpt-table tbody tr.rpt-row:not(:has(> td[data-label="Distancia"])) td.cell-share { grid-row: 5; }
-  body.page-list .rpt-table tbody tr.rpt-row:has(> td[data-label="Distancia"]) td.cell-share { grid-row: 6; }
-  body.page-list .rpt-table .cell-ub { display: none; }
+  body.page-list .rpt-table tbody tr.rpt-row:not(:has(> td[data-label="Distancia"])) td.cell-vence { grid-row: 5; }
+  body.page-list .rpt-table tbody tr.rpt-row:has(> td[data-label="Distancia"]) td.cell-vence { grid-row: 6; }
+  body.page-list .rpt-table tbody tr.rpt-row:not(:has(> td[data-label="Distancia"])) td.cell-share { grid-row: 6; }
+  body.page-list .rpt-table tbody tr.rpt-row:has(> td[data-label="Distancia"]) td.cell-share { grid-row: 7; }
   body.page-list .rpt-table tbody tr.rpt-row td.cell-share { padding-top: 3px; margin-top: 1px; }
   body.page-list .rpt-table .share-btn { min-width: 36px; min-height: 36px; }
 }

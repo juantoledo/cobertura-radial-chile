@@ -4,6 +4,44 @@
  */
 const NEAR_ME_RADIUS_KM = 100;
 
+/**
+ * Orden administrativo Chile (norte → sur, ley de regiones / división oficial).
+ * Cualquier región en datos que no esté en la lista va al final, ordenada por locale es.
+ */
+const CHILE_REGIONS_ADMIN_ORDER = [
+  'REGIÓN DE ARICA Y PARINACOTA',
+  'REGIÓN DE TARAPACÁ',
+  'REGIÓN DE ANTOFAGASTA',
+  'REGIÓN DE ATACAMA',
+  'REGIÓN DE COQUIMBO',
+  'REGIÓN DE VALPARAÍSO',
+  'REGIÓN METROPOLITANA DE SANTIAGO',
+  "REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS",
+  'REGIÓN DEL MAULE',
+  'REGIÓN DE NUBLE',
+  'REGIÓN DEL BIOBÍO',
+  'REGIÓN DE LA ARAUCANÍA',
+  'REGIÓN DE LOS RÍOS',
+  'REGIÓN DE LOS LAGOS',
+  'REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA'
+];
+
+function sortRegionKeysChile(keys) {
+  const rank = {};
+  CHILE_REGIONS_ADMIN_ORDER.forEach(function (r, i) {
+    rank[r] = i;
+  });
+  const UNKNOWN = 10000;
+  return keys.slice().sort(function (a, b) {
+    const ra = Object.prototype.hasOwnProperty.call(rank, a) ? rank[a] : UNKNOWN;
+    const rb = Object.prototype.hasOwnProperty.call(rank, b) ? rank[b] : UNKNOWN;
+    if (ra !== rb) return ra - rb;
+    return String(a).localeCompare(String(b), 'es', { sensitivity: 'base' });
+  });
+}
+
+window.sortRegionKeysChile = sortRegionKeysChile;
+
 const FILTER_LIST_IDS = ['filter-banda', 'filter-region', 'filter-type', 'filter-conference'];
 
 function haversine(la1, lo1, la2, lo2) {
@@ -409,8 +447,132 @@ function onDocumentClickCloseDropdowns(ev) {
   });
 }
 
+/** Visual viewport (mobile URL bar / keyboard); fallback to layout viewport. */
+function getFilterDropdownViewportRect() {
+  var vv = window.visualViewport;
+  if (vv) {
+    return {
+      left: vv.offsetLeft,
+      top: vv.offsetTop,
+      width: vv.width,
+      height: vv.height
+    };
+  }
+  return { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+}
+
+function clearFilterDropdownPanelFixed(panel) {
+  if (!panel) return;
+  panel.classList.remove('radiomap-filter-panel--fixed');
+  panel.style.position = '';
+  panel.style.top = '';
+  panel.style.left = '';
+  panel.style.width = '';
+  panel.style.maxHeight = '';
+  panel.style.zIndex = '';
+}
+
+var __radiomapOpenFilterDetails = null;
+var __radiomapFilterRepositionScheduled = false;
+
+function positionFilterDropdownPanel(details) {
+  var panel = details.querySelector('.filter-dropdown__panel');
+  var summary = details.querySelector('.filter-dropdown__summary');
+  if (!panel || !summary) return;
+
+  var tr = summary.getBoundingClientRect();
+  var vp = getFilterDropdownViewportRect();
+  var gap = 4;
+  var edge = 8;
+
+  var maxPanelW = Math.min(340, vp.width - 2 * edge);
+  var w = Math.max(tr.width, Math.min(panel.scrollWidth, maxPanelW));
+  w = Math.min(Math.max(w, 252), maxPanelW);
+
+  var belowTop = tr.bottom + gap;
+  var maxHBelow = vp.top + vp.height - belowTop - edge;
+  var maxHAbove = tr.top - vp.top - gap - edge;
+
+  var openBelow = maxHBelow >= maxHAbove;
+  if (maxHBelow < 72 && maxHAbove > maxHBelow) openBelow = false;
+  else if (maxHAbove < 72 && maxHBelow > maxHAbove) openBelow = true;
+
+  var maxH = openBelow ? maxHBelow : maxHAbove;
+  maxH = Math.floor(Math.max(72, maxH));
+
+  var top = openBelow ? belowTop : (tr.top - gap - maxH);
+
+  var left = tr.left;
+  left = Math.min(Math.max(left, vp.left + edge), vp.left + vp.width - w - edge);
+
+  panel.classList.add('radiomap-filter-panel--fixed');
+  panel.style.position = 'fixed';
+  panel.style.left = Math.round(left) + 'px';
+  panel.style.top = Math.round(top) + 'px';
+  panel.style.width = Math.round(w) + 'px';
+  panel.style.maxHeight = maxH + 'px';
+  panel.style.zIndex = '13000';
+}
+
+function scheduleRepositionOpenFilterDropdown() {
+  if (!__radiomapOpenFilterDetails) return;
+  if (__radiomapFilterRepositionScheduled) return;
+  __radiomapFilterRepositionScheduled = true;
+  requestAnimationFrame(function () {
+    __radiomapFilterRepositionScheduled = false;
+    var d = __radiomapOpenFilterDetails;
+    if (d && d.open) positionFilterDropdownPanel(d);
+  });
+}
+
+function bindFilterDropdownViewportListeners() {
+  if (window.__radiomapFilterViewportListenersBound) return;
+  window.__radiomapFilterViewportListenersBound = true;
+  window.addEventListener('resize', scheduleRepositionOpenFilterDropdown, true);
+  document.addEventListener('scroll', scheduleRepositionOpenFilterDropdown, true);
+  var vv = window.visualViewport;
+  if (vv) {
+    vv.addEventListener('resize', scheduleRepositionOpenFilterDropdown);
+    vv.addEventListener('scroll', scheduleRepositionOpenFilterDropdown);
+  }
+}
+
+function onFilterDropdownToggle(ev) {
+  var details = ev.currentTarget;
+  if (!details || details.nodeName !== 'DETAILS' || !details.classList.contains('filter-dropdown')) return;
+
+  if (details.open) {
+    document.querySelectorAll('details.filter-dropdown[open]').forEach(function (other) {
+      if (other !== details) other.open = false;
+    });
+    bindFilterDropdownViewportListeners();
+    __radiomapOpenFilterDetails = details;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (details.open) positionFilterDropdownPanel(details);
+      });
+    });
+  } else {
+    clearFilterDropdownPanelFixed(details.querySelector('.filter-dropdown__panel'));
+    if (__radiomapOpenFilterDetails === details) __radiomapOpenFilterDetails = null;
+  }
+}
+
+function wireFilterDropdownPanelPositioning() {
+  document.querySelectorAll('details.filter-dropdown').forEach(function (d) {
+    if (d.dataset.radiomapPanelBound) return;
+    d.dataset.radiomapPanelBound = '1';
+    d.addEventListener('toggle', onFilterDropdownToggle);
+  });
+}
+
 if (!window.__radiomapFilterDelegationDone) {
   window.__radiomapFilterDelegationDone = true;
   document.addEventListener('change', onFilterCheckboxChange, false);
   document.addEventListener('click', onDocumentClickCloseDropdowns, false);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wireFilterDropdownPanelPositioning);
+  } else {
+    wireFilterDropdownPanelPositioning();
+  }
 }

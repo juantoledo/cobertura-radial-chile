@@ -78,7 +78,7 @@
   let selectedIdx = null;
   let visibleSet = new Set(NODES.map(r=>r._idx));
 
-  const regionNames = Object.keys(REGION_COLORS || {}).filter(Boolean).sort();
+  const regionNames = sortRegionKeysChile(Object.keys(REGION_COLORS || {}).filter(Boolean));
   const filterRegion = document.getElementById('filter-region');
   if (filterRegion) {
     regionNames.forEach(reg => {
@@ -198,7 +198,7 @@
         const confT = (r.conference || '').trim();
         const echolinkLine = r.isEcholink ? '<br><span class="rpt-tooltip-meta">Echolink' + (confT ? ' · ' + escapeHtmlText(confT) : '') + '</span>' : '';
         const dmrLine = r.isDMR && !r.isEcholink ? '<br><span class="rpt-tooltip-meta">DMR' + (confT ? ' · ' + escapeHtmlText(confT) : '') + '</span>' : '';
-        const tooltipHtml = '<div class="rpt-tooltip-inner" style="font-family:Share Tech Mono,monospace;color:#00d4ff;background:#0d1520;border:1px solid #1a2d42;padding:8px 12px;border-radius:4px;">' +
+        const tooltipHtml = '<div class="rpt-tooltip-inner">' +
           r.signal + (club ? '<br><span class="rpt-tooltip-club">' + club + '</span>' : '') +
           '<br><span class="rpt-tooltip-meta">' + r.comuna + ' · ' + r.banda + '</span>' +
           '<br><span class="rpt-tooltip-meta">RX ' + rx + ' · TX ' + tx + ' · ' + tono + '</span>' + echolinkLine + dmrLine + '</div>';

@@ -9,7 +9,7 @@
   document.getElementById('nodes-count') && (document.getElementById('nodes-count').textContent = NODES.length);
 
   const filterRegion = document.getElementById('filter-region');
-  const regionNames = Object.keys(REGION_COLORS || {}).filter(Boolean).sort();
+  const regionNames = sortRegionKeysChile(Object.keys(REGION_COLORS || {}).filter(Boolean));
   if (filterRegion) {
     regionNames.forEach(reg => {
       const label = document.createElement('label');
@@ -337,7 +337,7 @@
           <td class="cell-pot" data-label="${labels[showDistance ? 6 : 5]}">${r.potencia ? r.potencia + ' W' : '—'}</td>
           <td class="cell-club" data-label="${labels[showDistance ? 7 : 6]}"><strong>${r.nombre}</strong><small>${r.region}</small></td>
           <td class="cell-comuna" data-label="${labels[showDistance ? 8 : 7]}">${r.comuna || '—'}</td>
-          <td class="cell-ub" data-label="${labels[showDistance ? 9 : 8]}" title="${r.ubicacion}">${r.ubicacion || '—'}</td>
+          <td class="cell-ub" data-label="${labels[showDistance ? 9 : 8]}">${escapeHtml(r.ubicacion || '—')}</td>
           <td class="cell-vence ${vc}" data-label="${labels[showDistance ? 10 : 9]}">${r.vence || '—'}</td>
           <td class="cell-share" data-label="Compartir"><button type="button" class="share-btn" data-signal="${(r.signal||'').replace(/"/g,'&quot;')}" aria-label="Compartir ${(r.signal||'').replace(/"/g,'&quot;')}" title="Compartir detalles"><span class="material-symbols-outlined" aria-hidden="true">share</span></button></td>
         </tr>`;
