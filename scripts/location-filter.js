@@ -67,8 +67,19 @@ function setNearMeLocation(lat, lon) {
   sessionStorage.setItem('ra-nearme-location', JSON.stringify({ lat, lon }));
 }
 
+function stripNearParamFromCurrentURL() {
+  try {
+    var u = new URL(window.location.href);
+    if (!u.searchParams.has('near')) return;
+    u.searchParams.delete('near');
+    var qs = u.searchParams.toString();
+    window.history.replaceState(null, '', u.pathname + (qs ? '?' + qs : '') + (u.hash || ''));
+  } catch (e) { /* ignore */ }
+}
+
 function clearNearMeLocation() {
   sessionStorage.removeItem('ra-nearme-location');
+  stripNearParamFromCurrentURL();
 }
 
 function updateNearMeButtonState() {
@@ -208,12 +219,13 @@ function saveFilterState() {
   try {
     const search = document.getElementById('search');
     const state = {
-      v: 2,
+      v: 3,
       search: search ? search.value || '' : '',
       bandas: getCheckedFilterValues(getFilterCheckboxListEl('filter-banda')),
       regions: getCheckedFilterValues(getFilterCheckboxListEl('filter-region')),
       types: getCheckedFilterValues(getFilterCheckboxListEl('filter-type')),
-      conferences: getCheckedFilterValues(getFilterCheckboxListEl('filter-conference'))
+      conferences: getCheckedFilterValues(getFilterCheckboxListEl('filter-conference')),
+      nearMe: !!getNearMeLocation()
     };
     sessionStorage.setItem('ra-filter-state', JSON.stringify(state));
   } catch (e) { /* ignore */ }
@@ -259,12 +271,15 @@ function loadFilterState() {
       var s = sessionStorage.getItem('ra-filter-state');
       if (!s) return;
       var parsed = JSON.parse(s);
-      if (parsed.v !== 2) return;
+      if (parsed.v !== 2 && parsed.v !== 3) return;
       if (searchEl) searchEl.value = parsed.search || '';
       setCheckedFilterValues('filter-banda', parsed.bandas || []);
       setCheckedFilterValues('filter-region', parsed.regions || []);
       setCheckedFilterValues('filter-type', parsed.types || []);
       setCheckedFilterValues('filter-conference', parsed.conferences || []);
+      if (parsed.v >= 3 && parsed.nearMe === false) {
+        clearNearMeLocation();
+      }
     }
     updateFilterMultiselectSummaries();
   } catch (e) { /* ignore */ }

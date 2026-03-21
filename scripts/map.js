@@ -269,6 +269,42 @@
 
   let userMarker = null;
 
+  /** @returns {number|null} index in NODES */
+  function findNearestVisibleNodeIndex(userLat, userLon) {
+    let best = null;
+    let bestD = Infinity;
+    visibleSet.forEach(function (i) {
+      const r = NODES[i];
+      if (r.lat == null || r.lon == null || typeof r.lat !== 'number' || typeof r.lon !== 'number') return;
+      const d = haversine(userLat, userLon, r.lat, r.lon);
+      if (d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    });
+    return best;
+  }
+
+  function showUserLocationSidebar(lat, lon) {
+    selectedIdx = null;
+    renderAll();
+    const sidebar = document.getElementById('sidebar');
+    const sbSig = document.getElementById('sb-signal');
+    const sbClub = document.getElementById('sb-club');
+    const body = document.getElementById('sb-body');
+    if (!sidebar || !sbSig || !sbClub || !body) return;
+    sbSig.classList.remove('sidebar-signal--with-web', 'sidebar-signal--air');
+    sbSig.textContent = 'Tu ubicación';
+    sbSig.style.color = '#00d4ff';
+    sbClub.textContent = lat.toFixed(5) + ', ' + lon.toFixed(5);
+    body.innerHTML =
+      '<div class="sb-detail-grid">' +
+      '<div class="sb-row"><span class="sb-key">Filtro</span><span class="sb-val">Cerca de mí</span></div>' +
+      '</div>' +
+      '<p class="sb-nearme-hint">No hay repetidoras visibles aquí. Ajustá filtros o la búsqueda.</p>';
+    sidebar.classList.add('open');
+  }
+
   function toggleNearMe(){
     const loc = getNearMeLocation();
     if(loc){
@@ -292,7 +328,14 @@
           })
         }).addTo(map).bindTooltip('Tu ubicación', { permanent: false, direction: 'top' });
         updateNearMeButtonState();
+        selectedIdx = null;
         applyFilters();
+        const nearest = findNearestVisibleNodeIndex(lat, lon);
+        if (nearest !== null) {
+          selectRepeater(nearest);
+        } else {
+          showUserLocationSidebar(lat, lon);
+        }
         if(btn) btn.disabled = false;
       },
       function(){

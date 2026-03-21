@@ -206,11 +206,13 @@
   <!-- SIDEBAR -->
   <div id="sidebar">
     <div class="sidebar-header">
-      <div>
+      <div class="sidebar-header__main">
         <div class="sidebar-signal" id="sb-signal">—</div>
-        <div class="sidebar-club"   id="sb-club">—</div>
+        <div class="sidebar-club" id="sb-club">—</div>
       </div>
-      <button type="button" class="sidebar-close" onclick="closeSidebar()" aria-label="Cerrar panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+      <button type="button" class="sidebar-close" onclick="closeSidebar()" aria-label="Cerrar y volver al mapa">
+        <span class="material-symbols-outlined sidebar-close__icon" aria-hidden="true">close</span>
+      </button>
     </div>
     <div class="sidebar-body" id="sb-body"></div>
   </div>
