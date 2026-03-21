@@ -23,7 +23,9 @@ const CHILE_REGIONS_ADMIN_ORDER = [
   'REGIÓN DE LA ARAUCANÍA',
   'REGIÓN DE LOS RÍOS',
   'REGIÓN DE LOS LAGOS',
-  'REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA'
+  'REGIÓN DE AYSÉN DEL GENERAL CARLOS IBÁÑEZ DEL CAMPO',
+  'REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA',
+  'ATC — NACIONAL (Chile)'
 ];
 
 function sortRegionKeysChile(keys) {
@@ -179,6 +181,7 @@ function updateFilterMultiselectSummaries() {
   setSummary('filter-type', 'filter-type-summary', 'Todos los tipos', function (v) {
     if (v === 'echolink') return 'Echolink';
     if (v === 'dmr') return 'DMR';
+    if (v === 'atc') return 'ATC / aéreo';
     if (v === 'radioclub') return 'Radioclubes';
     return v;
   });
@@ -324,7 +327,8 @@ function nodeMatchesFilterCriteria(r, c, nearMe) {
     var okType = c.types.some(function (t) {
       if (t === 'echolink') return !!r.isEcholink;
       if (t === 'dmr') return !!r.isDMR;
-      if (t === 'radioclub') return !r.isEcholink && !r.isDMR;
+      if (t === 'atc') return !!r.isAir;
+      if (t === 'radioclub') return !r.isEcholink && !r.isDMR && !r.isAir;
       return false;
     });
     if (!okType) return false;

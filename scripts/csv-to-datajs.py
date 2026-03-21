@@ -27,7 +27,9 @@ DEFAULT_REGION_COLORS = {
     "REGIÓN DE LA ARAUCANÍA": "#8dc63f",
     "REGIÓN DE LOS RÍOS": "#00d4ff",
     "REGIÓN DE LOS LAGOS": "#29abe2",
+    "REGIÓN DE AYSÉN DEL GENERAL CARLOS IBÁÑEZ DEL CAMPO": "#00838f",
     "REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA": "#1565c0",
+    "ATC — NACIONAL (Chile)": "#546e7a",
 }
 
 # Mismo orden que CHILE_REGIONS_ADMIN_ORDER en scripts/location-filter.js
@@ -62,7 +64,7 @@ def parse_row(row: dict) -> dict:
                 node[k] = float(v)
             except ValueError:
                 node[k] = v
-        elif k in ("isEcholink", "isDMR"):
+        elif k in ("isEcholink", "isDMR", "isAir"):
             node[k] = v.lower() in ("1", "true", "yes")
         else:
             node[k] = v

@@ -16,6 +16,18 @@
   function escapeAttr(s) {
     return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
   }
+  function aircraftIconSvgHtml() {
+    return '<svg class="signal-air-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>';
+  }
+  /** Same path as signal-air-icon; class sized for sidebar “nodos cercanos” ATC chip */
+  function neighborAtcIconSvgHtml() {
+    return '<svg class="neighbor-atc-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>';
+  }
+  /** Aircraft icon for Leaflet divIcon marker; px scales with marker size (9 / 14) */
+  function rptMarkerAircraftSvgHtml(px) {
+    var p = Math.max(4, Math.round(px));
+    return '<svg class="rpt-marker-air-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + p + '" height="' + p + '" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>';
+  }
   function safeWebsiteUrl(w) {
     w = (w || '').trim();
     if (!/^https?:\/\//i.test(w)) return '';
@@ -172,6 +184,7 @@
         const size = isSelected ? 14 : 9;
         const isEch = r.isEcholink;
         const isDmr = r.isDMR && !isEch;
+        const isAir = !!r.isAir && !isEch && !isDmr;
         let shape = 'border-radius:50%';
         let inner = '';
         let extraClass = '';
@@ -183,6 +196,9 @@
           shape = 'border-radius:3px;transform:rotate(45deg)';
           inner = '<span style="color:rgba(255,255,255,0.95);font:600 '+(size*0.55)+'px/1 sans-serif;pointer-events:none;transform:rotate(-45deg)">d</span>';
           extraClass = ' rpt-marker-dmr';
+        } else if (isAir) {
+          inner = rptMarkerAircraftSvgHtml(size * 0.58);
+          extraClass = ' rpt-marker-atc';
         }
         const icon = L.divIcon({
           className: '',
@@ -196,8 +212,9 @@
         const confT = (r.conference || '').trim();
         const echolinkLine = r.isEcholink ? '<br><span class="rpt-tooltip-meta">Echolink' + (confT ? ' · ' + escapeHtmlText(confT) : '') + '</span>' : '';
         const dmrLine = r.isDMR && !r.isEcholink ? '<br><span class="rpt-tooltip-meta">DMR' + (confT ? ' · ' + escapeHtmlText(confT) : '') + '</span>' : '';
+        const sigLead = r.isAir ? aircraftIconSvgHtml() : '';
         const tooltipHtml = '<div class="rpt-tooltip-inner">' +
-          r.signal + (club ? '<br><span class="rpt-tooltip-club">' + club + '</span>' : '') +
+          sigLead + escapeHtmlText(r.signal) + (club ? '<br><span class="rpt-tooltip-club">' + club + '</span>' : '') +
           '<br><span class="rpt-tooltip-meta">' + r.comuna + ' · ' + r.banda + '</span>' +
           '<br><span class="rpt-tooltip-meta">RX ' + rx + ' · TX ' + tx + ' · ' + tono + '</span>' + echolinkLine + dmrLine + '</div>';
         marker.bindTooltip(tooltipHtml, { permanent: false, direction: 'top', opacity: 1, className: 'rpt-tooltip' });
@@ -352,9 +369,12 @@
     const club = r.nombre || getClubName(r.signal);
     var sbSig = document.getElementById('sb-signal');
     var wurl = safeWebsiteUrl(r.website);
+    sbSig.classList.toggle('sidebar-signal--air', !!r.isAir);
+    var airPre = r.isAir ? aircraftIconSvgHtml() : '';
     if (wurl) {
       sbSig.classList.add('sidebar-signal--with-web');
       sbSig.innerHTML =
+        airPre +
         '<span class="sidebar-signal-text">' +
         escapeHtmlText(r.signal) +
         '</span><a href="' +
@@ -362,6 +382,12 @@
         '" class="station-website-link" target="_blank" rel="noopener noreferrer" aria-label="Sitio web del club" title="Sitio web"><span class="material-symbols-outlined" aria-hidden="true">language</span></a>';
       var st = sbSig.querySelector('.sidebar-signal-text');
       if (st) st.style.color = color;
+      sbSig.style.color = '';
+    } else if (r.isAir) {
+      sbSig.classList.remove('sidebar-signal--with-web');
+      sbSig.innerHTML = airPre + '<span class="sidebar-signal-text">' + escapeHtmlText(r.signal) + '</span>';
+      var stA = sbSig.querySelector('.sidebar-signal-text');
+      if (stA) stA.style.color = color;
       sbSig.style.color = '';
     } else {
       sbSig.classList.remove('sidebar-signal--with-web');
@@ -415,6 +441,8 @@
           ? '<div class="neighbor-echolink" style="background:'+nc+'" title="Echolink">e</div>'
           : nb.isDMR
           ? '<div class="neighbor-dmr" style="background:'+nc+'" title="DMR"><span class="neighbor-dmr-letter" aria-hidden="true">d</span></div>'
+          : nb.isAir
+          ? '<div class="neighbor-atc" style="background:'+nc+'" title="ATC / aéreo">' + neighborAtcIconSvgHtml() + '</div>'
           : '<div class="neighbor-dot" style="background:'+nc+'"></div>';
         return '<div class="neighbor-row'+(isSelected?' neighbor-selected':'')+'" onclick="selectRepeater('+n.idx+')">' +
           dotEl +

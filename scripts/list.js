@@ -53,7 +53,9 @@
     return 'vence-ok';
   }
   function bandaClass(banda) {
-    if (banda.includes('UHF')) return 'badge-uhf';
+    const b = banda || '';
+    if (b.includes('ATC') || b.includes('/AM')) return 'badge-air';
+    if (b.includes('UHF')) return 'badge-uhf';
     return 'badge-vhf';
   }
 
@@ -89,6 +91,14 @@
     );
   }
 
+  /** Inline aircraft icon (ATC / isAir) — prepended before signal text */
+  function aircraftIconHtml() {
+    return (
+      '<svg class="signal-air-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+      '<path fill="currentColor" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>'
+    );
+  }
+
   let stationDetailLastFocus = null;
   let stationDetailCurrentSignal = null;
 
@@ -120,10 +130,15 @@
       distKm = Math.round(haversine(nearMe.lat, nearMe.lon, r.lat, r.lon));
     }
 
+    titleEl.classList.toggle('station-detail-signal--with-air', !!r.isAir);
     const wurl = safeWebsiteUrl(r.website);
+    const sigHtml = (r.isAir ? aircraftIconHtml() : '') + escapeHtml(r.signal || '—');
     if (wurl) {
       titleEl.classList.add('station-detail-signal--with-web');
-      titleEl.innerHTML = escapeHtml(r.signal || '—') + websiteLinkHtml(r);
+      titleEl.innerHTML = sigHtml + websiteLinkHtml(r);
+    } else if (r.isAir) {
+      titleEl.classList.remove('station-detail-signal--with-web');
+      titleEl.innerHTML = sigHtml;
     } else {
       titleEl.classList.remove('station-detail-signal--with-web');
       titleEl.textContent = r.signal || '—';
@@ -215,7 +230,12 @@
   function closeStationDetail() {
     const overlay = document.getElementById('station-detail-overlay');
     const bodyEl = document.getElementById('station-detail-body');
+    const titleEl = document.getElementById('station-detail-title');
     if (!overlay) return;
+    if (titleEl) {
+      titleEl.classList.remove('station-detail-signal--with-web', 'station-detail-signal--with-air');
+      titleEl.textContent = '—';
+    }
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
@@ -292,11 +312,13 @@
         const confEsc = (r.conference || '').replace(/"/g, '&quot;');
         const echolinkBadge = r.isEcholink ? `<span class="badge-echolink" title="${confEsc}">Echolink</span>` : '';
         const dmrBadge = r.isDMR && !r.isEcholink ? `<span class="badge-dmr" title="${confEsc}">DMR</span>` : '';
+        const atcBadge = r.isAir ? '<span class="badge-atc" title="ATC aeronáutico (solo RX / escucha)">ATC</span>' : '';
         const distCell = showDistance ? `<td class="cell-dist" data-label="Distancia">${r._dist != null ? r._dist + ' km' : '—'}</td>` : '';
         const sigAttr = (r.signal || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
         const webLink = websiteLinkHtml(r);
+        const sigLead = r.isAir ? aircraftIconHtml() : '';
         html += `<tr class="rpt-row" data-signal="${sigAttr}">
-          <td class="cell-signal" data-label="${labels[0]}">${escapeHtml(r.signal || '—')}${webLink} ${echolinkBadge}${dmrBadge}</td>
+          <td class="cell-signal" data-label="${labels[0]}">${sigLead}${escapeHtml(r.signal || '—')}${webLink} ${echolinkBadge}${dmrBadge}${atcBadge}</td>
           <td data-label="${labels[1]}"><span class="badge-banda ${bc}">${bandaShort}</span></td>
           ${distCell}
           <td class="cell-freq freq-rx" data-label="${labels[showDistance ? 3 : 2]}">${r.rx || '—'}</td>

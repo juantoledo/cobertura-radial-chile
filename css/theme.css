@@ -655,6 +655,12 @@ body.page-list .filter-dropdown__summary {
   min-width: 0;
 }
 .sidebar-signal { font-family: var(--font-mono); font-size: var(--fs-lg); color: var(--accent); }
+.sidebar-signal.sidebar-signal--air {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 .sidebar-signal.sidebar-signal--with-web {
   display: flex;
   align-items: center;
@@ -859,6 +865,26 @@ body.page-list .filter-dropdown__summary {
   line-height: 1;
   pointer-events: none;
 }
+.neighbor-atc {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  grid-row: 1 / -1;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.95);
+}
+.neighbor-atc-icon {
+  width: 10px;
+  height: 10px;
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+}
 .neighbor-main {
   min-width: 0;
   grid-column: 2;
@@ -981,6 +1007,14 @@ body.page-list .filter-dropdown__summary {
 }
 .rpt-marker:hover { transform: scale(1.6); border-color: var(--accent) !important; box-shadow: 0 0 6px rgba(0,212,255,0.4); }
 .rpt-marker.selected { transform: scale(1.8); border-color: rgba(255,255,255,0.9); box-shadow: 0 0 8px rgba(0,212,255,0.6); }
+.rpt-marker-atc {
+  color: rgba(255,255,255,0.95);
+}
+.rpt-marker-air-icon {
+  display: block;
+  pointer-events: none;
+  flex-shrink: 0;
+}
 
 /* ── Map tooltip (override Leaflet) ─────────────────────────────────────── */
 #map .leaflet-tooltip.rpt-tooltip {
@@ -1221,6 +1255,22 @@ body.page-list main { padding: 24px 32px; }
   color: var(--text);
   vertical-align: middle;
 }
+/* ATC / aéreo — prepended before signal text (list, map, modals) */
+.signal-air-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: -0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 0;
+  color: currentColor;
+}
+.rpt-tooltip-inner .signal-air-icon {
+  width: 14px;
+  height: 14px;
+  vertical-align: -0.2em;
+  margin-right: 4px;
+}
 .cell-signal {
   font-family: var(--font-mono);
   color: var(--accent);
@@ -1260,6 +1310,7 @@ body.page-list main { padding: 24px 32px; }
 }
 .badge-vhf { border-color: var(--green); color: var(--green); }
 .badge-uhf { border-color: #ff9500; color: #ff9500; }
+.badge-air { border-color: #5c6bc0; color: #9fa8da; }
 .badge-echolink {
   display: inline-block;
   font-family: var(--font-mono);
@@ -1279,6 +1330,17 @@ body.page-list main { padding: 24px 32px; }
   border-radius: 3px;
   border: 1px solid #ff9800;
   color: #ffb74d;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+.badge-atc {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xxs);
+  padding: 1px 4px;
+  border-radius: 3px;
+  border: 1px solid #7986cb;
+  color: #9fa8da;
   margin-left: 4px;
   white-space: nowrap;
 }
@@ -1679,6 +1741,12 @@ body.page-map .map-empty-overlay .no-results--guided {
   color: var(--text-bright);
   line-height: 1.25;
   word-break: break-word;
+}
+.station-detail-signal.station-detail-signal--with-air {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 .station-detail-signal.station-detail-signal--with-web {
   display: flex;
@@ -2263,7 +2331,8 @@ html[data-theme="light"] .rpt-table tbody tr { border-bottom-color: rgba(0,0,0,0
   }
   .neighbor-dot,
   .neighbor-echolink,
-  .neighbor-dmr {
+  .neighbor-dmr,
+  .neighbor-atc {
     grid-row: 1 / -1;
     align-self: start;
     margin-top: 3px;
