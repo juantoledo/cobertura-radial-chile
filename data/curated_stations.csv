@@ -160,8 +160,8 @@ CA4HVE RPT-A,RADIO CLUB VALLES DEL TUTUVEN,CAUQUENES,CERRO NAME,-35.7206444444,-
 CE2RVI/RPT-B,RADIO CLUB VICUÑA,VICUÑA,O'HIGGINS 262,-30.0377777778,-70.7013888889,50.0,10,6,VHF/FM,146.88,146.28,162.2,REGIÓN DE COQUIMBO,28-11-2022,28-11-2027,,,,,,,,
 CE6RCV RPT-A,RADIO CLUB VILLARRICA,VILLARRICA,CERRO TRALCAHUE,-39.3747666667,-72.2005111111,143.5,25,6,VHF/FM,147.12,147.72,123,REGIÓN DE LA ARAUCANÍA,26-10-2022,21-04-2026,,,,,,,,https://www.ce6rcv.cl/
 CE2VOL/RPT-B,RADIO CLUB VIÑA DEL MAR,CURICÓ,AVENIDA RAMON FREIRE 2562,-35.1977777778,-71.0308333333,50.0,10,9,VHF/FM,147.27,147.87,151.4,REGIÓN DEL MAULE,15-07-2025,15-07-2030,,,,,,,,https://radioclubvina.cl/
-CE2VOL/RPT-C,RADIO CLUB VIÑA DEL MAR,CHANCO,CERRO MOLCO,-35.7873555556,-72.4113305556,99.5,10,6.8,VHF/FM,147.36,147.96,151.4,REGIÓN DEL MAULE,03-08-2023,17-01-2027,,,,,,,,https://radioclubvina.cl/
-CE2VOL RPT-A,RADIO CLUB VIÑA DEL MAR,VALPARAÍSO,CERRO COLORADO RECINTO ARMADA DE CHILE LA POLVORA,-33.0819444444,-71.6169444444,50.0,11,9,VHF/FM,146.22,146.82,151.4,REGIÓN DE VALPARAÍSO,07-11-2022,17-01-2027,,,,,,,,https://radioclubvina.cl/
+CE2VOL/RPT-C,RADIO CLUB VIÑA DEL MAR,CHANCO,CERRO MOLCO,-35.7873555556,-72.4113305556,99.5,10,6.8,VHF/FM,147.96,147.36,151.4,REGIÓN DEL MAULE,03-08-2023,17-01-2027,,,,,,,,https://radioclubvina.cl/
+CE2VOL RPT-A,RADIO CLUB VIÑA DEL MAR,VALPARAÍSO,CERRO COLORADO RECINTO ARMADA DE CHILE LA POLVORA,-33.0819444444,-71.6169444444,50.0,11,9,VHF/FM,146.82,146.22,151.4,REGIÓN DE VALPARAÍSO,07-11-2022,17-01-2027,,,,,,,,https://radioclubvina.cl/
 CE6RCO/RPT-A,RADIO CLUB VOLCÁN OSORNO,SAN JUAN DE LA COSTA,RUTA U-40 SECTOR LA CUMBRE,-40.6130555556,-73.4263888889,96.5,15,7,VHF/FM,146.85,146.25,189.9,REGIÓN DE LOS LAGOS,14-08-2025,14-08-2030,,,,,,,,
 CE2AQ/RPT-A,RADIOCLUB AMIGOS DE LA RADIOAFICIÓN,OLMUÉ,CORDON PARQUE NACIONAL LA CAMPANA,-32.9758333333,-71.015,50.0,20,6,VHF/FM,146.7,146.1,74.4,REGIÓN DE VALPARAÍSO,19-11-2024,19-11-2029,,,,,,,,
 CE7RPV/RPT-A,RADIOCLUB PUERTO VARAS,PUERTO VARAS,VOLCAN CALBUCO,-41.3209166667,-72.6685194444,90.8,10,6,VHF/FM,147.06,147.66,100,REGIÓN DE LOS LAGOS,21-03-2024,07-09-2028,,,,,,,,https://www.qrz.com/db/CE7RPV
@@ -218,7 +218,7 @@ CA4JNU-L,Red Echolink Chile - Empedrado,Empedrado,,-35.6,-72.2833333,,,,VHF/FM,1
 CE3EDQ-L,Red Echolink Chile - Santiago,Santiago,,-33.45,-70.6666667,,,,VHF/FM,147.740,147.740,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/
 CE6RLA-L,Red Echolink Chile - Temuco,Temuco,,-38.75,-72.6666667,,,,VHF/FM,147.560,147.560,203.5,REGIÓN DE LA ARAUCANÍA,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/
 CA6ELP-L,RCDR - Valdivia,Valdivia,,-39.8,-73.2333333,,,,VHF/FM,145.430,145.430,,REGIÓN DE LOS RÍOS,,,1,RCDR,,,,,,https://www.rcdr.cl/
-CD4JPX-L,RCDR - Nueva Imperial,Nueva Imperial,,-38.7333333,-72.95,,,,VHF/FM,145.430,145.430,,REGIÓN DE LA ARAUCANÍA,,,1,RCDR,,,,,,https://www.rcdr.cl/
+CA4JPX-L,RCDR - Nueva Imperial,Nueva Imperial,,-38.7333333,-72.95,,,,VHF/FM,145.430,145.430,,REGIÓN DE LA ARAUCANÍA,,,1,RCDR,,,,,,https://www.rcdr.cl/
 CA2VCR-L,RCDR - La Serena,La Serena,,-29.9,-71.25,,,,VHF/FM,145.430,145.430,,REGIÓN DE COQUIMBO,,,1,RCDR,,,,,,https://www.rcdr.cl/
 CA2LNQ-L,RCDR - Los Andes,Los Andes,,-32.8166667,-70.6166667,,,,VHF/FM,145.430,145.430,,REGIÓN DE VALPARAÍSO,,,1,RCDR,,,,,,https://www.rcdr.cl/
 CE4MOW-L,RCDR - Santa Cruz,Santa Cruz,,-34.6333333,-71.3666667,,,,VHF/FM,145.430,145.430,77.0,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,RCDR,,,,,,https://www.rcdr.cl/
@@ -228,7 +228,7 @@ CD6AWE-L,RCDR - Futrono,Futrono,,-40.1333333,-72.4,,,,VHF/FM,145.430,145.430,,RE
 CE3HKG-L,RCDR - Peñalolén,Peñalolén,,-33.4833333,-70.5333333,,,,VHF/FM,145.430,145.430,77.0,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/
 CD5ILA-L,RCDR - Chiguayante,Chiguayante,,-36.9166667,-73.0166667,,,,VHF/FM,145.500,145.500,,REGIÓN DEL BIOBÍO,,,1,RCDR,,,,,,https://www.rcdr.cl/
 CE5HRJ-L,RCDR - Penco,Penco,,-36.7333333,-72.9833333,,,,VHF/FM,145.430,145.430,77.0,REGIÓN DEL BIOBÍO,,,1,RCDR,,,,,,https://www.rcdr.cl/
-CE3KGB-L,San Jose de Maipo,San Jose de Maipo,,-33.6333333,-70.3666667,,,,VHF/FM,147.900,147.900,88.5,REGIÓN METROPOLITANA DE SANTIAGO,,,1,AllStarLink,,,,,,
+CE3KGB-L,San Jose de Maipo,San Jose de Maipo,,-33.6333333,-70.3666667,,,,VHF/FM,147.900,147.900,88.5,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
 CE3KGB-L,RCDR - San Jose de Maipo,San Jose de Maipo,,-33.6333333,-70.3666667,,,,VHF/FM,145.630,145.630,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/
 CE4LAB-L,RCDR - San Joaquin,San Joaquin,,-33.5,-70.6166667,,,,UHF/FM,433.430,433.430,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/
 CE5RPP-R,Conferencia Sur - Penco,Penco,,-36.7408,-72.9953,,,,VHF/FM,146.94,146.34,88.5,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/
@@ -241,7 +241,6 @@ CA3HRS-L,Conferencia Sur - Cabrero,Cabrero,,-37.0333,-72.4,,,,VHF/FM,145.55,145.
 CA2RDP-L,Conferencia Sur - La Serena,La Serena,,-29.9388888889,-71.2233333333,,,,VHF/FM,145.68,145.68,88.5,REGIÓN DE COQUIMBO,,,1,SUR,,,,,,https://conferenciasur.cl/
 CE5UNI-L,Conferencia Sur - UdeC,Concepción,Universidad de Concepción,-36.83101365,-73.03468047,,,,VHF/FM,220.1,224.98,88.5,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/
 CE5NCR,Conferencia Sur - Chile centro,Cañete,,-37.7531805556,-73.3611666667,,,,VHF/FM,146.75,146.15,100,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/
-CE3RZL-R,"AllStarLink - Santiago, Chile Repetidor",Santiago,,-33.45,-70.6666667,,,,VHF/FM,145.500,144.900,91.5,REGIÓN METROPOLITANA DE SANTIAGO,,,1,AllStarLink,,,,,,
 CE3RDV,RADIO CLUB VALLES DEL MAIPO,Buin,Centro urbano,-33.7333333333,-70.7333333333,,,,VHF/FM,146.480,146.480,,REGIÓN METROPOLITANA DE SANTIAGO,,,,,,,,,,https://ce3rdv.cl/
 CE3BIO,RADIO CLUB DEL BIOBIO,LOS ANGELES,LOS ANGELES CENTRO,-37.4697305556,-72.3536611111,,,,VHF/FM,146.790,146.190,,REGIÓN DEL BIOBÍO,,,,,1,,1,1,,https://www.ce5bio.cl/
 CE3SER-VHF,CE3SER — Simplex VHF (emergencias RC Chile),Santiago,Centro urbano,-33.45,-70.6666667,,,,VHF/FM,146.520,146.520,,REGIÓN METROPOLITANA DE SANTIAGO,,,,,,,,,,https://www.ce3ser.cl/
@@ -328,3 +327,22 @@ SCCI TWR 118.7,Aeropuerto Presidente Carlos Ibáñez del Campo — TWR (Punta Ar
 SCCI GND 121.9,Aeropuerto Presidente Carlos Ibáñez del Campo — GND (Control Terrestre (H24)),Punta Arenas,Aeropuerto Presidente Carlos Ibáñez del Campo,-53.0026,-70.8546,35,,,VHF/AM (ATC),121.9,,,REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA,,,,,,1,,,,https://aipchile.dgac.gob.cl/
 SCCI APP 123.9,Aeropuerto Presidente Carlos Ibáñez del Campo — APP (Punta Arenas Centro (Primario)),Punta Arenas,Aeropuerto Presidente Carlos Ibáñez del Campo,-53.0026,-70.8546,70,,,VHF/AM (ATC),123.9,,,REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA,,,,,,1,,,,https://aipchile.dgac.gob.cl/
 SCCI APP 128.1,Aeropuerto Presidente Carlos Ibáñez del Campo — APP (Punta Arenas Centro (Secundario)),Punta Arenas,Aeropuerto Presidente Carlos Ibáñez del Campo,-53.0026,-70.8546,70,,,VHF/AM (ATC),128.1,,,REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA,,,,,,1,,,,https://aipchile.dgac.gob.cl/
+CE2RPE,Sistema Interconectado CE2RPE - RPT Norte,COQUIMBO,,-29.9902777778,-71.2652777778,,,,VHF/FM,145.300,144.700,71.9,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE2RPE,Sistema Interconectado CE2RPE - RPT Panul,COQUIMBO,,-30.0277777778,-71.3602777778,,,,VHF/FM,146.700,146.100,71.9,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE2CZJ,Sistema Interconectado CE2RPE - Nodo Coquimbo,COQUIMBO,,-29.9533,-71.3436,,,,VHF/FM,145.100,145.100,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE2DRB,Sistema Interconectado CE2RPE - Nodo Vicuña,VICUÑA,,-30.0377777778,-70.7013888889,,,,VHF/FM,145.050,145.050,71.9,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE1CCX,Sistema Interconectado CE2RPE - Nodo Copiapó,COPIAPÓ,,-27.4065358333,-70.3999961111,,,,VHF/FM,145.100,145.100,,REGIÓN DE ATACAMA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CA1FOB,Sistema Interconectado CE2RPE - Nodo Vallenar,VALLENAR,,-28.5708333333,-70.7580555556,,,,VHF/FM,145.100,145.100,,REGIÓN DE ATACAMA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CA2ICV,Sistema Interconectado CE2RPE - Nodo Valparaíso,VALPARAÍSO,,-33.0458333333,-71.6197222222,,,,VHF/FM,145.050,145.050,71.9,REGIÓN DE VALPARAÍSO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE2BIS,Sistema Interconectado CE2RPE - RPT Salamanca,SALAMANCA,,-31.7794444444,-70.9675000000,,,,VHF/FM,147.240,147.840,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CA3MZU,Sistema Interconectado CE2RPE - Nodo Maipú,MAIPÚ,,-33.5111111111,-70.7663888889,,,,VHF/FM,145.150,145.150,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CA2DKI,Sistema Interconectado CE2RPE - Nodo Las Condes 1,LAS CONDES,,-33.4130555556,-70.5172222222,,,,VHF/FM,145.200,145.200,71.9,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE2WUI,Sistema Interconectado CE2RPE - Nodo Las Condes 2,LAS CONDES,,-33.4130555556,-70.5172222222,,,,VHF/FM,145.100,145.100,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE2SQV,Sistema Interconectado CE2RPE - Nodo Ovalle,OVALLE,,-30.5980555556,-71.1888888889,,,,VHF/FM,145.100,145.100,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE3HOV,Sistema Interconectado CE2RPE - Nodo Colina,COLINA,,-33.0765027778,-70.6737,,,,VHF/FM,145.050,145.050,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE3HOV,Sistema Interconectado CE2RPE - Nodo Algarrobo,ALGARROBO,,-33.3541666667,-71.6680555556,,,,VHF/FM,145.050,145.050,,REGIÓN DE VALPARAÍSO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CD2FYS,Sistema Interconectado CE2RPE - Nodo Tongoy,COQUIMBO,,-30.2547222222,-71.3963888889,,,,VHF/FM,145.200,145.200,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE2RZL,Sistema Interconectado CE2RPE - Nodo El Tabo,EL TABO,,-33.4572954,-71.6478833,,,,VHF/FM,145.100,145.100,91.5,REGIÓN DE VALPARAÍSO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE1WWG,Sistema Interconectado CE2RPE - Nodo asociado Arica,ARICA,,-18.4786111111,-70.3108333333,,,,VHF/FM,147.480,147.480,233.6,REGIÓN DE ARICA Y PARINACOTA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE1WWG,Sistema Interconectado CE2RPE - Nodo asociado Calama,CALAMA,,-22.4569444444,-68.9286111111,,,,VHF/FM,147.480,147.480,233.6,REGIÓN DE ANTOFAGASTA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
+CE3RZL,Sistema Interconectado CE2RPE - Nodo asociado Santiago,SANTIAGO,,-33.4377777778,-70.6505555556,,,,VHF/FM,145.500,144.900,91.5,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE
