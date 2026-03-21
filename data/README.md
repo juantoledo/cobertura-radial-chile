@@ -29,6 +29,8 @@ python scripts/csv-to-datajs.py
 
 El script lee `curated_stations.csv` y produce `data.js`. Se ejecuta en CI antes del deploy.
 
+Si la fila tiene **potencia** (W) y **ganancia** (dBi), el script **recalcula** `range_km` en `data.js` con el modelo EIRP descrito en el aviso ⚠ del mapa (base VHF/UHF, ley de alcance, tope y reglas asumidas). Si faltan esos campos, se conserva el `range_km` del CSV.
+
 Tras editar el CSV en local, conviene regenerar `data.js` antes de probar la app.
 
 ---

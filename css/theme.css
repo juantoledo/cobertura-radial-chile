@@ -357,7 +357,13 @@ html[data-theme="light"] .header-link-nav--list.current {
 .meth-sep { color: #2a4060; font-size: var(--fs-sm); }
 .meth-text { color: var(--text-dim); font-size: var(--fs-sm); }
 .meth-text strong { color: var(--text); }
-.meth-warn { color: #ff6b35cc; font-family: var(--font-sans); letter-spacing: 0.03em; }
+.meth-warn {
+  color: #ff6b35cc;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
 .meth-info {
   position: relative;
   cursor: help;
@@ -2175,7 +2181,8 @@ html[data-theme="light"] .rpt-table tbody tr { border-bottom-color: rgba(0,0,0,0
     gap: 8px;
   }
   .meth-label { font-size: var(--fs-xs); padding: 2px 6px; }
-  .meth-text, .meth-warn { font-size: var(--fs-xs); }
+  .meth-text { font-size: var(--fs-xs); }
+  .meth-warn { font-size: 0.7rem; line-height: 1.25; }
   .meth-sep { display: none; }
   .meth-info { width: 14px; height: 14px; font-size: var(--fs-xs); }
   .controls {

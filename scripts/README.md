@@ -23,6 +23,7 @@ python scripts/csv-to-datajs.py
 **Qué hace:**
 - Lee `data/curated_stations.csv`
 - Genera `data/data.js` con NODES, VERSION y REGION_COLORS
+- Si hay **potencia** y **ganancia**, recalcula `range_km` con el modelo EIRP (mismas reglas que el aviso ⚠ del mapa)
 - Preserva VERSION y REGION_COLORS del `data/data.js` existente
 
 Se ejecuta automáticamente en CI antes del deploy.

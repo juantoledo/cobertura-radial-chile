@@ -121,7 +121,7 @@
 <!-- METHODOLOGY BAR -->
 <div class="methodology-bar">
   <span class="meth-label">CÁLCULO DE COBERTURA</span>
-  <span class="meth-info" data-tooltip="EIRP: potencia radiada efectiva (P en W + ganancia antena en dBi). Base: alcance de referencia con 10W y 6dBi. Altura ×1.65: si la antena está más alta, el radio aumenta. Límite ×2.5: el radio máximo no supera 2.5× la base. Todo es teórico en terreno plano." title="Explicación de la fórmula">?</span>
+  <span class="meth-info" data-tooltip="EIRP (dBW) = 10·log₁₀(P en W) + G (dBi). Si hay potencia y ganancia en los datos, al generar el mapa el radio (km) parte de la base 55 km (VHF) o 25 km (UHF) a 10 W y 6 dBi y escala como la raíz cuadrada de la potencia efectiva (mismo margen en dB que en espacio libre). Sin dato de altura no aplicamos el factor 1,65 (se asume 1×). Tope: 2,5× esa base por banda. Ganancias se limitan a 0–25 dBi para evitar errores de carga. Si faltan P o G, se usa el km del CSV. Modelo plano, sin relieve." title="Explicación del cálculo de cobertura">?</span>
   <span class="meth-sep">|</span>
   <span class="meth-text">EIRP(dBW) = 10·log₁₀(P) + G<sub>dBi</sub></span>
   <span class="meth-sep">|</span>
@@ -129,7 +129,7 @@
   <span class="meth-sep">|</span>
   <span class="meth-text">Altura ×<strong>1.65</strong> · Límite ×<strong>2.5</strong></span>
   <span class="meth-sep">|</span>
-  <span class="meth-warn">⚠ Cobertura teórica en terreno plano — no refleja obstrucciones geográficas</span>
+  <span class="meth-warn" title="Con potencia (W) y ganancia (dBi), al publicar: EIRP vs 10 W+6 dBi; base 55 km VHF / 25 km UHF; alcance ∝ √(potencia efectiva), 10^ΔdB/20; sin altura 1×; tope ×2,5 base; G 0–25 dBi. Sin P/G → km del CSV. No modela relieve ni obstáculos.">⚠ Plano: km=EIRP si hay P+G; si no, CSV. Sin relieve/obstáculos.</span>
 </div>
 
 <!-- CONTROLS -->

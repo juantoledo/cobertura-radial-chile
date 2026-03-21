@@ -3,10 +3,29 @@
 Convierte data/curated_stations.csv a data/data.js (NODES, VERSION, REGION_COLORS).
 Se ejecuta en CI antes del deploy para generar data.js desde el CSV fuente.
 """
+from __future__ import annotations
+
 import csv
 import json
+import math
 import re
 from pathlib import Path
+from typing import Optional
+
+# ── Alcance teórico (coherente con la barra metodológica del mapa) ─────────
+# Referencia: 10 W y 6 dBi → 55 km (VHF) / 25 km (UHF).
+# EIRP (dBW) = 10·log10(P_W) + G_dBi. Variación de alcance ∝ √(P_ef) en línea
+# de vista → factor 10^((EIRP − EIRP_ref)/20).
+# Sin dato de altura de antena: factor 1 (no se aplica ×1,65).
+# Tope: 2,5× el radio base de la banda. Ganancia se acota a [0, 25] dBi.
+REF_P_W = 10.0
+REF_G_DBI = 6.0
+BASE_VHF_KM = 55.0
+BASE_UHF_KM = 25.0
+HEIGHT_FACTOR_ASSUMED = 1.0
+CAP_MULT = 2.5
+GAIN_MIN_DBI = 0.0
+GAIN_MAX_DBI = 25.0
 
 CSV_PATH = Path(__file__).resolve().parent.parent / "data" / "curated_stations.csv"
 OUT_PATH = Path(__file__).resolve().parent.parent / "data" / "data.js"
@@ -47,6 +66,54 @@ def ordered_region_colors(region_colors: dict) -> dict:
 
 
 NUMERIC_KEYS = ("lat", "lon", "range_km")
+
+
+def _float_field(d: dict, key: str) -> Optional[float]:
+    v = d.get(key)
+    if v is None or v == "":
+        return None
+    try:
+        return float(str(v).replace(",", "."))
+    except ValueError:
+        return None
+
+
+def _band_base_km(banda: str) -> Optional[float]:
+    u = (banda or "").upper()
+    if "VHF" in u:
+        return BASE_VHF_KM
+    if "UHF" in u:
+        return BASE_UHF_KM
+    return None
+
+
+def _eirp_dbw(p_w: float, g_dbi: float) -> float:
+    return 10.0 * math.log10(p_w) + g_dbi
+
+
+def computed_range_km(node: dict) -> Optional[float]:
+    """Alcance modelado desde P, G y banda; None si no aplica."""
+    p_w = _float_field(node, "potencia")
+    g_raw = _float_field(node, "ganancia")
+    if p_w is None or g_raw is None or p_w <= 0:
+        return None
+    g_dbi = max(GAIN_MIN_DBI, min(GAIN_MAX_DBI, g_raw))
+    r0 = _band_base_km(str(node.get("banda", "")))
+    if r0 is None:
+        return None
+    eirp_ref = _eirp_dbw(REF_P_W, REF_G_DBI)
+    eirp = _eirp_dbw(p_w, g_dbi)
+    delta_db = eirp - eirp_ref
+    r_km = r0 * (10.0 ** (delta_db / 20.0)) * HEIGHT_FACTOR_ASSUMED
+    r_km = min(r_km, r0 * CAP_MULT)
+    return round(r_km, 1)
+
+
+def apply_effective_range_km(node: dict) -> None:
+    """Sobrescribe range_km con el modelo EIRP si hay potencia y ganancia válidas."""
+    calc = computed_range_km(node)
+    if calc is not None:
+        node["range_km"] = calc
 
 
 def parse_row(row: dict) -> dict:
@@ -103,6 +170,9 @@ def main():
     with open(CSV_PATH, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         nodes = [parse_row(row) for row in reader]
+
+    for node in nodes:
+        apply_effective_range_km(node)
 
     version, region_colors = read_version_and_colors()
     region_colors.pop("", None)
