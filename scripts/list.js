@@ -1,6 +1,6 @@
 /**
  * List view — table by region, filters, share
- * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getFilteredNodes), dmr-ui.js (buildDmrDetailHtml), share-view.js (buildShareViewURL), export-csv.js, theme.js, help.js
+ * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getFilteredNodes), dmr-ui.js (buildDmrDetailHtml), share-view.js (buildShareViewURL), export-csv.js, theme.js, help.js, station-display.js (hasStationFieldValue)
  */
 (function() {
   if (typeof NODES === 'undefined' || !NODES.length) return;
@@ -107,6 +107,11 @@
     return String(v);
   }
 
+  function fieldShown(v) {
+    if (typeof hasStationFieldValue === 'function') return hasStationFieldValue(v);
+    return v != null && String(v).trim() !== '';
+  }
+
   function openStationDetail(signal) {
     if (!signal) return;
     const r = NODES.find(n => n.signal === signal);
@@ -157,21 +162,22 @@
     if (distKm != null) subParts.push('~' + distKm + ' km');
     subEl.textContent = parts.join('') + (subParts.length ? ' · ' + subParts.join(' · ') : '');
 
-    const rows = [
-      [['RX (MHz)', 'station-detail-freq'], r.rx ? r.rx + ' MHz' : '—'],
-      [['TX (MHz)', 'station-detail-freq'], r.tx ? r.tx + ' MHz' : '—'],
-      [['Tono (Hz)', ''], r.tono ? r.tono + ' Hz' : '—'],
-      [['Banda', ''], fmtVal(r.banda)],
-      [['Potencia', ''], r.potencia ? r.potencia + ' W' : '—'],
-      [['Ganancia', ''], fmtVal(r.ganancia)],
-      [['Cobertura', ''], r.range_km !== '' && r.range_km != null ? fmtVal(r.range_km) + ' km' : '—'],
-      [['Región', ''], fmtVal(r.region)],
-      [['Comuna', ''], fmtVal(r.comuna)],
-      [['Ubicación', ''], fmtVal(r.ubicacion)],
-      [['Lat / Lon', ''], r.lat != null && r.lon != null ? r.lat.toFixed(5) + ', ' + r.lon.toFixed(5) : '—'],
-      [['Otorga', ''], fmtVal(r.otorga)],
-      [['Vence', ''], fmtVal(r.vence)]
-    ];
+    const rows = [];
+    if (fieldShown(r.rx)) rows.push([['RX (MHz)', 'station-detail-freq'], r.rx + ' MHz']);
+    if (fieldShown(r.tx)) rows.push([['TX (MHz)', 'station-detail-freq'], r.tx + ' MHz']);
+    if (fieldShown(r.tono)) rows.push([['Tono (Hz)', ''], r.tono + ' Hz']);
+    if (fieldShown(r.banda)) rows.push([['Banda', ''], r.banda]);
+    if (fieldShown(r.potencia)) rows.push([['Potencia', ''], r.potencia + ' W']);
+    if (fieldShown(r.ganancia)) rows.push([['Ganancia', ''], fmtVal(r.ganancia)]);
+    if (fieldShown(r.range_km)) rows.push([['Cobertura', ''], fmtVal(r.range_km) + ' km']);
+    if (fieldShown(r.region)) rows.push([['Región', ''], fmtVal(r.region)]);
+    if (fieldShown(r.comuna)) rows.push([['Comuna', ''], fmtVal(r.comuna)]);
+    if (fieldShown(r.ubicacion)) rows.push([['Ubicación', ''], fmtVal(r.ubicacion)]);
+    if (r.lat != null && r.lon != null && !isNaN(r.lat) && !isNaN(r.lon)) {
+      rows.push([['Lat / Lon', ''], r.lat.toFixed(5) + ', ' + r.lon.toFixed(5)]);
+    }
+    if (fieldShown(r.otorga)) rows.push([['Otorga', ''], fmtVal(r.otorga)]);
+    if (fieldShown(r.vence)) rows.push([['Vence', ''], fmtVal(r.vence)]);
 
     if (r.isEcholink) {
       const ccf = (r.conference || '').trim();
@@ -321,14 +327,14 @@
           <td class="cell-signal" data-label="${labels[0]}">${sigLead}${escapeHtml(r.signal || '—')}${webLink} ${echolinkBadge}${dmrBadge}${atcBadge}</td>
           <td data-label="${labels[1]}"><span class="badge-banda ${bc}">${bandaShort}</span></td>
           ${distCell}
-          <td class="cell-freq freq-rx" data-label="${labels[showDistance ? 3 : 2]}">${r.rx || '—'}</td>
-          <td class="cell-freq freq-tx" data-label="${labels[showDistance ? 4 : 3]}">${r.tx || '—'}</td>
-          <td class="cell-tone" data-label="${labels[showDistance ? 5 : 4]}">${r.tono || '—'}</td>
-          <td class="cell-pot" data-label="${labels[showDistance ? 6 : 5]}">${r.potencia ? r.potencia + ' W' : '—'}</td>
+          <td class="cell-freq freq-rx" data-label="${labels[showDistance ? 3 : 2]}">${fieldShown(r.rx) ? r.rx : ''}</td>
+          <td class="cell-freq freq-tx" data-label="${labels[showDistance ? 4 : 3]}">${fieldShown(r.tx) ? r.tx : ''}</td>
+          <td class="cell-tone" data-label="${labels[showDistance ? 5 : 4]}">${fieldShown(r.tono) ? escapeHtml(String(r.tono)) : ''}</td>
+          <td class="cell-pot" data-label="${labels[showDistance ? 6 : 5]}">${fieldShown(r.potencia) ? r.potencia + ' W' : ''}</td>
           <td class="cell-club" data-label="${labels[showDistance ? 7 : 6]}"><strong>${r.nombre}</strong><small>${r.region}</small></td>
-          <td class="cell-comuna" data-label="${labels[showDistance ? 8 : 7]}">${r.comuna || '—'}</td>
-          <td class="cell-ub" data-label="${labels[showDistance ? 9 : 8]}">${escapeHtml(r.ubicacion || '—')}</td>
-          <td class="cell-vence ${vc}" data-label="${labels[showDistance ? 10 : 9]}">${r.vence || '—'}</td>
+          <td class="cell-comuna" data-label="${labels[showDistance ? 8 : 7]}">${fieldShown(r.comuna) ? escapeHtml(r.comuna) : ''}</td>
+          <td class="cell-ub" data-label="${labels[showDistance ? 9 : 8]}">${fieldShown(r.ubicacion) ? escapeHtml(r.ubicacion) : ''}</td>
+          <td class="cell-vence ${vc}" data-label="${labels[showDistance ? 10 : 9]}">${fieldShown(r.vence) ? escapeHtml(r.vence) : ''}</td>
           <td class="cell-share" data-label="Compartir"><button type="button" class="share-btn" data-signal="${(r.signal||'').replace(/"/g,'&quot;')}" aria-label="Compartir ${(r.signal||'').replace(/"/g,'&quot;')}" title="Compartir detalles"><span class="material-symbols-outlined" aria-hidden="true">share</span></button></td>
         </tr>`;
       });

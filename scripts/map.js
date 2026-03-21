@@ -1,6 +1,6 @@
 /**
  * Map view — Leaflet map, circles, markers, sidebar, filters
- * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getVisibleNodeIndices), dmr-ui.js (buildDmrDetailHtml), export-csv.js, theme.js, help.js
+ * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getVisibleNodeIndices), dmr-ui.js (buildDmrDetailHtml), export-csv.js, theme.js, help.js, station-display.js (hasStationFieldValue)
  */
 (function() {
   if (typeof NODES === 'undefined' || !NODES.length) return;
@@ -38,6 +38,11 @@
     } catch (e) {
       return '';
     }
+  }
+
+  function fieldShown(v) {
+    if (typeof hasStationFieldValue === 'function') return hasStationFieldValue(v);
+    return v != null && String(v).trim() !== '';
   }
 
   const DEFAULT_RANGE_KM = 25; // for nodes without range_km (e.g. Echolink)
@@ -208,15 +213,22 @@
         const marker = L.marker([mLat, mLon], { icon, zIndexOffset: isSelected ? 1000 : 0 });
         marker.on('click', ()=>{ selectRepeater(r._idx); });
         const club = r.nombre || getClubName(r.signal);
-        const rx = r.rx || '—', tx = r.tx || '—', tono = r.tono ? r.tono + ' Hz' : '—';
         const confT = (r.conference || '').trim();
         const echolinkLine = r.isEcholink ? '<br><span class="rpt-tooltip-meta">Echolink' + (confT ? ' · ' + escapeHtmlText(confT) : '') + '</span>' : '';
         const dmrLine = r.isDMR && !r.isEcholink ? '<br><span class="rpt-tooltip-meta">DMR' + (confT ? ' · ' + escapeHtmlText(confT) : '') + '</span>' : '';
         const sigLead = r.isAir ? aircraftIconSvgHtml() : '';
+        const locParts = [];
+        if (fieldShown(r.comuna)) locParts.push(escapeHtmlText(r.comuna));
+        if (fieldShown(r.banda)) locParts.push(escapeHtmlText(r.banda));
+        const locLine = locParts.length ? '<br><span class="rpt-tooltip-meta">' + locParts.join(' · ') + '</span>' : '';
+        const freqParts = [];
+        if (fieldShown(r.rx)) freqParts.push('RX ' + escapeHtmlText(String(r.rx)));
+        if (fieldShown(r.tx)) freqParts.push('TX ' + escapeHtmlText(String(r.tx)));
+        if (fieldShown(r.tono)) freqParts.push(escapeHtmlText(String(r.tono)) + ' Hz');
+        const freqLine = freqParts.length ? '<br><span class="rpt-tooltip-meta">' + freqParts.join(' · ') + '</span>' : '';
         const tooltipHtml = '<div class="rpt-tooltip-inner">' +
-          sigLead + escapeHtmlText(r.signal) + (club ? '<br><span class="rpt-tooltip-club">' + club + '</span>' : '') +
-          '<br><span class="rpt-tooltip-meta">' + r.comuna + ' · ' + r.banda + '</span>' +
-          '<br><span class="rpt-tooltip-meta">RX ' + rx + ' · TX ' + tx + ' · ' + tono + '</span>' + echolinkLine + dmrLine + '</div>';
+          sigLead + escapeHtmlText(r.signal) + (fieldShown(club) ? '<br><span class="rpt-tooltip-club">' + escapeHtmlText(club) + '</span>' : '') +
+          locLine + freqLine + echolinkLine + dmrLine + '</div>';
         marker.bindTooltip(tooltipHtml, { permanent: false, direction: 'top', opacity: 1, className: 'rpt-tooltip' });
         if(visible) marker.addTo(markerLayer);
       } else {
@@ -397,14 +409,24 @@
     document.getElementById('sb-club').textContent = club || r.region + ' · ' + r.comuna;
 
     const body = document.getElementById('sb-body');
-    const vence = r.vence || '—';
-    const rows = [
-      ['CLUB', club || '—'], ['Región', r.region || '—'], ['COMUNA', r.comuna || '—'],
-      ['BANDA', '<span style="color:'+(r.banda.startsWith('VHF')?'#29abe2':'#e91e8c')+'">' + r.banda + '</span>'],
-      ['RX (MHz)', r.rx || '—'], ['TX (MHz)', r.tx || '—'], ['TONO', r.tono ? r.tono + ' Hz' : '—'],
-      ['POTENCIA', r.potencia ? r.potencia + ' W' : '—'], ['GANANCIA', r.ganancia ? r.ganancia + ' dBi' : '—'],
-      ['COBERTURA', r.range_km ? r.range_km + ' km' : '—'], ['UBICACIÓN', r.ubicacion || '—'], ['VENCE', vence],
-    ];
+    const rows = [];
+    if (fieldShown(club)) rows.push(['CLUB', escapeHtmlText(club)]);
+    if (fieldShown(r.region)) rows.push(['Región', escapeHtmlText(r.region)]);
+    if (fieldShown(r.comuna)) rows.push(['COMUNA', escapeHtmlText(r.comuna)]);
+    if (fieldShown(r.banda)) {
+      rows.push([
+        'BANDA',
+        '<span style="color:' + (String(r.banda).startsWith('VHF') ? '#29abe2' : '#e91e8c') + '">' + r.banda + '</span>',
+      ]);
+    }
+    if (fieldShown(r.rx)) rows.push(['RX (MHz)', escapeHtmlText(String(r.rx))]);
+    if (fieldShown(r.tx)) rows.push(['TX (MHz)', escapeHtmlText(String(r.tx))]);
+    if (fieldShown(r.tono)) rows.push(['TONO', escapeHtmlText(String(r.tono)) + ' Hz']);
+    if (fieldShown(r.potencia)) rows.push(['POTENCIA', escapeHtmlText(String(r.potencia)) + ' W']);
+    if (fieldShown(r.ganancia)) rows.push(['GANANCIA', escapeHtmlText(String(r.ganancia)) + ' dBi']);
+    if (fieldShown(r.range_km)) rows.push(['COBERTURA', escapeHtmlText(String(r.range_km)) + ' km']);
+    if (fieldShown(r.ubicacion)) rows.push(['UBICACIÓN', escapeHtmlText(r.ubicacion)]);
+    if (fieldShown(r.vence)) rows.push(['VENCE', escapeHtmlText(r.vence)]);
     if (r.isEcholink) {
       const ccf = (r.conference || '').trim();
       rows.push(['ECHOLINK', '<span class="badge-echolink">Sí</span>' + (ccf ? ' · ' + escapeHtmlText(ccf) : '')]);
@@ -427,13 +449,19 @@
       html += filteredNeighbors.map(n=>{
         const nb = NODES[n.idx];
         const nc = REGION_COLORS[nb.region]||'#5e35b1';
-        const rx = nb.rx || '—', tx = nb.tx || '—', tono = nb.tono ? nb.tono+' Hz' : '—';
-        const details = 'RX '+rx+' · TX '+tx+' · '+tono;
+        const freqPartsN = [];
+        if (fieldShown(nb.rx)) freqPartsN.push('RX ' + escapeHtmlText(String(nb.rx)));
+        if (fieldShown(nb.tx)) freqPartsN.push('TX ' + escapeHtmlText(String(nb.tx)));
+        if (fieldShown(nb.tono)) freqPartsN.push(escapeHtmlText(String(nb.tono)) + ' Hz');
+        const details = freqPartsN.join(' · ');
         const clubName = (nb.nombre || getClubName(nb.signal) || '').trim();
         const comuna = (nb.comuna || '').trim();
         const metaLabel = [clubName, comuna].filter(Boolean).join(' · ');
         const metaHtml = metaLabel
           ? '<div class="neighbor-meta" title="' + escapeAttr(metaLabel) + '">' + escapeHtmlText(metaLabel) + '</div>'
+          : '';
+        const detailsHtml = details
+          ? '<div class="neighbor-details"><span>' + details + '</span></div>'
           : '';
         const isSelected = n.idx === idx;
         const distStr = n.dist === 0 ? '0 km' : n.dist+' km';
@@ -448,7 +476,7 @@
           dotEl +
           '<div class="neighbor-main"><span class="neighbor-signal">'+escapeHtmlText(nb.signal)+(isSelected?' (este)':'')+'</span>' +
           metaHtml +
-          '<div class="neighbor-details"><span>'+details+'</span></div></div>' +
+          detailsHtml + '</div>' +
           '<span class="neighbor-dist">'+distStr+'</span></div>';
       }).join('');
     }
