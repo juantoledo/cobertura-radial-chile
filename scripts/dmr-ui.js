@@ -1,6 +1,6 @@
 /**
  * Shared compact DMR detail HTML (map sidebar + list modal).
- * Requires: utils.js (escapeHtml, escapeAttr), data.js (r.isDMR / r.isEcholink).
+ * Requires: utils.js (escapeHtml, escapeAttr), station-display.js (hasStationFieldValue), data.js.
  */
 (function () {
   /**
@@ -12,7 +12,7 @@
     if (!r || !r.isDMR || r.isEcholink) return '';
     var parts = ['<span class="badge-dmr">DMR</span>'];
     var conf = (r.conference || '').trim();
-    if (conf) {
+    if (typeof hasStationFieldValue === 'function' ? hasStationFieldValue(conf) : conf) {
       parts.push(
         '<span class="dmr-kv">' +
           '<abbr class="dmr-abbr" title="Conferencia / red">Red</abbr>' +
@@ -22,7 +22,11 @@
       );
     }
     function pushTokens(abbr, fullLabel, val, tokenClass) {
-      if (val == null || String(val).trim() === '') return;
+      if (typeof hasStationFieldValue === 'function') {
+        if (!hasStationFieldValue(val)) return;
+      } else if (val == null || String(val).trim() === '') {
+        return;
+      }
       var tk = String(val)
         .trim()
         .split(/\s+/)

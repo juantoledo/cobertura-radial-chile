@@ -207,8 +207,8 @@
         marker.on('click', ()=>{ selectRepeater(r._idx); });
         const club = r.nombre || getClubName(r.signal);
         const confT = (r.conference || '').trim();
-        const echolinkLine = r.isEcholink ? '<br><span class="rpt-tooltip-meta">Echolink' + (confT ? ' · ' + escapeHtml(confT) : '') + '</span>' : '';
-        const dmrLine = r.isDMR && !r.isEcholink ? '<br><span class="rpt-tooltip-meta">DMR' + (confT ? ' · ' + escapeHtml(confT) : '') + '</span>' : '';
+        const echolinkLine = r.isEcholink ? '<br><span class="rpt-tooltip-meta">Echolink' + (fieldShown(confT) ? ' · ' + escapeHtml(confT) : '') + '</span>' : '';
+        const dmrLine = r.isDMR && !r.isEcholink ? '<br><span class="rpt-tooltip-meta">DMR' + (fieldShown(confT) ? ' · ' + escapeHtml(confT) : '') + '</span>' : '';
         const sigLead = r.isAir ? aircraftIconSvgHtml() : '';
         const locParts = [];
         if (fieldShown(r.comuna)) locParts.push(escapeHtml(r.comuna));
@@ -456,7 +456,11 @@
       sbSig.textContent = r.signal;
       sbSig.style.color = color;
     }
-    document.getElementById('sb-club').textContent = club || r.region + ' · ' + r.comuna;
+    var sbClubLine = [];
+    if (fieldShown(club)) sbClubLine.push(club);
+    if (fieldShown(r.region)) sbClubLine.push(r.region);
+    if (fieldShown(r.comuna)) sbClubLine.push(r.comuna);
+    document.getElementById('sb-club').textContent = sbClubLine.join(' · ');
 
     const body = document.getElementById('sb-body');
     const rows = [];
@@ -479,15 +483,16 @@
     if (fieldShown(r.vence)) rows.push(['VENCE', escapeHtml(r.vence)]);
     if (r.isEcholink) {
       const ccf = (r.conference || '').trim();
-      rows.push(['ECHOLINK', '<span class="badge-echolink">Sí</span>' + (ccf ? ' · ' + escapeHtml(ccf) : '')]);
+      rows.push(['ECHOLINK', '<span class="badge-echolink">Sí</span>' + (fieldShown(ccf) ? ' · ' + escapeHtml(ccf) : '')]);
     }
     if (r.isDMR && !r.isEcholink) {
+      const ccfD = (r.conference || '').trim();
       rows.push([
         'DMR',
         typeof buildDmrDetailHtml === 'function'
           ? buildDmrDetailHtml(r, 'sidebar')
           : '<span class="badge-dmr">DMR</span>' +
-            ((r.conference || '').trim() ? ' · ' + escapeHtml((r.conference || '').trim()) : ''),
+            (fieldShown(ccfD) ? ' · ' + escapeHtml(ccfD) : ''),
       ]);
     }
 
@@ -504,9 +509,11 @@
         if (fieldShown(nb.tx)) freqPartsN.push('TX ' + escapeHtml(String(nb.tx)));
         if (fieldShown(nb.tono)) freqPartsN.push(escapeHtml(String(nb.tono)) + ' Hz');
         const details = freqPartsN.join(' · ');
-        const clubName = (nb.nombre || getClubName(nb.signal) || '').trim();
-        const comuna = (nb.comuna || '').trim();
-        const metaLabel = [clubName, comuna].filter(Boolean).join(' · ');
+        const rawClubN = (nb.nombre || getClubName(nb.signal) || '').trim();
+        const metaPieces = [];
+        if (fieldShown(rawClubN)) metaPieces.push(rawClubN);
+        if (fieldShown(nb.comuna)) metaPieces.push(String(nb.comuna).trim());
+        const metaLabel = metaPieces.join(' · ');
         const metaHtml = metaLabel
           ? '<div class="neighbor-meta" title="' + escapeAttr(metaLabel) + '">' + escapeHtml(metaLabel) + '</div>'
           : '';

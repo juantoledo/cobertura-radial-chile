@@ -17,5 +17,15 @@
     return true;
   }
 
+  /**
+   * CSS class for table cells with no value (hides mobile ::before labels, etc.).
+   * @param {*} v
+   * @returns {string} ' cell-empty' or ''
+   */
+  function stationFieldEmptyClass(v) {
+    return hasStationFieldValue(v) ? '' : ' cell-empty';
+  }
+
   window.hasStationFieldValue = hasStationFieldValue;
+  window.stationFieldEmptyClass = stationFieldEmptyClass;
 })();

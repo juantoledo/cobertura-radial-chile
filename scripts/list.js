@@ -133,13 +133,18 @@
   let stationDetailCurrentSignal = null;
 
   function fmtVal(v) {
-    if (v === null || v === undefined || v === '') return '—';
+    if (!fieldShown(v)) return '';
     return String(v);
   }
 
   function fieldShown(v) {
     if (typeof hasStationFieldValue === 'function') return hasStationFieldValue(v);
     return v != null && String(v).trim() !== '';
+  }
+
+  function cellEmptyClass(v) {
+    if (typeof stationFieldEmptyClass === 'function') return stationFieldEmptyClass(v);
+    return fieldShown(v) ? '' : ' cell-empty';
   }
 
   function openStationDetail(signal) {
@@ -178,19 +183,25 @@
       titleEl.classList.remove('station-detail-signal--with-web');
       titleEl.textContent = r.signal || '—';
     }
-    const bandaShort = (r.banda || '').replace('/FM', '');
-    const parts = [bandaShort && (bandaShort + ' · '), r.nombre || ''].filter(Boolean);
+    const subMainParts = [];
+    if (fieldShown(r.banda)) {
+      const bs = (r.banda || '').replace('/FM', '').trim();
+      if (bs) subMainParts.push(bs);
+    }
+    if (fieldShown(r.nombre)) subMainParts.push(String(r.nombre).trim());
     const subParts = [];
     if (r.isEcholink) {
       const ccf = (r.conference || '').trim();
-      subParts.push('Echolink' + (ccf ? ' · ' + ccf : ''));
+      subParts.push('Echolink' + (fieldShown(ccf) ? ' · ' + ccf : ''));
     }
     if (r.isDMR && !r.isEcholink) {
       const ccf = (r.conference || '').trim();
-      subParts.push('DMR' + (ccf ? ' · ' + ccf : ''));
+      subParts.push('DMR' + (fieldShown(ccf) ? ' · ' + ccf : ''));
     }
     if (distKm != null) subParts.push('~' + distKm + ' km');
-    subEl.textContent = parts.join('') + (subParts.length ? ' · ' + subParts.join(' · ') : '');
+    const left = subMainParts.join(' · ');
+    const right = subParts.join(' · ');
+    subEl.textContent = left && right ? left + ' · ' + right : (left || right);
 
     const rows = [];
     if (fieldShown(r.rx)) rows.push([['RX (MHz)', 'station-detail-freq'], r.rx + ' MHz']);
@@ -213,7 +224,7 @@
       const ccf = (r.conference || '').trim();
       rows.push([
         ['Echolink', 'station-detail-grid-full'],
-        '<span class="badge-echolink">Sí</span>' + (ccf ? ' · ' + escapeHtml(ccf) : ''),
+        '<span class="badge-echolink">Sí</span>' + (fieldShown(ccf) ? ' · ' + escapeHtml(ccf) : ''),
         'html'
       ]);
     }
@@ -353,29 +364,35 @@
           <tbody>`;
 
       rows.forEach(r => {
-        const vc = venceClass(r.vence);
+        const vc = fieldShown(r.vence) ? venceClass(r.vence) : '';
         const bc = bandaClass(r.banda);
         const bandaShort = (r.banda || '').replace('/FM','');
         const confEsc = escapeAttr(r.conference || '');
         const echolinkBadge = r.isEcholink ? `<span class="badge-echolink" title="${confEsc}">Echolink</span>` : '';
         const dmrBadge = r.isDMR && !r.isEcholink ? `<span class="badge-dmr" title="${confEsc}">DMR</span>` : '';
         const atcBadge = r.isAir ? '<span class="badge-atc" title="ATC aeronáutico (solo RX / escucha)">ATC</span>' : '';
-        const distCell = showDistance ? `<td class="cell-dist" data-label="Distancia">${r._dist != null ? r._dist + ' km' : '—'}</td>` : '';
+        const distHasVal = showDistance && r._dist != null && typeof r._dist === 'number' && !isNaN(r._dist);
+        const distCell = showDistance
+          ? `<td class="cell-dist${distHasVal ? '' : ' cell-empty'}" data-label="Distancia">${distHasVal ? r._dist + ' km' : ''}</td>`
+          : '';
         const sigAttr = (r.signal || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
         const webLink = websiteLinkHtml(r);
         const sigLead = r.isAir ? aircraftIconHtml() : '';
+        const clubStrong = fieldShown(r.nombre) ? `<strong>${escapeHtml(r.nombre)}</strong>` : '';
+        const clubSmall = fieldShown(r.region) ? `<small>${escapeHtml(r.region)}</small>` : '';
+        const clubEmpty = !fieldShown(r.nombre) && !fieldShown(r.region);
         html += `<tr class="rpt-row" data-signal="${sigAttr}">
           <td class="cell-signal" data-label="Señal">${sigLead}${escapeHtml(r.signal || '—')}${webLink} ${echolinkBadge}${dmrBadge}${atcBadge}</td>
-          <td data-label="Banda"><span class="badge-banda ${bc}">${bandaShort}</span></td>
+          <td class="cell-banda${cellEmptyClass(r.banda)}" data-label="Banda">${fieldShown(r.banda) ? `<span class="badge-banda ${bc}">${escapeHtml(bandaShort)}</span>` : ''}</td>
           ${distCell}
-          <td class="cell-freq freq-rx" data-label="RX (MHz)">${fieldShown(r.rx) ? r.rx : ''}</td>
-          <td class="cell-freq freq-tx" data-label="TX (MHz)">${fieldShown(r.tx) ? r.tx : ''}</td>
-          <td class="cell-tone" data-label="Tono">${fieldShown(r.tono) ? escapeHtml(String(r.tono)) : ''}</td>
-          <td class="cell-pot" data-label="Pot. W">${fieldShown(r.potencia) ? r.potencia + ' W' : ''}</td>
-          <td class="cell-club" data-label="Club / Titular"><strong>${escapeHtml(r.nombre || '')}</strong><small>${escapeHtml(r.region || '')}</small></td>
-          <td class="cell-comuna" data-label="Comuna">${fieldShown(r.comuna) ? escapeHtml(r.comuna) : ''}</td>
-          <td class="cell-ub" data-label="Ubicación">${fieldShown(r.ubicacion) ? escapeHtml(r.ubicacion) : ''}</td>
-          <td class="cell-vence ${vc}" data-label="Vence">${fieldShown(r.vence) ? escapeHtml(r.vence) : ''}</td>
+          <td class="cell-freq freq-rx${cellEmptyClass(r.rx)}" data-label="RX (MHz)">${fieldShown(r.rx) ? r.rx : ''}</td>
+          <td class="cell-freq freq-tx${cellEmptyClass(r.tx)}" data-label="TX (MHz)">${fieldShown(r.tx) ? r.tx : ''}</td>
+          <td class="cell-tone${cellEmptyClass(r.tono)}" data-label="Tono">${fieldShown(r.tono) ? escapeHtml(String(r.tono)) : ''}</td>
+          <td class="cell-pot${cellEmptyClass(r.potencia)}" data-label="Pot. W">${fieldShown(r.potencia) ? r.potencia + ' W' : ''}</td>
+          <td class="cell-club${clubEmpty ? ' cell-empty' : ''}" data-label="Club / Titular">${clubStrong}${clubSmall}</td>
+          <td class="cell-comuna${cellEmptyClass(r.comuna)}" data-label="Comuna">${fieldShown(r.comuna) ? escapeHtml(r.comuna) : ''}</td>
+          <td class="cell-ub${cellEmptyClass(r.ubicacion)}" data-label="Ubicación">${fieldShown(r.ubicacion) ? escapeHtml(r.ubicacion) : ''}</td>
+          <td class="cell-vence ${vc}${cellEmptyClass(r.vence)}" data-label="Vence">${fieldShown(r.vence) ? escapeHtml(r.vence) : ''}</td>
           <td class="cell-share" data-label="Compartir"><button type="button" class="share-btn" data-signal="${(r.signal||'').replace(/"/g,'&quot;')}" aria-label="Compartir ${(r.signal||'').replace(/"/g,'&quot;')}" title="Compartir detalles"><span class="material-symbols-outlined" aria-hidden="true">share</span></button></td>
         </tr>`;
       });

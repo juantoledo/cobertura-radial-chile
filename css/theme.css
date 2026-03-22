@@ -1439,6 +1439,16 @@ body.page-list main { padding: 24px 32px; }
   border-collapse: collapse;
   font-size: var(--fs-sm);
 }
+/* Optional cells with no data: no pseudo-label, no em-dash filler */
+.rpt-table td.cell-empty {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+.rpt-table td.cell-empty::before,
+.rpt-table td.cell-empty::after {
+  content: none !important;
+  display: none !important;
+}
 .rpt-table thead tr { background: var(--surface2); }
 .rpt-table th {
   font-family: var(--font-mono);
@@ -2853,6 +2863,9 @@ html[data-theme="light"] .rpt-table tbody tr { border-bottom-color: rgba(0,0,0,0
     border: none;
     min-height: 0;
     min-width: 0;
+  }
+  body.page-list .rpt-table tbody tr.rpt-row td.cell-empty {
+    display: none !important;
   }
   body.page-list .rpt-table tbody tr.rpt-row td::before {
     content: attr(data-label);
