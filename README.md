@@ -17,10 +17,25 @@
 
 ---
 
-## Mapa
+## Cómo se ve
 
-![Mapa de cobertura](images/map.png)
-![Mapa de cobertura](images/map2.png)
+### En el navegador (escritorio)
+
+Capturas del **mapa en modo oscuro y claro** — mismo producto, distinto tema; ideal para usar de día o de noche sin cansar la vista.
+
+![Radiomap — mapa, tema oscuro](images/web-dark.png)
+![Radiomap — mapa, tema claro](images/web-light.png)
+
+### En el teléfono
+
+**Mapa** y **lista** optimizados para pantalla chica: controles compactos, navegación MAPA / LISTA y exportación CSV accesible desde el menú.
+
+![Radiomap — mapa en móvil](images/mobile-map.png)
+![Radiomap — lista en móvil](images/mobile-list.png)
+
+---
+
+## Mapa
 
 - **Leyenda visual** — Radioclubes (círculo), Echolink (cuadrado **e**), DMR (rombo **d**).
 - **Cómo ver la cobertura** — Marcador solo, círculo solo o ambos; explorás Chile con zoom y pan habituales.
@@ -30,8 +45,6 @@
 ---
 
 ## Lista
-
-![Lista de repetidores](images/list.png)
 
 - Tabla **agrupada por región**: señal, banda, RX/TX, tono, potencia, club, comuna, vencimiento e insignias **Echolink/DMR** donde corresponda.
 - **Los mismos filtros y la misma búsqueda** que en el mapa, para pasar de vista geográfica a planilla sin perder contexto.
@@ -61,6 +74,8 @@ Tras editar el CSV:
 ```
 
 Más detalle: [`scripts/README.md`](scripts/README.md), [`data/README.md`](data/README.md), [`AGENTS.md`](AGENTS.md).
+
+**Assets de capturas** (README y redes): `images/web-dark.png`, `images/web-light.png`, `images/mobile-map.png`, `images/mobile-list.png`.
 
 ---
 
