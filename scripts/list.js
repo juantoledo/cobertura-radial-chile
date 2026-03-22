@@ -129,10 +129,10 @@
     stationDetailCurrentSignal = signal;
     stationDetailLastFocus = document.activeElement;
 
-    const nearMe = typeof getNearMeLocation === 'function' ? getNearMeLocation() : null;
+    const distAnchor = typeof getDistanceFilterAnchor === 'function' ? getDistanceFilterAnchor() : null;
     let distKm = null;
-    if (nearMe && r.lat != null && r.lon != null && typeof haversine === 'function') {
-      distKm = Math.round(haversine(nearMe.lat, nearMe.lon, r.lat, r.lon));
+    if (distAnchor && r.lat != null && r.lon != null && typeof haversine === 'function') {
+      distKm = Math.round(haversine(distAnchor.lat, distAnchor.lon, r.lat, r.lon));
     }
 
     titleEl.classList.toggle('station-detail-signal--with-air', !!r.isAir);
@@ -256,12 +256,14 @@
   }
 
   function render(filtered) {
+    if (typeof syncNearRadiusControl === 'function') syncNearRadiusControl();
     const main = document.getElementById('main-content');
     document.getElementById('shown-count').textContent = filtered.length;
     document.getElementById('total-count').textContent = NODES.length;
     document.getElementById('regions-count').textContent = filtered.length ? new Set(filtered.map(r => r.region || '')).size : 0;
     document.getElementById('clubs-count').textContent = filtered.length ? new Set(filtered.map(r => r.nombre).filter(Boolean)).size : 0;
-    document.getElementById('filter-nearme').textContent = getNearMeLocation() ? ' · cerca de mí' : '';
+    document.getElementById('filter-nearme').textContent =
+      typeof formatNearMeFilterSuffix === 'function' ? formatNearMeFilterSuffix() : (getNearMeLocation() ? ' · cerca de mí' : '');
 
     if (filtered.length === 0) {
       main.innerHTML = typeof buildGuidedEmptyStateHtml === 'function'
@@ -270,8 +272,8 @@
       return;
     }
 
-    const nearMe = getNearMeLocation();
-    const showDistance = !!nearMe;
+    const distAnchor = typeof getDistanceFilterAnchor === 'function' ? getDistanceFilterAnchor() : null;
+    const showDistance = !!distAnchor;
 
     const byRegion = {};
     regionNames.forEach(reg => { byRegion[reg] = []; });
@@ -281,7 +283,7 @@
     });
 
     let regionsToShow = regionNames.filter(reg => byRegion[reg] && byRegion[reg].length > 0);
-    if (nearMe && regionsToShow.length > 1) {
+    if (distAnchor && regionsToShow.length > 1) {
       regionsToShow.sort((a, b) => {
         const minA = Math.min(...byRegion[a].map(r => r._dist ?? 9999));
         const minB = Math.min(...byRegion[b].map(r => r._dist ?? 9999));
@@ -365,6 +367,7 @@
     if (loc) {
       clearNearMeLocation();
       updateNearMeButtonState();
+      if (typeof saveFilterState === 'function') saveFilterState();
       render(getFiltered());
       return;
     }
@@ -377,6 +380,7 @@
     requestNearMeLocation(
       function () {
         updateNearMeButtonState();
+        if (typeof saveFilterState === 'function') saveFilterState();
         render(getFiltered());
         if (btn) btn.disabled = false;
       },
@@ -514,6 +518,9 @@
   window.__radiomapListMultiselectChange = function () {
     render(getFiltered());
   };
+  window.__radiomapListRadiusChange = function () {
+    render(getFiltered());
+  };
 
   updateNearMeButtonState();
 
@@ -529,7 +536,7 @@
   });
 
   function getExportCriteria() {
-    return typeof getExportFilterCriteria === 'function' ? getExportFilterCriteria() : { search: '', nearMe: !!getNearMeLocation(), bandas: [], regions: [], types: [], conferences: [] };
+    return typeof getExportFilterCriteria === 'function' ? getExportFilterCriteria() : { search: '', nearMe: !!(typeof getDistanceFilterAnchor === 'function' && getDistanceFilterAnchor()), bandas: [], regions: [], types: [], conferences: [] };
   }
   document.querySelectorAll('#btn-download-csv, #btn-download-csv-menu').forEach(btn => {
     btn.addEventListener('click', function(e) {

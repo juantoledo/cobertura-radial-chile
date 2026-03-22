@@ -82,10 +82,10 @@
         <h3>Para qué sirve</h3>
         <ul>
           <li>Ver en el mapa repetidoras, nodos Echolink y estaciones DMR, cobertura teórica y ubicación.</li>
-          <li>Botón 📍 para mostrar solo nodos cerca de tu ubicación (100 km).</li>
+          <li>Botón 📍 o repetidora de referencia: filtro por distancia (20–100 km); el deslizador está en el mapa al usar ubicación o al elegir una señal.</li>
           <li>Buscar por señal, comuna, frecuencias (RX/TX/tono) o filtrar por banda, región y tipo (Echolink / DMR / radioclubes).</li>
           <li>Revisar datos de cada nodo y descargar listas en CSV (botón ↓ CSV siempre visible).</li>
-          <li><strong>↗ Compartir</strong>: copia un enlace con los mismos filtros y búsqueda de esta página (lista o mapa según el enlace).</li>
+          <li><strong>↗ Compartir</strong>: copia un enlace con los mismos filtros, búsqueda, referencia de distancia y <strong>radio en km</strong> cuando aplique (lista o mapa según el enlace).</li>
         </ul>
       </section>
       <section class="help-section">
@@ -157,7 +157,20 @@
     </div>
   </details>
   <button type="button" id="btn-clear-filters" class="btn-clear-filters" onclick="clearAllFilters()" title="Quitar búsqueda, filtros y cerca de mí" aria-label="Limpiar filtros"><span class="material-symbols-outlined" aria-hidden="true">filter_alt_off</span> Limpiar filtros</button>
-  <div class="filter-count">Mostrando <span id="shown-count">172</span> de <span id="total-count">172</span> · <span id="regions-count">13</span> regiones · <span id="clubs-count">—</span> clubes<span id="filter-nearme"></span></div>
+  <div class="filter-count-wrap">
+    <div class="filter-count">Mostrando <span id="shown-count">172</span> de <span id="total-count">172</span> · <span id="regions-count">13</span> regiones · <span id="clubs-count">—</span> clubes<span id="filter-nearme"></span></div>
+    <div id="near-radius-floater" class="near-radius-floater" hidden aria-hidden="true" title="Distancia máxima desde la referencia (ubicación o repetidora elegida)">
+      <div class="near-radius-floater__head">
+        <label class="near-radius-floater__label" for="near-radius-slider">Radio</label>
+        <span id="near-radius-value" class="near-radius-floater__value">100 km</span>
+      </div>
+      <div class="near-radius-floater__slider-row">
+        <span class="near-radius-floater__ticks" aria-hidden="true">20</span>
+        <input type="range" id="near-radius-slider" class="near-radius-floater__slider" min="20" max="100" step="1" value="100" aria-valuemin="20" aria-valuemax="100" aria-valuenow="100" aria-label="Distancia máxima desde la referencia (ubicación o repetidora elegida), en kilómetros">
+        <span class="near-radius-floater__ticks" aria-hidden="true">100</span>
+      </div>
+    </div>
+  </div>
 </div>
 </div>
 

@@ -3,6 +3,21 @@
  * Requires: location-filter.js, data/data.js (NODES) for buildMapViewURLForStation
  */
 (function () {
+  /**
+   * Include radio (km) whenever the link encodes distance-from-reference semantics:
+   * GPS (near), repetidora (signal), or an active anchor not yet reflected in p.
+   */
+  function ensureNearRadiusInParams(p) {
+    if (!p || typeof getNearMeRadiusKm !== 'function') return;
+    var need =
+      p.has('near') ||
+      p.has('signal') ||
+      (typeof getDistanceFilterAnchor === 'function' && !!getDistanceFilterAnchor());
+    if (need) {
+      p.set('nearRadius', String(getNearMeRadiusKm()));
+    }
+  }
+
   /** Filters + near (no map position) — shared by buildShareViewURL and buildMapViewURLForStation */
   function buildShareQueryParams() {
     var p = new URLSearchParams();
@@ -29,6 +44,7 @@
       p.set('near', nm.lat.toFixed(5) + ',' + nm.lon.toFixed(5));
     }
 
+    ensureNearRadiusInParams(p);
     return p;
   }
 
@@ -62,6 +78,7 @@
         p.set('zoom', String(zoomForStationNode(r)));
       }
     }
+    ensureNearRadiusInParams(p);
     base.search = p.toString();
     return base.toString();
   }
@@ -70,6 +87,12 @@
     var url = new URL(window.location.href);
     url.hash = '';
     var p = buildShareQueryParams();
+    try {
+      var curSig = new URLSearchParams(window.location.search).get('signal');
+      if (curSig && String(curSig).trim() && !p.has('signal')) {
+        p.set('signal', String(curSig).trim());
+      }
+    } catch (e2) { /* ignore */ }
 
     if (typeof window.__radiomapGetMapShareState === 'function') {
       var m = window.__radiomapGetMapShareState();
@@ -82,6 +105,7 @@
       }
     }
 
+    ensureNearRadiusInParams(p);
     url.search = p.toString();
     return url.toString();
   }

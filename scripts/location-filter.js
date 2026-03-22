@@ -2,7 +2,103 @@
  * Near-me + multiselect filters (checkbox lists in .filter-checkbox-list).
  * Requires global NODES (data/data.js) for getVisibleNodeIndices / getFilteredNodes.
  */
-const NEAR_ME_RADIUS_KM = 100;
+const NEAR_ME_RADIUS_MIN_KM = 20;
+const NEAR_ME_RADIUS_MAX_KM = 100;
+const NEAR_ME_RADIUS_DEFAULT_KM = 100;
+const NEAR_ME_RADIUS_STORAGE_KEY = 'ra-nearme-radius-km';
+
+function clampNearMeRadiusKm(n) {
+  var x = parseInt(n, 10);
+  if (isNaN(x)) return NEAR_ME_RADIUS_DEFAULT_KM;
+  return Math.min(NEAR_ME_RADIUS_MAX_KM, Math.max(NEAR_ME_RADIUS_MIN_KM, x));
+}
+
+function getNearMeRadiusKm() {
+  try {
+    var s = sessionStorage.getItem(NEAR_ME_RADIUS_STORAGE_KEY);
+    if (s == null || s === '') return NEAR_ME_RADIUS_DEFAULT_KM;
+    return clampNearMeRadiusKm(s);
+  } catch (e) {
+    return NEAR_ME_RADIUS_DEFAULT_KM;
+  }
+}
+
+function setNearMeRadiusKm(km) {
+  try {
+    sessionStorage.setItem(NEAR_ME_RADIUS_STORAGE_KEY, String(clampNearMeRadiusKm(km)));
+  } catch (e) { /* ignore */ }
+}
+
+window.getNearMeRadiusKm = getNearMeRadiusKm;
+window.setNearMeRadiusKm = setNearMeRadiusKm;
+
+const RADIUS_REF_SIGNAL_KEY = 'ra-radius-ref-signal';
+
+function getRadiusRefSignal() {
+  try {
+    var s = sessionStorage.getItem(RADIUS_REF_SIGNAL_KEY);
+    return s ? String(s).trim() : '';
+  } catch (e) {
+    return '';
+  }
+}
+
+function setRadiusRefSignal(signal) {
+  try {
+    var t = signal != null ? String(signal).trim() : '';
+    if (t) sessionStorage.setItem(RADIUS_REF_SIGNAL_KEY, t);
+    else sessionStorage.removeItem(RADIUS_REF_SIGNAL_KEY);
+  } catch (e) { /* ignore */ }
+}
+
+function clearRadiusRefSignal() {
+  try {
+    sessionStorage.removeItem(RADIUS_REF_SIGNAL_KEY);
+  } catch (e) { /* ignore */ }
+}
+
+window.getRadiusRefSignal = getRadiusRefSignal;
+window.setRadiusRefSignal = setRadiusRefSignal;
+window.clearRadiusRefSignal = clearRadiusRefSignal;
+
+/**
+ * Reference point for distance filter + orden por distancia.
+ * Prioridad: GPS (cerca de mí) → selección actual en mapa → señal persistida (p. ej. lista / sesión).
+ * @returns {{ lat: number, lon: number, kind: 'gps'|'station', signal?: string }|null}
+ */
+function getDistanceFilterAnchor() {
+  var g = getNearMeLocation();
+  if (g && typeof g.lat === 'number' && typeof g.lon === 'number' && !isNaN(g.lat) && !isNaN(g.lon)) {
+    return { lat: g.lat, lon: g.lon, kind: 'gps' };
+  }
+  if (typeof window.__radiomapRadiusReference === 'function') {
+    var live = window.__radiomapRadiusReference();
+    if (live && typeof live.lat === 'number' && typeof live.lon === 'number' && !isNaN(live.lat) && !isNaN(live.lon)) {
+      return { lat: live.lat, lon: live.lon, kind: 'station', signal: live.signal || '' };
+    }
+  }
+  var sig = getRadiusRefSignal();
+  if (sig && typeof NODES !== 'undefined' && NODES.length) {
+    for (var i = 0; i < NODES.length; i++) {
+      var n = NODES[i];
+      if (n.signal === sig && n.lat != null && n.lon != null && typeof n.lat === 'number' && typeof n.lon === 'number') {
+        return { lat: n.lat, lon: n.lon, kind: 'station', signal: sig };
+      }
+    }
+  }
+  return null;
+}
+window.getDistanceFilterAnchor = getDistanceFilterAnchor;
+
+function formatNearMeFilterSuffix() {
+  var a = getDistanceFilterAnchor();
+  if (!a) return '';
+  var km = getNearMeRadiusKm();
+  if (a.kind === 'gps') return ' · cerca de mí (' + km + ' km)';
+  var lab = a.signal ? a.signal : 'referencia';
+  return ' · cerca de ' + lab + ' (' + km + ' km)';
+}
+window.formatNearMeFilterSuffix = formatNearMeFilterSuffix;
 
 /**
  * Orden administrativo Chile (norte → sur, ley de regiones / división oficial).
@@ -67,11 +163,19 @@ function setNearMeLocation(lat, lon) {
   sessionStorage.setItem('ra-nearme-location', JSON.stringify({ lat, lon }));
 }
 
-function stripNearParamFromCurrentURL() {
+function stripNearShareParamsFromCurrentURL() {
   try {
     var u = new URL(window.location.href);
-    if (!u.searchParams.has('near')) return;
-    u.searchParams.delete('near');
+    var changed = false;
+    if (u.searchParams.has('near')) {
+      u.searchParams.delete('near');
+      changed = true;
+    }
+    if (u.searchParams.has('nearRadius')) {
+      u.searchParams.delete('nearRadius');
+      changed = true;
+    }
+    if (!changed) return;
     var qs = u.searchParams.toString();
     window.history.replaceState(null, '', u.pathname + (qs ? '?' + qs : '') + (u.hash || ''));
   } catch (e) { /* ignore */ }
@@ -79,7 +183,7 @@ function stripNearParamFromCurrentURL() {
 
 function clearNearMeLocation() {
   sessionStorage.removeItem('ra-nearme-location');
-  stripNearParamFromCurrentURL();
+  stripNearShareParamsFromCurrentURL();
 }
 
 function updateNearMeButtonState() {
@@ -211,7 +315,7 @@ function parseMultiParam(params, key) {
 
 function urlHasShareParams() {
   const params = new URLSearchParams(window.location.search);
-  const keys = ['search', 'banda', 'region', 'echolink', 'echolinkConference', 'type', 'conference', 'near', 'mlat', 'mlon', 'zoom', 'mode', 'signal'];
+  const keys = ['search', 'banda', 'region', 'echolink', 'echolinkConference', 'type', 'conference', 'near', 'nearRadius', 'mlat', 'mlon', 'zoom', 'mode', 'signal'];
   return keys.some(function (k) { return params.has(k); });
 }
 
@@ -219,13 +323,15 @@ function saveFilterState() {
   try {
     const search = document.getElementById('search');
     const state = {
-      v: 3,
+      v: 5,
       search: search ? search.value || '' : '',
       bandas: getCheckedFilterValues(getFilterCheckboxListEl('filter-banda')),
       regions: getCheckedFilterValues(getFilterCheckboxListEl('filter-region')),
       types: getCheckedFilterValues(getFilterCheckboxListEl('filter-type')),
       conferences: getCheckedFilterValues(getFilterCheckboxListEl('filter-conference')),
-      nearMe: !!getNearMeLocation()
+      nearMe: !!getNearMeLocation(),
+      nearMeRadiusKm: getNearMeRadiusKm(),
+      radiusRefSignal: getRadiusRefSignal() || null
     };
     sessionStorage.setItem('ra-filter-state', JSON.stringify(state));
   } catch (e) { /* ignore */ }
@@ -263,15 +369,32 @@ function loadFilterState() {
         var parts = String(near).split(',');
         var la = parseFloat(parts[0], 10);
         var lo = parseFloat(parts[1], 10);
-        if (!isNaN(la) && !isNaN(lo)) setNearMeLocation(la, lo);
+        if (!isNaN(la) && !isNaN(lo)) {
+          setNearMeLocation(la, lo);
+          if (params.has('nearRadius')) {
+            setNearMeRadiusKm(params.get('nearRadius'));
+          } else {
+            setNearMeRadiusKm(NEAR_ME_RADIUS_DEFAULT_KM);
+          }
+        }
       } else {
         clearNearMeLocation();
+      }
+      if (params.has('nearRadius') && !params.has('near')) {
+        setNearMeRadiusKm(params.get('nearRadius'));
+      } else if (params.has('signal') && !params.has('near') && !params.has('nearRadius')) {
+        setNearMeRadiusKm(NEAR_ME_RADIUS_DEFAULT_KM);
+      }
+      if (params.has('signal')) {
+        setRadiusRefSignal(params.get('signal') || '');
+      } else {
+        clearRadiusRefSignal();
       }
     } else {
       var s = sessionStorage.getItem('ra-filter-state');
       if (!s) return;
       var parsed = JSON.parse(s);
-      if (parsed.v !== 2 && parsed.v !== 3) return;
+      if (parsed.v !== 2 && parsed.v !== 3 && parsed.v !== 4 && parsed.v !== 5) return;
       if (searchEl) searchEl.value = parsed.search || '';
       setCheckedFilterValues('filter-banda', parsed.bandas || []);
       setCheckedFilterValues('filter-region', parsed.regions || []);
@@ -279,6 +402,13 @@ function loadFilterState() {
       setCheckedFilterValues('filter-conference', parsed.conferences || []);
       if (parsed.v >= 3 && parsed.nearMe === false) {
         clearNearMeLocation();
+      }
+      if (parsed.nearMeRadiusKm != null && parsed.v >= 4) {
+        setNearMeRadiusKm(parsed.nearMeRadiusKm);
+      }
+      if (parsed.v >= 5 && Object.prototype.hasOwnProperty.call(parsed, 'radiusRefSignal')) {
+        if (parsed.radiusRefSignal) setRadiusRefSignal(parsed.radiusRefSignal);
+        else clearRadiusRefSignal();
       }
     }
     updateFilterMultiselectSummaries();
@@ -293,6 +423,8 @@ function clearAllFilters() {
       setCheckedFilterValues(id, []);
     });
     clearNearMeLocation();
+    clearRadiusRefSignal();
+    setNearMeRadiusKm(NEAR_ME_RADIUS_DEFAULT_KM);
     updateNearMeButtonState();
     saveFilterState();
     updateFilterMultiselectSummaries();
@@ -327,7 +459,7 @@ function getFilterCriteria() {
   }
 }
 
-function nodeMatchesFilterCriteria(r, c, nearMe) {
+function nodeMatchesFilterCriteria(r, c, distAnchor) {
   if (c.regions && c.regions.length) {
     var okReg = c.regions.some(function (reg) {
       return r.region === reg;
@@ -359,7 +491,7 @@ function nodeMatchesFilterCriteria(r, c, nearMe) {
     ].filter(Boolean).join(' ').toLowerCase();
     if (haystack.indexOf(c.q) < 0) return false;
   }
-  if (nearMe && (r.lat == null || r.lon == null || haversine(nearMe.lat, nearMe.lon, r.lat, r.lon) > NEAR_ME_RADIUS_KM)) {
+  if (distAnchor && (r.lat == null || r.lon == null || haversine(distAnchor.lat, distAnchor.lon, r.lat, r.lon) > getNearMeRadiusKm())) {
     return false;
   }
   return true;
@@ -368,10 +500,10 @@ function nodeMatchesFilterCriteria(r, c, nearMe) {
 function getVisibleNodeIndices() {
   if (typeof NODES === 'undefined' || !NODES.length) return [];
   var c = getFilterCriteria();
-  var nearMe = getNearMeLocation();
+  var anchor = getDistanceFilterAnchor();
   var indices = [];
   for (var i = 0; i < NODES.length; i++) {
-    if (nodeMatchesFilterCriteria(NODES[i], c, nearMe)) indices.push(i);
+    if (nodeMatchesFilterCriteria(NODES[i], c, anchor)) indices.push(i);
   }
   return indices;
 }
@@ -380,11 +512,11 @@ function getFilteredNodes(opts) {
   opts = opts || {};
   var indices = getVisibleNodeIndices();
   var result = indices.map(function (i) { return NODES[i]; });
-  var nearMe = getNearMeLocation();
-  if (opts.sortByDistance && nearMe && result.length > 0) {
+  var anchor = getDistanceFilterAnchor();
+  if (opts.sortByDistance && anchor && result.length > 0) {
     result = result.map(function (r) {
       return Object.assign({}, r, {
-        _dist: (r.lat != null && r.lon != null) ? Math.round(haversine(nearMe.lat, nearMe.lon, r.lat, r.lon)) : null
+        _dist: (r.lat != null && r.lon != null) ? Math.round(haversine(anchor.lat, anchor.lon, r.lat, r.lon)) : null
       });
     });
     result.sort(function (a, b) { return (a._dist ?? 9999) - (b._dist ?? 9999); });
@@ -404,7 +536,7 @@ function getExportFilterCriteria() {
   var rawSearch = searchEl && searchEl.value.trim() ? searchEl.value.trim() : '';
   return {
     search: rawSearch,
-    nearMe: !!getNearMeLocation(),
+    nearMe: !!getDistanceFilterAnchor(),
     bandas: c.bandas,
     regions: c.regions,
     types: c.types,
@@ -419,7 +551,7 @@ function getActiveFilterFlags() {
     return {
       hasSearch: !!c.q,
       hasFilters: !!(c.bandas.length || c.regions.length || c.types.length || c.conferences.length),
-      hasNear: typeof getNearMeLocation === 'function' && !!getNearMeLocation()
+      hasNear: typeof getDistanceFilterAnchor === 'function' && !!getDistanceFilterAnchor()
     };
   } catch (e) {
     return { hasSearch: false, hasFilters: false, hasNear: false };
@@ -431,7 +563,7 @@ function buildGuidedEmptyStateHtml() {
   var hints = [];
   if (f.hasSearch) hints.push('Borra o acorta el texto en el campo de búsqueda.');
   if (f.hasFilters) hints.push('Relaja los filtros: banda, región, tipo (Echolink / DMR / radioclub) o conferencia.');
-  if (f.hasNear) hints.push('Desactiva «cerca de mí» si no hay nodos en 100 km a tu alrededor.');
+  if (f.hasNear) hints.push('Desactivá el filtro por distancia (ubicación o repetidora de referencia), o ampliá el radio (hasta ' + NEAR_ME_RADIUS_MAX_KM + ' km).');
   if (hints.length === 0) hints.push('Amplía la búsqueda o quita filtros.');
   var items = hints.map(function (h) { return '<li>' + h + '</li>'; }).join('');
   return '<div class="no-results no-results--guided" role="status">' +
@@ -593,5 +725,53 @@ if (!window.__radiomapFilterDelegationDone) {
     document.addEventListener('DOMContentLoaded', wireFilterDropdownPanelPositioning);
   } else {
     wireFilterDropdownPanelPositioning();
+  }
+}
+
+function syncNearRadiusControl() {
+  var wrap = document.getElementById('near-radius-floater');
+  var sl = document.getElementById('near-radius-slider');
+  var valEl = document.getElementById('near-radius-value');
+  if (!wrap || !sl || !valEl) return;
+  var on = typeof getDistanceFilterAnchor === 'function' && !!getDistanceFilterAnchor();
+  wrap.hidden = !on;
+  wrap.setAttribute('aria-hidden', on ? 'false' : 'true');
+  if (on) {
+    var r = typeof getNearMeRadiusKm === 'function' ? getNearMeRadiusKm() : 100;
+    sl.value = String(r);
+    valEl.textContent = r + ' km';
+    sl.setAttribute('aria-valuenow', String(r));
+  }
+}
+window.syncNearRadiusControl = syncNearRadiusControl;
+
+function wireNearRadiusSliderOnce() {
+  var nrSlider = document.getElementById('near-radius-slider');
+  if (!nrSlider || nrSlider.dataset.radiomapNearRadiusBound) return;
+  nrSlider.dataset.radiomapNearRadiusBound = '1';
+  nrSlider.addEventListener('input', function () {
+    if (typeof setNearMeRadiusKm === 'function') setNearMeRadiusKm(nrSlider.value);
+    var valEl = document.getElementById('near-radius-value');
+    var r = typeof getNearMeRadiusKm === 'function' ? getNearMeRadiusKm() : parseInt(nrSlider.value, 10);
+    if (valEl) valEl.textContent = r + ' km';
+    nrSlider.setAttribute('aria-valuenow', String(r));
+    if (typeof saveFilterState === 'function') saveFilterState();
+    if (typeof window.applyFilters === 'function') {
+      window.applyFilters({ skipFitBounds: true });
+    } else if (typeof window.__radiomapListRadiusChange === 'function') {
+      window.__radiomapListRadiusChange();
+    }
+  });
+}
+
+if (!window.__radiomapNearRadiusSliderWired) {
+  window.__radiomapNearRadiusSliderWired = true;
+  function runNearRadiusWire() {
+    wireNearRadiusSliderOnce();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runNearRadiusWire);
+  } else {
+    runNearRadiusWire();
   }
 }

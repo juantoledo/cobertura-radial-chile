@@ -287,6 +287,7 @@
 
   function showUserLocationSidebar(lat, lon) {
     selectedIdx = null;
+    if (typeof clearRadiusRefSignal === 'function') clearRadiusRefSignal();
     renderAll();
     const sidebar = document.getElementById('sidebar');
     const sbSig = document.getElementById('sb-signal');
@@ -348,7 +349,7 @@
 
   function applyFilters(opts){
     opts = opts || {};
-    const nearMe = getNearMeLocation();
+    const distAnchor = typeof getDistanceFilterAnchor === 'function' ? getDistanceFilterAnchor() : null;
     const visibleIndices = getVisibleNodeIndices();
     visibleSet = new Set(visibleIndices);
     const visibleNodes = visibleIndices.map(function (i) { return NODES[i]; });
@@ -361,18 +362,20 @@
     document.getElementById('total-count').textContent = NODES.length;
     document.getElementById('regions-count').textContent = new Set(visibleNodes.map(r => r.region || '')).size;
     document.getElementById('clubs-count').textContent = new Set(visibleNodes.map(r => r.nombre).filter(Boolean)).size;
-    document.getElementById('filter-nearme').textContent = nearMe ? ' · cerca de mí' : '';
+    document.getElementById('filter-nearme').textContent =
+      typeof formatNearMeFilterSuffix === 'function' ? formatNearMeFilterSuffix() : (distAnchor ? ' · filtro distancia' : '');
     if (typeof saveFilterState === 'function') saveFilterState();
+    if (typeof syncNearRadiusControl === 'function') syncNearRadiusControl();
     renderAll();
     if (selectedIdx !== null) showSidebar(selectedIdx);
-    if (!opts.skipFitBounds && nearMe) {
+    if (!opts.skipFitBounds && distAnchor) {
       const withCoords = visibleNodes.filter(r => r.lat != null && r.lon != null);
       if (withCoords.length > 0) {
         const bounds = L.latLngBounds(withCoords.map(r => [r.lat, r.lon]));
-        bounds.extend([nearMe.lat, nearMe.lon]);
+        bounds.extend([distAnchor.lat, distAnchor.lon]);
         map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
       } else {
-        map.setView([nearMe.lat, nearMe.lon], 10);
+        map.setView([distAnchor.lat, distAnchor.lon], 10);
       }
     }
   }
@@ -414,8 +417,15 @@
 
   function selectRepeater(idx){
     selectedIdx = idx;
-    renderAll();
-    showSidebar(idx);
+    const r = NODES[idx];
+    if (typeof setRadiusRefSignal === 'function') {
+      if (r && r.lat != null && r.lon != null && typeof r.lat === 'number' && typeof r.lon === 'number') {
+        setRadiusRefSignal(r.signal);
+      } else if (typeof clearRadiusRefSignal === 'function') {
+        clearRadiusRefSignal();
+      }
+    }
+    applyFilters({ skipFitBounds: true });
   }
 
   function showSidebar(idx){
@@ -599,7 +609,7 @@
   });
 
   function getExportCriteria() {
-    return typeof getExportFilterCriteria === 'function' ? getExportFilterCriteria() : { search: '', nearMe: !!getNearMeLocation(), bandas: [], regions: [], types: [], conferences: [] };
+    return typeof getExportFilterCriteria === 'function' ? getExportFilterCriteria() : { search: '', nearMe: !!(typeof getDistanceFilterAnchor === 'function' && getDistanceFilterAnchor()), bandas: [], regions: [], types: [], conferences: [] };
   }
   document.querySelectorAll('#btn-download-csv, #btn-download-csv-menu').forEach(btn => {
     btn.addEventListener('click', function(e) {
@@ -625,6 +635,13 @@
     }
     closeSidebar();
     applyFilters();
+  };
+
+  window.__radiomapRadiusReference = function () {
+    if (selectedIdx == null || typeof NODES === 'undefined' || !NODES.length) return null;
+    var r = NODES[selectedIdx];
+    if (!r || r.lat == null || r.lon == null || typeof r.lat !== 'number' || typeof r.lon !== 'number') return null;
+    return { lat: r.lat, lon: r.lon, signal: r.signal || '' };
   };
 
   window.__radiomapGetMapShareState = function () {
