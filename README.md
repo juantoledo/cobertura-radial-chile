@@ -1,66 +1,67 @@
 # Radiomap
 
-**Mapa y lista de repetidoras de radioaficionados en Chile** — dónde están, qué cubren y cómo contactar. Incluye repetidoras SUBTEL y nodos Echolink (Red Chile, Red Echolink Chile, RCDR). Datos oficiales SUBTEL/DGMN.
+**El mapa y el listado de repetidoras en Chile** — repetidoras autorizadas, nodos **Echolink** y estaciones **DMR**, en un solo lugar. Pensado para salir a la ruta con la frecuencia correcta y cero fricción.
 
-[**→ Abrir la aplicación**](https://www.radiomap.cl/)
-
----
-
-## Para qué sirve
-
-- **Ver en el mapa** todas las repetidoras y nodos Echolink, su cobertura teórica y ubicación.
-- **Buscar por señal, comuna, frecuencias (RX/TX/tono)** o filtrar por banda, región y tipo (Radioclubes / Echolink).
-- **Revisar datos** de cada nodo (club, potencia, vencimiento, conferencia Echolink) y descargar listas en CSV.
-- **Botón 📍** para mostrar solo nodos cerca de tu ubicación (100 km).
-
-Ideal para planificar rutas, elegir repetidora o tener a mano el listado actualizado.
+[**Abrir Radiomap →**](https://www.radiomap.cl/)
 
 ---
 
-## Cómo se usa
+## Por qué usarlo
 
-### Mapa de cobertura
+- **Una vista del país** — Cobertura teórica en mapa y tabla por región, con datos alineados al trabajo de SUBTEL/DGMN y curación propia donde hace falta.
+- **Encuentra rápido** — Búsqueda por indicativo, comuna, RX/TX, tono, texto en DMR (color, slot, TG) y más.
+- **Filtra como operador** — Banda, región, tipo (**radioclubes / Echolink / DMR**) y **conferencia o red** (varias opciones = OR dentro de cada criterio).
+- **Cerca tuyo o de una repetidora** — **Cerca de mí** o repetidora de referencia, con **radio ajustable (20–100 km)** para ver solo lo que te sirve en el momento.
+- **Llévatelo** — **CSV** en un clic (mapa y lista, también en móvil). **Compartir** genera un enlace con filtros, búsqueda, distancia, posición del mapa y la estación abierta en el panel cuando aplica.
+- **Cómodo de noche o de día** — Tema claro/oscuro, ayuda integrada y UI pensada para pantalla chica.
+
+---
+
+## Mapa
 
 ![Mapa de cobertura](images/map.png)
 ![Mapa de cobertura](images/map2.png)
 
-- Explora el mapa (modo oscuro/claro con ☽).
-- **Vista** (iconos): marcador, círculo de cobertura o ambos.
-- **Filtros**: banda (VHF/UHF), región, tipo (Todos los Tipos / Solo Echolink / Solo Radioclubes) y conferencia Echolink.
-- Búsqueda por texto: señal, comuna, frecuencia…
-- **Clic en un punto**: datos completos y nodos cercanos en el panel lateral. Los Radioclubes muestran un punto de color; los Echolink un cuadrado con «e». Desde ahí puedes descargar CSV de nodos cercanos o compartir la lista.
+- **Leyenda visual** — Radioclubes (círculo), Echolink (cuadrado **e**), DMR (rombo **d**).
+- **Cómo ver la cobertura** — Marcador solo, círculo solo o ambos; explorás Chile con zoom y pan habituales.
+- **Detalle al tocar** — Ficha con lo esencial y **nodos cercanos**; desde ahí podés exportar CSV de vecinos o compartir la vista.
+- El mapa muestra **cobertura teórica**; condiciones reales (terreno, antena, QRM) siempre pueden diferir — revisá el aviso en la app.
 
-### Lista de repetidores
+---
+
+## Lista
 
 ![Lista de repetidores](images/list.png)
 
-- Tabla agrupada por región con señal, banda, RX/TX, tono, potencia, club, comuna y vencimiento.
-- Mismos filtros y búsqueda (incluye frecuencias).
-- **Descarga CSV** siempre visible en el header (también en móvil).
-
-En ambas vistas puedes cambiar el tema (claro/oscuro) y exportar a CSV. Interfaz optimizada para móvil (controles compactos, header adaptable).
+- Tabla **agrupada por región**: señal, banda, RX/TX, tono, potencia, club, comuna, vencimiento e insignias **Echolink/DMR** donde corresponda.
+- **Los mismos filtros y la misma búsqueda** que en el mapa, para pasar de vista geográfica a planilla sin perder contexto.
 
 ---
 
-## Datos
+## Datos y confianza
 
-La información proviene del **listado oficial de repetidoras** de la [Subsecretaría de Telecomunicaciones (SUBTEL)](https://www.subtel.gob.cl/), más nodos **Echolink** (Red Chile, Red Echolink Chile, RCDR). La fuente de datos es `data/curated_stations.csv`, que puede curarse para corregir errores del origen.
-
-Las regiones siguen la división administrativa de Chile (SUBTEL/DGMN).
+La base parte del [**listado oficial de repetidoras de SUBTEL**](https://www.subtel.gob.cl/), complementado con nodos **Echolink** (p. ej. Red Chile, Red Echolink Chile, RCDR) y **DMR** según lo curado en el proyecto. Las regiones siguen la división administrativa chilena. El archivo curado vive en `data/curated_stations.csv`; si encontrás inconsistencias, el flujo del repo permite corregir y regenerar el dataset publicado.
 
 ---
 
-## Ejecutarlo en local
+## Para desarrolladores
 
-Si quieres correr la app en tu máquina:
+Sitio estático (sin bundler). Para verlo en local:
 
 ```bash
-python -m http.server 8080
+./scripts/serve.sh 8080
 ```
 
-Luego abre `http://localhost:8080/` (mapa) o `http://localhost:8080/lista.html` (lista).  
-Usar un servidor local (y no `file://`) ayuda a que el tema y preferencias se guarden bien.
+Abrí `http://localhost:8080/` (mapa) o `/lista.html` (lista). **No uses `file://`** si querés tema y preferencias estables.
+
+Tras editar el CSV:
+
+```bash
+./scripts/sync-data.sh
+```
+
+Más detalle: [`scripts/README.md`](scripts/README.md), [`data/README.md`](data/README.md), [`AGENTS.md`](AGENTS.md).
 
 ---
 
-*Desarrollado por [CD3DXZ](https://cd3dxz.radio)*
+*Radiomap — desarrollado por [CD3DXZ](https://cd3dxz.radio)*
