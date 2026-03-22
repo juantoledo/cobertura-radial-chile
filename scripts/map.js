@@ -78,11 +78,35 @@
       tileOpts
     ).addTo(map);
   }
-  setMapTiles(getTheme());
-  window.onThemeChange = function(theme) { setMapTiles(theme); };
 
   const circleLayer = L.layerGroup().addTo(map);
+  /** Anillo casi invisible del radio «cerca de mí / referencia» (sobre cobertura, bajo marcadores). */
+  const nearRadiusFilterLayer = L.layerGroup().addTo(map);
   const markerLayer = L.layerGroup().addTo(map);
+
+  function syncNearRadiusFilterOverlay() {
+    nearRadiusFilterLayer.clearLayers();
+    var anchor = typeof getDistanceFilterAnchor === 'function' ? getDistanceFilterAnchor() : null;
+    if (!anchor || typeof anchor.lat !== 'number' || typeof anchor.lon !== 'number' || isNaN(anchor.lat) || isNaN(anchor.lon)) return;
+    var km = typeof getNearMeRadiusKm === 'function' ? getNearMeRadiusKm() : 100;
+    if (!(km > 0)) return;
+    var light = typeof getTheme === 'function' && getTheme() === 'light';
+    L.circle([anchor.lat, anchor.lon], {
+      radius: km * 1000,
+      color: light ? 'rgba(40, 70, 120, 0.2)' : 'rgba(0, 212, 255, 0.22)',
+      weight: 1,
+      fillColor: light ? 'rgba(60, 100, 180, 0.035)' : 'rgba(0, 212, 255, 0.04)',
+      fillOpacity: 1,
+      interactive: false,
+      bubblingMouseEvents: false,
+    }).addTo(nearRadiusFilterLayer);
+  }
+
+  setMapTiles(getTheme());
+  window.onThemeChange = function(theme) {
+    setMapTiles(theme);
+    syncNearRadiusFilterOverlay();
+  };
 
   let currentMode = 'markers';
   let selectedIdx = null;
@@ -287,6 +311,7 @@
       }
     });
     updateMapEmptyOverlay();
+    syncNearRadiusFilterOverlay();
   }
 
   function updateMapEmptyOverlay() {
