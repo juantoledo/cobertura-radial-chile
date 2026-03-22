@@ -1,6 +1,6 @@
 /**
  * Map view — Leaflet map, circles, markers, sidebar, filters
- * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getVisibleNodeIndices), dmr-ui.js (buildDmrDetailHtml), export-csv.js, theme.js, help.js, station-display.js (hasStationFieldValue)
+ * Requires: utils.js (escapeHtml, escapeAttr), data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getVisibleNodeIndices), dmr-ui.js (buildDmrDetailHtml), export-csv.js, theme.js, help.js, station-display.js (hasStationFieldValue)
  */
 (function() {
   if (typeof NODES === 'undefined' || !NODES.length) return;
@@ -9,13 +9,6 @@
   function getClubName(signal) { var n = NODES && NODES.find(function(x){ return x.signal === signal; }); return n ? (n.nombre || '') : ''; }
   window.getClubName = getClubName;
 
-  function escapeHtmlText(s) {
-    if (s == null || s === '') return '';
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-  function escapeAttr(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-  }
   function aircraftIconSvgHtml() {
     return '<svg class="signal-air-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>';
   }
@@ -177,7 +170,7 @@
         else { fillOp = 0.02; strokeOp = 0.07; weight = 0.5; dashArr = null; }
 
         const circle = L.circle([r.lat, r.lon], {
-          radius: r.range_km * 1000,
+          radius: getRange(r) * 1000,
           color: 'rgba('+rgb+','+strokeOp+')',
           fillColor: 'rgba('+rgb+','+fillOp+')',
           fillOpacity: 1, weight: weight, dashArray: dashArr, interactive: false,
@@ -214,20 +207,20 @@
         marker.on('click', ()=>{ selectRepeater(r._idx); });
         const club = r.nombre || getClubName(r.signal);
         const confT = (r.conference || '').trim();
-        const echolinkLine = r.isEcholink ? '<br><span class="rpt-tooltip-meta">Echolink' + (confT ? ' · ' + escapeHtmlText(confT) : '') + '</span>' : '';
-        const dmrLine = r.isDMR && !r.isEcholink ? '<br><span class="rpt-tooltip-meta">DMR' + (confT ? ' · ' + escapeHtmlText(confT) : '') + '</span>' : '';
+        const echolinkLine = r.isEcholink ? '<br><span class="rpt-tooltip-meta">Echolink' + (confT ? ' · ' + escapeHtml(confT) : '') + '</span>' : '';
+        const dmrLine = r.isDMR && !r.isEcholink ? '<br><span class="rpt-tooltip-meta">DMR' + (confT ? ' · ' + escapeHtml(confT) : '') + '</span>' : '';
         const sigLead = r.isAir ? aircraftIconSvgHtml() : '';
         const locParts = [];
-        if (fieldShown(r.comuna)) locParts.push(escapeHtmlText(r.comuna));
-        if (fieldShown(r.banda)) locParts.push(escapeHtmlText(r.banda));
+        if (fieldShown(r.comuna)) locParts.push(escapeHtml(r.comuna));
+        if (fieldShown(r.banda)) locParts.push(escapeHtml(r.banda));
         const locLine = locParts.length ? '<br><span class="rpt-tooltip-meta">' + locParts.join(' · ') + '</span>' : '';
         const freqParts = [];
-        if (fieldShown(r.rx)) freqParts.push('RX ' + escapeHtmlText(String(r.rx)));
-        if (fieldShown(r.tx)) freqParts.push('TX ' + escapeHtmlText(String(r.tx)));
-        if (fieldShown(r.tono)) freqParts.push(escapeHtmlText(String(r.tono)) + ' Hz');
+        if (fieldShown(r.rx)) freqParts.push('RX ' + escapeHtml(String(r.rx)));
+        if (fieldShown(r.tx)) freqParts.push('TX ' + escapeHtml(String(r.tx)));
+        if (fieldShown(r.tono)) freqParts.push(escapeHtml(String(r.tono)) + ' Hz');
         const freqLine = freqParts.length ? '<br><span class="rpt-tooltip-meta">' + freqParts.join(' · ') + '</span>' : '';
         const tooltipHtml = '<div class="rpt-tooltip-inner">' +
-          sigLead + escapeHtmlText(r.signal) + (fieldShown(club) ? '<br><span class="rpt-tooltip-club">' + escapeHtmlText(club) + '</span>' : '') +
+          sigLead + escapeHtml(r.signal) + (fieldShown(club) ? '<br><span class="rpt-tooltip-club">' + escapeHtml(club) + '</span>' : '') +
           locLine + freqLine + echolinkLine + dmrLine + '</div>';
         marker.bindTooltip(tooltipHtml, { permanent: false, direction: 'top', opacity: 1, className: 'rpt-tooltip' });
         if(visible) marker.addTo(markerLayer);
@@ -383,6 +376,10 @@
 
   const searchEl = document.getElementById('search');
   if (searchEl) {
+    const debouncedApply = typeof debounce === 'function'
+      ? debounce(function () { applyFilters(); }, 200)
+      : function () { applyFilters(); };
+    searchEl.addEventListener('input', debouncedApply);
     function isMapOverlayOpen() {
       const help = document.getElementById('help-overlay');
       return !!(help && help.classList.contains('open'));
@@ -441,7 +438,7 @@
       sbSig.innerHTML =
         airPre +
         '<span class="sidebar-signal-text">' +
-        escapeHtmlText(r.signal) +
+        escapeHtml(r.signal) +
         '</span><a href="' +
         escapeAttr(wurl) +
         '" class="station-website-link" target="_blank" rel="noopener noreferrer" aria-label="Sitio web del club" title="Sitio web"><span class="material-symbols-outlined" aria-hidden="true">language</span></a>';
@@ -450,7 +447,7 @@
       sbSig.style.color = '';
     } else if (r.isAir) {
       sbSig.classList.remove('sidebar-signal--with-web');
-      sbSig.innerHTML = airPre + '<span class="sidebar-signal-text">' + escapeHtmlText(r.signal) + '</span>';
+      sbSig.innerHTML = airPre + '<span class="sidebar-signal-text">' + escapeHtml(r.signal) + '</span>';
       var stA = sbSig.querySelector('.sidebar-signal-text');
       if (stA) stA.style.color = color;
       sbSig.style.color = '';
@@ -463,26 +460,26 @@
 
     const body = document.getElementById('sb-body');
     const rows = [];
-    if (fieldShown(club)) rows.push(['CLUB', escapeHtmlText(club)]);
-    if (fieldShown(r.region)) rows.push(['Región', escapeHtmlText(r.region)]);
-    if (fieldShown(r.comuna)) rows.push(['COMUNA', escapeHtmlText(r.comuna)]);
+    if (fieldShown(club)) rows.push(['CLUB', escapeHtml(club)]);
+    if (fieldShown(r.region)) rows.push(['Región', escapeHtml(r.region)]);
+    if (fieldShown(r.comuna)) rows.push(['COMUNA', escapeHtml(r.comuna)]);
     if (fieldShown(r.banda)) {
       rows.push([
         'BANDA',
         '<span style="color:' + (String(r.banda).startsWith('VHF') ? '#29abe2' : '#e91e8c') + '">' + r.banda + '</span>',
       ]);
     }
-    if (fieldShown(r.rx)) rows.push(['RX (MHz)', escapeHtmlText(String(r.rx))]);
-    if (fieldShown(r.tx)) rows.push(['TX (MHz)', escapeHtmlText(String(r.tx))]);
-    if (fieldShown(r.tono)) rows.push(['TONO', escapeHtmlText(String(r.tono)) + ' Hz']);
-    if (fieldShown(r.potencia)) rows.push(['POTENCIA', escapeHtmlText(String(r.potencia)) + ' W']);
-    if (fieldShown(r.ganancia)) rows.push(['GANANCIA', escapeHtmlText(String(r.ganancia)) + ' dBi']);
-    if (fieldShown(r.range_km)) rows.push(['COBERTURA', escapeHtmlText(String(r.range_km)) + ' km']);
-    if (fieldShown(r.ubicacion)) rows.push(['UBICACIÓN', escapeHtmlText(r.ubicacion)]);
-    if (fieldShown(r.vence)) rows.push(['VENCE', escapeHtmlText(r.vence)]);
+    if (fieldShown(r.rx)) rows.push(['RX (MHz)', escapeHtml(String(r.rx))]);
+    if (fieldShown(r.tx)) rows.push(['TX (MHz)', escapeHtml(String(r.tx))]);
+    if (fieldShown(r.tono)) rows.push(['TONO', escapeHtml(String(r.tono)) + ' Hz']);
+    if (fieldShown(r.potencia)) rows.push(['POTENCIA', escapeHtml(String(r.potencia)) + ' W']);
+    if (fieldShown(r.ganancia)) rows.push(['GANANCIA', escapeHtml(String(r.ganancia)) + ' dBi']);
+    if (fieldShown(r.range_km)) rows.push(['COBERTURA', escapeHtml(String(r.range_km)) + ' km']);
+    if (fieldShown(r.ubicacion)) rows.push(['UBICACIÓN', escapeHtml(r.ubicacion)]);
+    if (fieldShown(r.vence)) rows.push(['VENCE', escapeHtml(r.vence)]);
     if (r.isEcholink) {
       const ccf = (r.conference || '').trim();
-      rows.push(['ECHOLINK', '<span class="badge-echolink">Sí</span>' + (ccf ? ' · ' + escapeHtmlText(ccf) : '')]);
+      rows.push(['ECHOLINK', '<span class="badge-echolink">Sí</span>' + (ccf ? ' · ' + escapeHtml(ccf) : '')]);
     }
     if (r.isDMR && !r.isEcholink) {
       rows.push([
@@ -490,7 +487,7 @@
         typeof buildDmrDetailHtml === 'function'
           ? buildDmrDetailHtml(r, 'sidebar')
           : '<span class="badge-dmr">DMR</span>' +
-            ((r.conference || '').trim() ? ' · ' + escapeHtmlText((r.conference || '').trim()) : ''),
+            ((r.conference || '').trim() ? ' · ' + escapeHtml((r.conference || '').trim()) : ''),
       ]);
     }
 
@@ -503,15 +500,15 @@
         const nb = NODES[n.idx];
         const nc = REGION_COLORS[nb.region]||'#5e35b1';
         const freqPartsN = [];
-        if (fieldShown(nb.rx)) freqPartsN.push('RX ' + escapeHtmlText(String(nb.rx)));
-        if (fieldShown(nb.tx)) freqPartsN.push('TX ' + escapeHtmlText(String(nb.tx)));
-        if (fieldShown(nb.tono)) freqPartsN.push(escapeHtmlText(String(nb.tono)) + ' Hz');
+        if (fieldShown(nb.rx)) freqPartsN.push('RX ' + escapeHtml(String(nb.rx)));
+        if (fieldShown(nb.tx)) freqPartsN.push('TX ' + escapeHtml(String(nb.tx)));
+        if (fieldShown(nb.tono)) freqPartsN.push(escapeHtml(String(nb.tono)) + ' Hz');
         const details = freqPartsN.join(' · ');
         const clubName = (nb.nombre || getClubName(nb.signal) || '').trim();
         const comuna = (nb.comuna || '').trim();
         const metaLabel = [clubName, comuna].filter(Boolean).join(' · ');
         const metaHtml = metaLabel
-          ? '<div class="neighbor-meta" title="' + escapeAttr(metaLabel) + '">' + escapeHtmlText(metaLabel) + '</div>'
+          ? '<div class="neighbor-meta" title="' + escapeAttr(metaLabel) + '">' + escapeHtml(metaLabel) + '</div>'
           : '';
         const detailsHtml = details
           ? '<div class="neighbor-details"><span>' + details + '</span></div>'
@@ -525,9 +522,9 @@
           : nb.isAir
           ? '<div class="neighbor-atc" style="background:'+nc+'" title="ATC / aéreo">' + neighborAtcIconSvgHtml() + '</div>'
           : '<div class="neighbor-dot" style="background:'+nc+'"></div>';
-        return '<div class="neighbor-row'+(isSelected?' neighbor-selected':'')+'" onclick="selectRepeater('+n.idx+')">' +
+        return '<div class="neighbor-row'+(isSelected?' neighbor-selected':'')+'" onclick="selectRepeater('+n.idx+')" tabindex="0" role="button" data-idx="'+n.idx+'" aria-label="'+escapeAttr(nb.signal)+(isSelected?' (este)':'')+'">' +
           dotEl +
-          '<div class="neighbor-main"><span class="neighbor-signal">'+escapeHtmlText(nb.signal)+(isSelected?' (este)':'')+'</span>' +
+          '<div class="neighbor-main"><span class="neighbor-signal">'+escapeHtml(nb.signal)+(isSelected?' (este)':'')+'</span>' +
           metaHtml +
           detailsHtml + '</div>' +
           '<span class="neighbor-dist">'+distStr+'</span></div>';
@@ -608,6 +605,21 @@
     if (menu && menu.classList.contains('open') && !menu.contains(e.target) && !toggle.contains(e.target)) closeMenuMap();
   });
 
+  (function wireNeighborKeyboard() {
+    var sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    sidebar.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var row = e.target.closest('.neighbor-row');
+      if (!row) return;
+      var idx = parseInt(row.getAttribute('data-idx'), 10);
+      if (!isNaN(idx)) {
+        e.preventDefault();
+        selectRepeater(idx);
+      }
+    });
+  })();
+
   function getExportCriteria() {
     return typeof getExportFilterCriteria === 'function' ? getExportFilterCriteria() : { search: '', nearMe: !!(typeof getDistanceFilterAnchor === 'function' && getDistanceFilterAnchor()), bandas: [], regions: [], types: [], conferences: [] };
   }
@@ -657,8 +669,8 @@
 
   const urlParams = new URLSearchParams(window.location.search);
   const sharedMapOk = urlParams.has('mlat') && urlParams.has('mlon') && urlParams.has('zoom');
-  const mlat = sharedMapOk ? parseFloat(urlParams.get('mlat'), 10) : NaN;
-  const mlon = sharedMapOk ? parseFloat(urlParams.get('mlon'), 10) : NaN;
+  const mlat = sharedMapOk ? parseFloat(urlParams.get('mlat')) : NaN;
+  const mlon = sharedMapOk ? parseFloat(urlParams.get('mlon')) : NaN;
   const mzoom = sharedMapOk ? parseInt(urlParams.get('zoom'), 10) : NaN;
   const sharedMapValid = sharedMapOk && !isNaN(mlat) && !isNaN(mlon) && !isNaN(mzoom);
 

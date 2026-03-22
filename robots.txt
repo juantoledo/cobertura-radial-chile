@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /data/data.js
+
+Sitemap: https://www.radiomap.cl/sitemap.xml

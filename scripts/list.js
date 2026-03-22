@@ -1,6 +1,6 @@
 /**
  * List view — table by region, filters, share
- * Requires: data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getFilteredNodes), dmr-ui.js (buildDmrDetailHtml), share-view.js (buildShareViewURL), export-csv.js, theme.js, help.js, station-display.js (hasStationFieldValue)
+ * Requires: utils.js (escapeHtml, escapeAttr), data/data.js (NODES, REGION_COLORS, VERSION), location-filter.js (getFilteredNodes), dmr-ui.js (buildDmrDetailHtml), share-view.js (buildShareViewURL), export-csv.js, theme.js, help.js, station-display.js (hasStationFieldValue)
  */
 (function() {
   if (typeof NODES === 'undefined' || !NODES.length) return;
@@ -36,6 +36,9 @@
   }
   if (typeof loadFilterState === 'function') loadFilterState();
 
+  let sortCol = null;
+  let sortDir = 'asc';
+
   function parseDate(s) {
     if (!s) return null;
     const p = String(s).trim().split('-');
@@ -43,6 +46,44 @@
     if (p[0].length === 4) return new Date(s);
     return new Date(parseInt(p[2],10), parseInt(p[1],10)-1, parseInt(p[0],10));
   }
+  function cmpStr(a, b) {
+    const sa = (a == null || a === '') ? null : String(a);
+    const sb = (b == null || b === '') ? null : String(b);
+    if (sa === null && sb === null) return 0;
+    if (sa === null) return 1;
+    if (sb === null) return -1;
+    return sa.localeCompare(sb, 'es', { sensitivity: 'base' });
+  }
+  function cmpNum(a, b) {
+    const na = (a == null || a === '') ? null : parseFloat(a);
+    const nb = (b == null || b === '') ? null : parseFloat(b);
+    if (na === null && nb === null) return 0;
+    if (na === null || isNaN(na)) return 1;
+    if (nb === null || isNaN(nb)) return -1;
+    return na - nb;
+  }
+  function cmpDate(a, b) {
+    const da = parseDate(a);
+    const db = parseDate(b);
+    if (!da && !db) return 0;
+    if (!da || isNaN(da)) return 1;
+    if (!db || isNaN(db)) return -1;
+    return da - db;
+  }
+  const SORT_COMPARATORS = {
+    signal:    (a, b) => cmpStr(a.signal, b.signal),
+    banda:     (a, b) => cmpStr(a.banda, b.banda),
+    rx:        (a, b) => cmpNum(a.rx, b.rx),
+    tx:        (a, b) => cmpNum(a.tx, b.tx),
+    tono:      (a, b) => cmpNum(a.tono, b.tono),
+    potencia:  (a, b) => cmpNum(a.potencia, b.potencia),
+    nombre:    (a, b) => cmpStr(a.nombre, b.nombre),
+    comuna:    (a, b) => cmpStr(a.comuna, b.comuna),
+    ubicacion: (a, b) => cmpStr(a.ubicacion, b.ubicacion),
+    vence:     (a, b) => cmpDate(a.vence, b.vence),
+    _dist:     (a, b) => cmpNum(a._dist, b._dist),
+  };
+
   function venceClass(vence) {
     if (!vence) return '';
     const d = parseDate(vence);
@@ -59,17 +100,6 @@
     return 'badge-vhf';
   }
 
-  function escapeHtml(s) {
-    if (s == null || s === '') return '';
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-  function escapeAttr(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-  }
   function safeWebsiteUrl(w) {
     w = (w || '').trim();
     if (!/^https?:\/\//i.test(w)) return '';
@@ -291,13 +321,21 @@
       });
     }
 
-    const labels = ['Señal','Banda','RX (MHz)','TX (MHz)','Tono','Pot. W','Club / Titular','Comuna','Ubicación','Vence','Compartir'];
-    if (showDistance) labels.splice(2, 0, 'Distancia');
+    function thSort(col, label) {
+      const active = sortCol === col;
+      const ariaSortAttr = active ? ` aria-sort="${sortDir === 'asc' ? 'ascending' : 'descending'}"` : ' aria-sort="none"';
+      return `<th data-sort-col="${col}"${ariaSortAttr}>${label}<span class="sort-arrow" aria-hidden="true"></span></th>`;
+    }
 
     let html = '';
     regionsToShow.forEach(reg => {
-      const rows = byRegion[reg];
+      let rows = byRegion[reg];
       if (!rows || !rows.length) return;
+
+      if (sortCol && SORT_COMPARATORS[sortCol]) {
+        const cmp = SORT_COMPARATORS[sortCol];
+        rows = rows.slice().sort((a, b) => sortDir === 'asc' ? cmp(a, b) : cmp(b, a));
+      }
 
       html += `<div class="zone-group" data-region="${reg}">
         <div class="zone-header">
@@ -306,10 +344,11 @@
         </div>
         <table class="rpt-table">
           <thead><tr>
-            <th>Señal</th><th>Banda</th>
-            ${showDistance ? '<th>Distancia</th>' : ''}
-            <th>RX (MHz)</th><th>TX (MHz)</th><th>Tono</th><th>Pot. W</th>
-            <th>Club / Titular</th><th>Comuna</th><th>Ubicación</th><th>Vence</th><th>Compartir</th>
+            ${thSort('signal','Señal')}${thSort('banda','Banda')}
+            ${showDistance ? thSort('_dist','Distancia') : ''}
+            ${thSort('rx','RX (MHz)')}${thSort('tx','TX (MHz)')}${thSort('tono','Tono')}${thSort('potencia','Pot. W')}
+            ${thSort('nombre','Club / Titular')}${thSort('comuna','Comuna')}${thSort('ubicacion','Ubicación')}${thSort('vence','Vence')}
+            <th>Compartir</th>
           </tr></thead>
           <tbody>`;
 
@@ -317,7 +356,7 @@
         const vc = venceClass(r.vence);
         const bc = bandaClass(r.banda);
         const bandaShort = (r.banda || '').replace('/FM','');
-        const confEsc = (r.conference || '').replace(/"/g, '&quot;');
+        const confEsc = escapeAttr(r.conference || '');
         const echolinkBadge = r.isEcholink ? `<span class="badge-echolink" title="${confEsc}">Echolink</span>` : '';
         const dmrBadge = r.isDMR && !r.isEcholink ? `<span class="badge-dmr" title="${confEsc}">DMR</span>` : '';
         const atcBadge = r.isAir ? '<span class="badge-atc" title="ATC aeronáutico (solo RX / escucha)">ATC</span>' : '';
@@ -326,17 +365,17 @@
         const webLink = websiteLinkHtml(r);
         const sigLead = r.isAir ? aircraftIconHtml() : '';
         html += `<tr class="rpt-row" data-signal="${sigAttr}">
-          <td class="cell-signal" data-label="${labels[0]}">${sigLead}${escapeHtml(r.signal || '—')}${webLink} ${echolinkBadge}${dmrBadge}${atcBadge}</td>
-          <td data-label="${labels[1]}"><span class="badge-banda ${bc}">${bandaShort}</span></td>
+          <td class="cell-signal" data-label="Señal">${sigLead}${escapeHtml(r.signal || '—')}${webLink} ${echolinkBadge}${dmrBadge}${atcBadge}</td>
+          <td data-label="Banda"><span class="badge-banda ${bc}">${bandaShort}</span></td>
           ${distCell}
-          <td class="cell-freq freq-rx" data-label="${labels[showDistance ? 3 : 2]}">${fieldShown(r.rx) ? r.rx : ''}</td>
-          <td class="cell-freq freq-tx" data-label="${labels[showDistance ? 4 : 3]}">${fieldShown(r.tx) ? r.tx : ''}</td>
-          <td class="cell-tone" data-label="${labels[showDistance ? 5 : 4]}">${fieldShown(r.tono) ? escapeHtml(String(r.tono)) : ''}</td>
-          <td class="cell-pot" data-label="${labels[showDistance ? 6 : 5]}">${fieldShown(r.potencia) ? r.potencia + ' W' : ''}</td>
-          <td class="cell-club" data-label="${labels[showDistance ? 7 : 6]}"><strong>${r.nombre}</strong><small>${r.region}</small></td>
-          <td class="cell-comuna" data-label="${labels[showDistance ? 8 : 7]}">${fieldShown(r.comuna) ? escapeHtml(r.comuna) : ''}</td>
-          <td class="cell-ub" data-label="${labels[showDistance ? 9 : 8]}">${fieldShown(r.ubicacion) ? escapeHtml(r.ubicacion) : ''}</td>
-          <td class="cell-vence ${vc}" data-label="${labels[showDistance ? 10 : 9]}">${fieldShown(r.vence) ? escapeHtml(r.vence) : ''}</td>
+          <td class="cell-freq freq-rx" data-label="RX (MHz)">${fieldShown(r.rx) ? r.rx : ''}</td>
+          <td class="cell-freq freq-tx" data-label="TX (MHz)">${fieldShown(r.tx) ? r.tx : ''}</td>
+          <td class="cell-tone" data-label="Tono">${fieldShown(r.tono) ? escapeHtml(String(r.tono)) : ''}</td>
+          <td class="cell-pot" data-label="Pot. W">${fieldShown(r.potencia) ? r.potencia + ' W' : ''}</td>
+          <td class="cell-club" data-label="Club / Titular"><strong>${escapeHtml(r.nombre || '')}</strong><small>${escapeHtml(r.region || '')}</small></td>
+          <td class="cell-comuna" data-label="Comuna">${fieldShown(r.comuna) ? escapeHtml(r.comuna) : ''}</td>
+          <td class="cell-ub" data-label="Ubicación">${fieldShown(r.ubicacion) ? escapeHtml(r.ubicacion) : ''}</td>
+          <td class="cell-vence ${vc}" data-label="Vence">${fieldShown(r.vence) ? escapeHtml(r.vence) : ''}</td>
           <td class="cell-share" data-label="Compartir"><button type="button" class="share-btn" data-signal="${(r.signal||'').replace(/"/g,'&quot;')}" aria-label="Compartir ${(r.signal||'').replace(/"/g,'&quot;')}" title="Compartir detalles"><span class="material-symbols-outlined" aria-hidden="true">share</span></button></td>
         </tr>`;
       });
@@ -434,6 +473,18 @@
   }
 
   document.getElementById('main-content').addEventListener('click', function (e) {
+    const th = e.target.closest('th[data-sort-col]');
+    if (th) {
+      const col = th.getAttribute('data-sort-col');
+      if (sortCol === col) {
+        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortCol = col;
+        sortDir = 'asc';
+      }
+      render(getFiltered());
+      return;
+    }
     const btn = e.target.closest('.share-btn');
     if (btn && btn.dataset.signal !== undefined) {
       e.stopPropagation();
@@ -474,10 +525,20 @@
 
   const searchEl = document.getElementById('search');
   if (searchEl) {
-    ['input', 'change'].forEach(ev => searchEl.addEventListener(ev, () => {
+    const debouncedSearch = typeof debounce === 'function'
+      ? debounce(function () {
+          if (typeof saveFilterState === 'function') saveFilterState();
+          render(getFiltered());
+        }, 200)
+      : function () {
+          if (typeof saveFilterState === 'function') saveFilterState();
+          render(getFiltered());
+        };
+    searchEl.addEventListener('input', debouncedSearch);
+    searchEl.addEventListener('change', function () {
       if (typeof saveFilterState === 'function') saveFilterState();
       render(getFiltered());
-    }));
+    });
 
     function isListOverlayOpen() {
       const help = document.getElementById('help-overlay');
@@ -525,8 +586,10 @@
   updateNearMeButtonState();
 
   function closeMenu() {
-    document.getElementById('header-menu').classList.remove('open');
-    document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
+    const menu = document.getElementById('header-menu');
+    const toggle = document.getElementById('menu-toggle');
+    if (menu) menu.classList.remove('open');
+    if (toggle) toggle.setAttribute('aria-expanded', 'false');
   }
 
   document.getElementById('menu-toggle').addEventListener('click', function() {

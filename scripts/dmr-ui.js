@@ -1,20 +1,8 @@
 /**
  * Shared compact DMR detail HTML (map sidebar + list modal).
- * Requires: loaded after data.js (uses r.isDMR / r.isEcholink).
+ * Requires: utils.js (escapeHtml, escapeAttr), data.js (r.isDMR / r.isEcholink).
  */
 (function () {
-  function escapeHtml(s) {
-    if (s == null || s === '') return '';
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-  function escapeAttr(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-  }
-
   /**
    * @param {object} r node
    * @param {'sidebar'|'modal'} context

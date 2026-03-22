@@ -1244,6 +1244,7 @@ body.page-list select:focus { border-color: var(--accent); }
   border: 1px solid var(--border);
   border-radius: 6px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 .near-radius-floater__head {
   display: flex;
@@ -1275,9 +1276,9 @@ body.page-list select:focus { border-color: var(--accent); }
   min-width: 0;
 }
 .near-radius-floater__slider {
-  flex: 1 1 auto;
+  flex: 1 1 0%;
   min-width: 0;
-  width: 100%;
+  max-width: 100%;
   height: 8px;
   margin: 0;
   accent-color: var(--accent);
@@ -1357,6 +1358,7 @@ html[data-theme="light"] .near-radius-floater {
     height: 6px;
     background: transparent;
     touch-action: manipulation;
+    max-width: 100%;
   }
   .near-radius-floater__slider::-webkit-slider-runnable-track {
     height: 6px;
@@ -1399,7 +1401,7 @@ html[data-theme="light"] .near-radius-floater {
 
 /* ── Lista page: main content & table ────────────────────────────────────── */
 body.page-list main { padding: 24px 32px; }
-.zone-group { margin-bottom: 32px; }
+.zone-group { margin-bottom: 32px; overflow: hidden; }
 .zone-header {
   display: flex;
   align-items: center;
@@ -1418,10 +1420,15 @@ body.page-list main { padding: 24px 32px; }
   border-radius: 3px;
   border: 1px solid;
   white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .zone-region { font-size: var(--fs-sm); color: var(--text-dim); font-style: italic; }
 .zone-count {
   margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
   color: var(--text-dim);
@@ -1447,6 +1454,24 @@ body.page-list main { padding: 24px 32px; }
   user-select: none;
 }
 .rpt-table th:hover { color: var(--accent); }
+.rpt-table th[data-sort-col] { padding-right: 22px; position: relative; }
+.sort-arrow {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  color: var(--text-dim);
+  opacity: 0.35;
+  pointer-events: none;
+}
+.sort-arrow::after { content: '⇅'; }
+.rpt-table th[aria-sort="ascending"] { color: var(--accent); }
+.rpt-table th[aria-sort="ascending"] .sort-arrow { opacity: 1; color: var(--accent); }
+.rpt-table th[aria-sort="ascending"] .sort-arrow::after { content: '▲'; }
+.rpt-table th[aria-sort="descending"] { color: var(--accent); }
+.rpt-table th[aria-sort="descending"] .sort-arrow { opacity: 1; color: var(--accent); }
+.rpt-table th[aria-sort="descending"] .sort-arrow::after { content: '▼'; }
 .rpt-table tbody tr {
   border-bottom: 1px solid rgba(30, 45, 61, 0.6);
   transition: background 0.1s;
