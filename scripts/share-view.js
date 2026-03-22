@@ -1,5 +1,6 @@
 /**
  * Build / open shareable URLs: filters, near-me, map position & mode, list vs map page.
+ * List view: friendly text + link. Map view: same + optional live map PNG (Web Share Level 2).
  * Requires: location-filter.js, data/data.js (NODES) for buildMapViewURLForStation
  */
 (function () {
@@ -71,7 +72,9 @@
     var p = buildShareQueryParams();
     if (signal) p.set('signal', signal);
     if (typeof NODES !== 'undefined' && NODES.length && signal) {
-      var r = NODES.find(function (n) { return n.signal === signal; });
+      var r = NODES.find(function (n) {
+        return n.signal === signal;
+      });
       if (r && r.lat != null && r.lon != null && typeof r.lat === 'number' && typeof r.lon === 'number') {
         p.set('mlat', r.lat.toFixed(5));
         p.set('mlon', r.lon.toFixed(5));
@@ -92,7 +95,9 @@
       if (curSig && String(curSig).trim() && !p.has('signal')) {
         p.set('signal', String(curSig).trim());
       }
-    } catch (e2) { /* ignore */ }
+    } catch (e2) {
+      /* ignore */
+    }
 
     if (typeof window.__radiomapGetMapShareState === 'function') {
       var m = window.__radiomapGetMapShareState();
@@ -110,38 +115,147 @@
     return url.toString();
   }
 
-  function fallbackCopyShareUrl(text) {
+  function fallbackCopyShareUrl(url, optionalFullMessage) {
+    var copyText = optionalFullMessage != null ? optionalFullMessage : url;
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () {
-        alert('Enlace copiado al portapapeles.');
+      navigator.clipboard.writeText(copyText).then(function () {
+        alert('Copiado al portapapeles.');
       }).catch(function () {
-        window.prompt('Copia este enlace:', text);
+        window.prompt('Copia este texto:', copyText);
       });
     } else {
-      window.prompt('Copia este enlace:', text);
+      window.prompt('Copia este texto:', copyText);
     }
+  }
+
+  var html2canvasLoadPromise = null;
+  function ensureHtml2Canvas() {
+    if (typeof window.html2canvas === 'function') return Promise.resolve(window.html2canvas);
+    if (html2canvasLoadPromise) return html2canvasLoadPromise;
+    html2canvasLoadPromise = new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.crossOrigin = 'anonymous';
+      s.onload = function () {
+        if (typeof window.html2canvas === 'function') resolve(window.html2canvas);
+        else reject(new Error('html2canvas'));
+      };
+      s.onerror = function () {
+        reject(new Error('html2canvas load'));
+      };
+      document.head.appendChild(s);
+    });
+    return html2canvasLoadPromise;
+  }
+
+  function captureMapElementToPngBlob() {
+    var el = document.getElementById('map');
+    if (!el || typeof window.html2canvas !== 'function') return Promise.reject(new Error('no map'));
+    return window.html2canvas(el, {
+        useCORS: true,
+        allowTaint: false,
+        scale: Math.min(2, window.devicePixelRatio || 1),
+        logging: false,
+        backgroundColor: null,
+        imageTimeout: 15000,
+      })
+      .then(function (canvas) {
+        return new Promise(function (resolve, reject) {
+          canvas.toBlob(function (blob) {
+            if (blob) resolve(blob);
+            else reject(new Error('toBlob'));
+          }, 'image/png');
+        });
+      });
+  }
+
+  function sharePayloadForPage(url, isMapPage) {
+    if (isMapPage) {
+      return {
+        title: 'Radiomap',
+        text: '¡Hola! Te comparto esta vista del mapa de estaciones de radio en Chile: ' + url,
+      };
+    }
+    return {
+      title: 'Radiomap',
+      text: '¡Hola! Te comparto este mapa de estaciones de radio contigo: ' + url,
+    };
+  }
+
+  /**
+   * @param {object} opts
+   * @param {string} [opts.urlOverride] — full URL to share (default: buildShareViewURL())
+   * @param {boolean} [opts.withScreenshot] — on map page, attach PNG of #map when supported
+   * @param {string} [opts.title] — share title (e.g. station signal)
+   */
+  function radiomapPerformShare(opts) {
+    opts = opts || {};
+    var url = opts.urlOverride || buildShareViewURL();
+    var isMapPage = document.body.classList.contains('page-map');
+    var wantScreenshot = !!opts.withScreenshot && isMapPage;
+    var msgs = sharePayloadForPage(url, isMapPage);
+    var title = opts.title != null && String(opts.title).trim() ? String(opts.title).trim() : msgs.title;
+    var text = msgs.text;
+
+    function closeMenus() {
+      if (typeof closeMenuMap === 'function') closeMenuMap();
+      if (typeof closeMenu === 'function') closeMenu();
+    }
+
+    function tryShare(files) {
+      var payload = { title: title, text: text, url: url };
+      if (files && files.length && navigator.canShare) {
+        try {
+          if (!navigator.canShare({ files: files })) files = null;
+        } catch (e) {
+          files = null;
+        }
+      }
+      if (files && files.length) payload.files = files;
+      if (navigator.share) return navigator.share(payload);
+      return Promise.reject(new Error('no share'));
+    }
+
+    function fallback() {
+      fallbackCopyShareUrl(url, text);
+    }
+
+    var chain = Promise.resolve();
+    if (wantScreenshot) {
+      chain = ensureHtml2Canvas()
+        .then(captureMapElementToPngBlob)
+        .then(function (blob) {
+          var file = new File([blob], 'radiomap-mapa.png', { type: 'image/png' });
+          return tryShare([file]).catch(function () {
+            return tryShare(null);
+          });
+        })
+        .catch(function () {
+          return tryShare(null);
+        });
+    } else {
+      chain = tryShare(null);
+    }
+
+    return chain
+      .catch(function (err) {
+        if (err && err.name === 'AbortError') return;
+        fallback();
+      })
+      .finally(closeMenus);
   }
 
   function shareThisView(ev) {
     if (ev) ev.preventDefault();
-    var url = buildShareViewURL();
-    var title = 'Radiomap';
-    var text = 'Vista.';
-    if (navigator.share) {
-      navigator.share({ title: title, text: text, url: url }).catch(function () {
-        fallbackCopyShareUrl(url);
-      });
-    } else {
-      fallbackCopyShareUrl(url);
-    }
-    if (typeof closeMenuMap === 'function') closeMenuMap();
-    if (typeof closeMenu === 'function') closeMenu();
+    var isList = document.body.classList.contains('page-list');
+    radiomapPerformShare({ withScreenshot: !isList });
   }
 
   window.buildShareViewURL = buildShareViewURL;
   window.buildMapViewURLForStation = buildMapViewURLForStation;
   window.shareThisView = shareThisView;
   window.fallbackCopyShareUrl = fallbackCopyShareUrl;
+  window.radiomapPerformShare = radiomapPerformShare;
 
   function bindShareButtons() {
     document.querySelectorAll('#btn-share-view, #btn-share-view-menu').forEach(function (btn) {

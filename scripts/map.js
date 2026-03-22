@@ -66,6 +66,8 @@
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd',
     maxZoom: 19,
+    /** Needed so html2canvas can export the map (tiles) without tainting the canvas */
+    crossOrigin: true,
   };
   let currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', tileOpts).addTo(map);
 
@@ -568,20 +570,24 @@
     const filteredNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || []).filter(n=>visibleSet.has(n.idx))].sort((a,b)=>a.dist-b.dist);
     if(filteredNeighbors.length === 0) return;
     /** Same as “Compartir vista”: filtros, cerca de mí, mapa (mlat/mlon/zoom/mode) y signal de la repetidora abierta → al abrir se selecciona y se ve “Nodos cercanos”. */
+    if (typeof radiomapPerformShare === 'function') {
+      radiomapPerformShare({ withScreenshot: true, title: r.signal || 'Radiomap' });
+      return;
+    }
     const urlStr = typeof buildShareViewURL === 'function' ? buildShareViewURL() : window.location.href;
     const title = r.signal || 'Radiomap';
-    const text = 'Mapa · cercanos.';
+    const text = '¡Hola! Te comparto esta vista del mapa de estaciones de radio en Chile: ' + urlStr;
     if (navigator.share) {
       navigator.share({ title, text, url: urlStr }).catch(function () {
-        if (typeof fallbackCopyShareUrl === 'function') fallbackCopyShareUrl(urlStr);
+        if (typeof fallbackCopyShareUrl === 'function') fallbackCopyShareUrl(urlStr, text);
       });
     } else if (typeof fallbackCopyShareUrl === 'function') {
-      fallbackCopyShareUrl(urlStr);
+      fallbackCopyShareUrl(urlStr, text);
     } else {
       try {
-        navigator.clipboard.writeText(urlStr).then(function () { alert('Enlace copiado al portapapeles.'); });
+        navigator.clipboard.writeText(text).then(function () { alert('Copiado al portapapeles.'); });
       } catch (e) {
-        window.prompt('Copia este enlace:', urlStr);
+        window.prompt('Copia este texto:', text);
       }
     }
   }

@@ -476,16 +476,20 @@
     const r = NODES.find(n => n.signal === signal);
     if (!r) return;
     const urlStr = buildStationShareLink(signal);
+    if (typeof radiomapPerformShare === 'function') {
+      radiomapPerformShare({ urlOverride: urlStr, withScreenshot: false, title: r.signal || 'Radiomap' });
+      return;
+    }
     const title = r.signal || 'Radiomap';
-    const text = 'Lista.';
+    const text = '¡Hola! Te comparto este mapa de estaciones de radio: ' + urlStr;
     if (navigator.share) {
       navigator.share({ title, text, url: urlStr }).catch(function () {
-        if (typeof fallbackCopyShareUrl === 'function') fallbackCopyShareUrl(urlStr);
+        if (typeof fallbackCopyShareUrl === 'function') fallbackCopyShareUrl(urlStr, text);
       });
     } else if (typeof fallbackCopyShareUrl === 'function') {
-      fallbackCopyShareUrl(urlStr);
+      fallbackCopyShareUrl(urlStr, text);
     } else {
-      window.prompt('Copia este enlace:', urlStr);
+      window.prompt('Copia este texto:', text);
     }
   }
 
