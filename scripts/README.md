@@ -9,7 +9,18 @@ Scripts para el pipeline de datos de repetidoras. La fuente de verdad es `data/c
 | Archivo | Descripción |
 |---------|-------------|
 | `csv-to-datajs.py` | Convierte `data/curated_stations.csv` a `data/data.js` (usado en CI) |
+| `sync-data.sh` | Wrapper: ejecuta `csv-to-datajs.py` desde la raíz del repo (cualquier cwd) |
+| `serve.sh` | Servidor HTTP estático local (`python3 -m http.server`, puerto por defecto 8080) |
 | `data/curated_stations.csv` | Fuente de datos (curated) |
+
+---
+
+## sync-data.sh y serve.sh
+
+```bash
+./scripts/sync-data.sh      # regenerar data.js
+./scripts/serve.sh 8080     # preview en http://localhost:8080/
+```
 
 ---
 
