@@ -579,15 +579,15 @@
     const text = '¡Hola! Te comparto esta vista del mapa de estaciones de radio en Chile: ' + urlStr;
     if (navigator.share) {
       navigator.share({ title, text, url: urlStr }).catch(function () {
-        if (typeof fallbackCopyShareUrl === 'function') fallbackCopyShareUrl(urlStr, text);
+        if (typeof fallbackCopyShareUrl === 'function') fallbackCopyShareUrl(urlStr);
       });
     } else if (typeof fallbackCopyShareUrl === 'function') {
-      fallbackCopyShareUrl(urlStr, text);
+      fallbackCopyShareUrl(urlStr);
     } else {
       try {
-        navigator.clipboard.writeText(text).then(function () { alert('Copiado al portapapeles.'); });
+        navigator.clipboard.writeText(urlStr).then(function () { alert('Enlace copiado al portapapeles.'); });
       } catch (e) {
-        window.prompt('Copia este texto:', text);
+        window.prompt('Copia este enlace:', urlStr);
       }
     }
   }

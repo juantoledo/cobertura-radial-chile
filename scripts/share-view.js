@@ -115,16 +115,17 @@
     return url.toString();
   }
 
-  function fallbackCopyShareUrl(url, optionalFullMessage) {
-    var copyText = optionalFullMessage != null ? optionalFullMessage : url;
+  /** When `navigator.share` is missing or fails, copy only the URL (no greeting text). */
+  function fallbackCopyShareUrl(url) {
+    var u = url != null ? String(url) : '';
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(copyText).then(function () {
-        alert('Copiado al portapapeles.');
+      navigator.clipboard.writeText(u).then(function () {
+        alert('Enlace copiado al portapapeles.');
       }).catch(function () {
-        window.prompt('Copia este texto:', copyText);
+        window.prompt('Copia este enlace:', u);
       });
     } else {
-      window.prompt('Copia este texto:', copyText);
+      window.prompt('Copia este enlace:', u);
     }
   }
 
@@ -217,7 +218,7 @@
     }
 
     function fallback() {
-      fallbackCopyShareUrl(url, text);
+      fallbackCopyShareUrl(url);
     }
 
     var chain = Promise.resolve();

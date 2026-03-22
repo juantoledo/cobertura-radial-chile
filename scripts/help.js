@@ -21,7 +21,6 @@ function closeHelp() {
     el.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
   }
-  try { document.cookie = 'ra-help-seen=1; path=/; max-age=31536000'; } catch (e) {}
   if (_helpLastFocus && typeof _helpLastFocus.focus === 'function') {
     _helpLastFocus.focus();
   }
@@ -65,12 +64,4 @@ function closeHelp() {
       }
     }
   });
-
-  if (!document.cookie.split(';').some(function (c) { return c.trim().startsWith('ra-help-seen='); })) {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function () { setTimeout(openHelp, 400); });
-    } else {
-      setTimeout(openHelp, 400);
-    }
-  }
 })();

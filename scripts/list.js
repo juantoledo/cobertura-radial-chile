@@ -484,12 +484,12 @@
     const text = '¡Hola! Te comparto este mapa de estaciones de radio: ' + urlStr;
     if (navigator.share) {
       navigator.share({ title, text, url: urlStr }).catch(function () {
-        if (typeof fallbackCopyShareUrl === 'function') fallbackCopyShareUrl(urlStr, text);
+        if (typeof fallbackCopyShareUrl === 'function') fallbackCopyShareUrl(urlStr);
       });
     } else if (typeof fallbackCopyShareUrl === 'function') {
-      fallbackCopyShareUrl(urlStr, text);
+      fallbackCopyShareUrl(urlStr);
     } else {
-      window.prompt('Copia este texto:', text);
+      window.prompt('Copia este enlace:', urlStr);
     }
   }
 
