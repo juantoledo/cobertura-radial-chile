@@ -355,11 +355,10 @@
         </div>
         <table class="rpt-table">
           <thead><tr>
-            ${thSort('signal','Señal')}${thSort('banda','Banda')}
+            ${thSort('signal','Señal')}
             ${showDistance ? thSort('_dist','Distancia') : ''}
             ${thSort('rx','RX (MHz)')}${thSort('tx','TX (MHz)')}${thSort('tono','Tono')}${thSort('potencia','Pot. W')}
             ${thSort('nombre','Club / Titular')}${thSort('comuna','Comuna')}${thSort('ubicacion','Ubicación')}${thSort('vence','Vence')}
-            <th>Compartir</th>
           </tr></thead>
           <tbody>`;
 
@@ -381,9 +380,12 @@
         const clubStrong = fieldShown(r.nombre) ? `<strong>${escapeHtml(r.nombre)}</strong>` : '';
         const clubSmall = fieldShown(r.region) ? `<small>${escapeHtml(r.region)}</small>` : '';
         const clubEmpty = !fieldShown(r.nombre) && !fieldShown(r.region);
+        const shareBtn = `<span class="cell-signal-share"><button type="button" class="share-btn" data-signal="${(r.signal || '').replace(/"/g, '&quot;')}" aria-label="Compartir ${(r.signal || '').replace(/"/g, '&quot;')}" title="Compartir detalles"><span class="material-symbols-outlined" aria-hidden="true">share</span></button></span>`;
+        const bandaBadge = fieldShown(r.banda)
+          ? `<span class="cell-signal-banda"><span class="badge-banda ${bc}">${escapeHtml(bandaShort)}</span></span>`
+          : '';
         html += `<tr class="rpt-row" data-signal="${sigAttr}">
-          <td class="cell-signal" data-label="Señal">${sigLead}${escapeHtml(r.signal || '—')}${webLink} ${echolinkBadge}${dmrBadge}${atcBadge}</td>
-          <td class="cell-banda${cellEmptyClass(r.banda)}" data-label="Banda">${fieldShown(r.banda) ? `<span class="badge-banda ${bc}">${escapeHtml(bandaShort)}</span>` : ''}</td>
+          <td class="cell-signal" data-label="Señal"><span class="cell-signal-left"><span class="cell-signal-main">${sigLead}${escapeHtml(r.signal || '—')}${webLink} ${echolinkBadge}${dmrBadge}${atcBadge}</span>${bandaBadge}</span>${shareBtn}</td>
           ${distCell}
           <td class="cell-freq freq-rx${cellEmptyClass(r.rx)}" data-label="RX (MHz)">${fieldShown(r.rx) ? r.rx : ''}</td>
           <td class="cell-freq freq-tx${cellEmptyClass(r.tx)}" data-label="TX (MHz)">${fieldShown(r.tx) ? r.tx : ''}</td>
@@ -393,7 +395,6 @@
           <td class="cell-comuna${cellEmptyClass(r.comuna)}" data-label="Comuna">${fieldShown(r.comuna) ? escapeHtml(r.comuna) : ''}</td>
           <td class="cell-ub${cellEmptyClass(r.ubicacion)}" data-label="Ubicación">${fieldShown(r.ubicacion) ? escapeHtml(r.ubicacion) : ''}</td>
           <td class="cell-vence ${vc}${cellEmptyClass(r.vence)}" data-label="Vence">${fieldShown(r.vence) ? escapeHtml(r.vence) : ''}</td>
-          <td class="cell-share" data-label="Compartir"><button type="button" class="share-btn" data-signal="${(r.signal||'').replace(/"/g,'&quot;')}" aria-label="Compartir ${(r.signal||'').replace(/"/g,'&quot;')}" title="Compartir detalles"><span class="material-symbols-outlined" aria-hidden="true">share</span></button></td>
         </tr>`;
       });
 
