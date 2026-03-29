@@ -10,12 +10,11 @@
     r._idx = i;
   });
 
-  if (typeof VERSION !== 'undefined') {
-    if (typeof setRadiomapVersionDisplays === 'function') setRadiomapVersionDisplays(VERSION);
-    else {
-      var _av = document.getElementById('app-version');
-      if (_av) _av.textContent = VERSION;
-    }
+  if (typeof setRadiomapVersionDisplays === 'function') {
+    setRadiomapVersionDisplays(typeof VERSION !== 'undefined' ? VERSION : null);
+  } else if (typeof VERSION !== 'undefined') {
+    var _av = document.getElementById('app-version');
+    if (_av) _av.textContent = VERSION;
   }
   const filterRegion = document.getElementById('filter-region');
   const regionNames = sortRegionKeysChile(Object.keys(REGION_COLORS || {}).filter(Boolean));

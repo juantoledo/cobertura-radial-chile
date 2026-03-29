@@ -5,12 +5,11 @@
 (function() {
   if (typeof NODES === 'undefined' || !NODES.length) return;
 
-  if (typeof VERSION !== 'undefined') {
-    if (typeof setRadiomapVersionDisplays === 'function') setRadiomapVersionDisplays(VERSION);
-    else {
-      var _av = document.getElementById('app-version');
-      if (_av) _av.textContent = VERSION;
-    }
+  if (typeof setRadiomapVersionDisplays === 'function') {
+    setRadiomapVersionDisplays(typeof VERSION !== 'undefined' ? VERSION : null);
+  } else if (typeof VERSION !== 'undefined') {
+    var _av = document.getElementById('app-version');
+    if (_av) _av.textContent = VERSION;
   }
   function getClubName(signal) { var n = NODES && NODES.find(function(x){ return x.signal === signal; }); return n ? (n.nombre || '') : ''; }
   window.getClubName = getClubName;
