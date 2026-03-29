@@ -33,6 +33,12 @@ Capturas del **mapa en modo oscuro y claro** — mismo producto, distinto tema; 
 ![Radiomap — mapa en móvil](images/mobile-map.png)
 ![Radiomap — lista en móvil](images/mobile-list.png)
 
+### Mapa con propagación (experimental)
+
+Con la capa **Propagación** activa, el mapa muestra un **raster orientativo** de potencia recibida (dBm) sobre el relieve, alineado a la estación seleccionada. A la izquierda aparece la **leyenda vertical** de umbrales; el panel lateral sigue mostrando la ficha técnica y **nodos cercanos**. Solo hay datos donde el repositorio incluye PNG/PGW (y DCF si existe) bajo `data/propagation/<señal>/`. Más contexto y limitaciones: [Sobre propagación](https://www.radiomap.cl/propagacion.html).
+
+![Radiomap — mapa con capa de propagación y leyenda dBm](images/propagation.png)
+
 ---
 
 ## Mapa
@@ -76,7 +82,7 @@ Tras editar el CSV:
 
 Más detalle: [`scripts/README.md`](scripts/README.md), [`data/README.md`](data/README.md), [`AGENTS.md`](AGENTS.md).
 
-**Assets de capturas** (README y redes): `images/web-dark.png`, `images/web-light.png`, `images/mobile-map.png`, `images/mobile-list.png`.
+**Assets de capturas** (README y redes): `images/web-dark.png`, `images/web-light.png`, `images/mobile-map.png`, `images/mobile-list.png`, `images/propagation.png`.
 
 ---
 
