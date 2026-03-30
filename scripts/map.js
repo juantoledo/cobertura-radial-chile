@@ -1041,7 +1041,7 @@
       userMarker = null;
     }
     closeSidebar();
-    applyFilters();
+    applyFilters({ skipFitBounds: true });
   };
 
   window.__radiomapRadiusReference = function () {
