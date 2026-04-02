@@ -736,11 +736,22 @@
     if (toggle) toggle.setAttribute('aria-expanded', 'false');
   }
 
-  document.getElementById('menu-toggle').addEventListener('click', function() {
-    const menu = document.getElementById('header-menu');
-    const open = menu.classList.toggle('open');
-    this.setAttribute('aria-expanded', open);
-  });
+  if (typeof window.radiomapWireFilterBottomSheet === 'function') {
+    window.radiomapWireFilterBottomSheet({
+      detailsId: 'list-filters-details',
+      closeMenu: closeMenu
+    });
+  }
+
+  var menuToggleList = document.getElementById('menu-toggle');
+  if (menuToggleList) {
+    menuToggleList.addEventListener('click', function() {
+      const menu = document.getElementById('header-menu');
+      if (!menu) return;
+      const open = menu.classList.toggle('open');
+      this.setAttribute('aria-expanded', open);
+    });
+  }
 
   function getExportCriteria() {
     return typeof getExportFilterCriteria === 'function' ? getExportFilterCriteria() : { search: '', nearMe: !!(typeof getDistanceFilterAnchor === 'function' && getDistanceFilterAnchor()), bandas: [], regions: [], types: [], conferences: [] };
@@ -757,7 +768,7 @@
   document.addEventListener('click', function(e) {
     const menu = document.getElementById('header-menu');
     const toggle = document.getElementById('menu-toggle');
-    if (menu.classList.contains('open') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+    if (menu && toggle && menu.classList.contains('open') && !menu.contains(e.target) && !toggle.contains(e.target)) {
       closeMenu();
     }
   });

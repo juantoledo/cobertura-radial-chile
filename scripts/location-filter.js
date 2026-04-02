@@ -270,6 +270,46 @@ function syncCheckboxGroup(listEl, changedInput) {
   }
 }
 
+function buildUnifiedFilterSummaryText() {
+  function part(listId, multiWord) {
+    var listEl = document.getElementById(listId);
+    if (!listEl) return '';
+    var vals = getCheckedFilterValues(listEl);
+    if (!vals.length) return '';
+    if (vals.length === 1) {
+      var v = vals[0];
+      if (listId === 'filter-type') {
+        if (v === 'echolink') return 'Echolink';
+        if (v === 'dmr') return 'DMR';
+        if (v === 'atc') return 'ATC / aéreo';
+        if (v === 'radioclub') return 'Radioclubes';
+      }
+      return v;
+    }
+    return vals.length + ' ' + multiWord;
+  }
+  var bits = [];
+  var b = part('filter-banda', 'bandas');
+  if (b) bits.push(b);
+  var r = part('filter-region', 'regiones');
+  if (r) bits.push(r);
+  var t = part('filter-type', 'tipos');
+  if (t) bits.push(t);
+  var c = part('filter-conference', 'conferencias');
+  if (c) bits.push(c);
+  if (!bits.length) return 'Sin restricciones';
+  if (bits.length <= 2) return bits.join(' · ');
+  return bits.length + ' criterios activos';
+}
+
+function setUnifiedFilterSummaryUi() {
+  var t = buildUnifiedFilterSummaryText();
+  var u = document.getElementById('filter-unified-summary');
+  if (u) u.textContent = t;
+  var sheet = document.getElementById('filter-unified-summary-sheet');
+  if (sheet) sheet.textContent = t === 'Sin restricciones' ? '' : t;
+}
+
 function updateFilterMultiselectSummaries() {
   function setSummary(listId, summaryId, allLabel, labelForValue) {
     const sumEl = document.getElementById(summaryId);
@@ -303,6 +343,7 @@ function updateFilterMultiselectSummaries() {
   setSummary('filter-conference', 'filter-conference-summary', 'Todas las conferencias', function (v) {
     return v;
   });
+  setUnifiedFilterSummaryUi();
 }
 
 function parseMultiParam(params, key) {
@@ -621,8 +662,22 @@ function clearFilterDropdownPanelFixed(panel) {
   panel.style.top = '';
   panel.style.left = '';
   panel.style.width = '';
+  panel.style.maxWidth = '';
   panel.style.maxHeight = '';
   panel.style.zIndex = '';
+}
+
+/**
+ * Map unified filters live inside #map-filter-sheet-panel. On desktop the sheet is display:contents
+ * and the floating panel should use the same fixed positioning as lista. On narrow viewports the
+ * sheet is a real flex panel — the filter panel must stay in-flow (no position:fixed).
+ */
+function mapUnifiedFilterInBottomSheet(details) {
+  if (!details) return false;
+  if (details.id !== 'map-filters-details' && details.id !== 'list-filters-details') return false;
+  var sheet = document.getElementById('map-filter-sheet-panel');
+  if (!sheet) return false;
+  return window.getComputedStyle(sheet).display !== 'contents';
 }
 
 var __radiomapOpenFilterDetails = null;
@@ -635,46 +690,102 @@ function positionFilterDropdownPanel(details) {
 
   var tr = summary.getBoundingClientRect();
   var vp = getFilterDropdownViewportRect();
-  var gap = 4;
+  var unified = panel.classList.contains('filter-dropdown__panel--unified');
+  var narrowSheet = vp.width <= 560;
+  var gap = unified && narrowSheet ? 6 : 4;
   var edge = 8;
+  if (unified && narrowSheet) {
+    edge = vp.width <= 360 ? 5 : vp.width <= 480 ? 7 : 8;
+  }
+  edge = Math.max(edge, 0);
 
-  var maxPanelW = Math.min(340, vp.width - 2 * edge);
-  var w = Math.max(tr.width, Math.min(panel.scrollWidth, maxPanelW));
-  w = Math.min(Math.max(w, 252), maxPanelW);
+  var maxWCap = unified ? 520 : 360;
+  var minWFloor = unified ? (narrowSheet ? 0 : 280) : 252;
 
+  var maxPanelW = narrowSheet ? (vp.width - 2 * edge) : Math.min(maxWCap, vp.width - 2 * edge);
+  var w = narrowSheet
+    ? Math.floor(Math.max(0, maxPanelW))
+    : Math.min(Math.max(Math.max(tr.width, Math.min(panel.scrollWidth, maxPanelW)), minWFloor), maxPanelW);
+
+  var availV = Math.max(0, Math.floor(vp.height - 2 * edge));
   var belowTop = tr.bottom + gap;
-  var maxHBelow = vp.top + vp.height - belowTop - edge;
-  var maxHAbove = tr.top - vp.top - gap - edge;
+  var spaceBelow = Math.floor(vp.top + vp.height - belowTop - edge);
+  var spaceAbove = Math.floor(tr.top - vp.top - gap - edge);
 
-  var openBelow = maxHBelow >= maxHAbove;
-  if (maxHBelow < 72 && maxHAbove > maxHBelow) openBelow = false;
-  else if (maxHAbove < 72 && maxHBelow > maxHAbove) openBelow = true;
+  var openBelow = spaceBelow >= spaceAbove;
+  if (spaceBelow < 88 && spaceAbove > spaceBelow) openBelow = false;
+  else if (spaceAbove < 88 && spaceBelow > spaceAbove) openBelow = true;
 
-  var maxH = openBelow ? maxHBelow : maxHAbove;
-  maxH = Math.floor(Math.max(72, maxH));
+  /* Objetivo de alto: listas largas deben poder hacer scroll dentro del viewport */
+  var preferH = Math.min(
+    Math.floor(availV * (unified && narrowSheet ? 0.86 : 0.72)),
+    unified && narrowSheet ? 640 : 520,
+    availV
+  );
+  if (!narrowSheet) preferH = Math.min(preferH, unified ? 480 : 420);
+
+  var primary = openBelow ? spaceBelow : spaceAbove;
+  var maxH = Math.floor(Math.min(preferH, primary, availV));
+
+  if (narrowSheet && maxH < Math.min(200, preferH)) {
+    var alt = openBelow ? spaceAbove : spaceBelow;
+    if (alt > primary + 12) {
+      openBelow = !openBelow;
+      primary = openBelow ? spaceBelow : spaceAbove;
+      maxH = Math.floor(Math.min(preferH, primary, availV));
+    }
+  }
+
+  primary = openBelow ? spaceBelow : spaceAbove;
+  maxH = Math.floor(Math.min(maxH, primary, availV));
 
   var top = openBelow ? belowTop : (tr.top - gap - maxH);
+  top = Math.max(vp.top + edge, Math.min(top, vp.top + vp.height - maxH - edge));
 
-  var left = tr.left;
-  left = Math.min(Math.max(left, vp.left + edge), vp.left + vp.width - w - edge);
+  var left = narrowSheet ? (vp.left + edge) : tr.left;
+  if (!narrowSheet) {
+    left = Math.min(Math.max(left, vp.left + edge), vp.left + vp.width - w - edge);
+  }
 
   panel.classList.add('radiomap-filter-panel--fixed');
   panel.style.position = 'fixed';
   panel.style.left = Math.round(left) + 'px';
   panel.style.top = Math.round(top) + 'px';
   panel.style.width = Math.round(w) + 'px';
+  if (unified) {
+    panel.style.maxWidth = Math.round(w) + 'px';
+  } else {
+    panel.style.maxWidth = '';
+  }
   panel.style.maxHeight = maxH + 'px';
   panel.style.zIndex = '13000';
 }
 
 function scheduleRepositionOpenFilterDropdown() {
-  if (!__radiomapOpenFilterDetails) return;
+  var d = __radiomapOpenFilterDetails;
+  if (!d || !d.open) {
+    d = document.getElementById('map-filters-details');
+    if (!d || !d.open) d = document.getElementById('list-filters-details');
+    if (!d || !d.open) return;
+    if (mapUnifiedFilterInBottomSheet(d)) return;
+    __radiomapOpenFilterDetails = d;
+  } else if (mapUnifiedFilterInBottomSheet(d)) {
+    clearFilterDropdownPanelFixed(d.querySelector('.filter-dropdown__panel'));
+    __radiomapOpenFilterDetails = null;
+    return;
+  }
   if (__radiomapFilterRepositionScheduled) return;
   __radiomapFilterRepositionScheduled = true;
   requestAnimationFrame(function () {
     __radiomapFilterRepositionScheduled = false;
-    var d = __radiomapOpenFilterDetails;
-    if (d && d.open) positionFilterDropdownPanel(d);
+    d = __radiomapOpenFilterDetails;
+    if (!d || !d.open) return;
+    if (mapUnifiedFilterInBottomSheet(d)) {
+      clearFilterDropdownPanelFixed(d.querySelector('.filter-dropdown__panel'));
+      __radiomapOpenFilterDetails = null;
+      return;
+    }
+    positionFilterDropdownPanel(d);
   });
 }
 
@@ -698,6 +809,12 @@ function onFilterDropdownToggle(ev) {
     document.querySelectorAll('details.filter-dropdown[open]').forEach(function (other) {
       if (other !== details) other.open = false;
     });
+    var panelEl = details.querySelector('.filter-dropdown__panel');
+    if (mapUnifiedFilterInBottomSheet(details)) {
+      clearFilterDropdownPanelFixed(panelEl);
+      __radiomapOpenFilterDetails = null;
+      return;
+    }
     bindFilterDropdownViewportListeners();
     __radiomapOpenFilterDetails = details;
     requestAnimationFrame(function () {
@@ -778,3 +895,84 @@ if (!window.__radiomapNearRadiusSliderWired) {
     runNearRadiusWire();
   }
 }
+
+/**
+ * Narrow-viewport filter bottom sheet (map + lista). Pass detailsId for the page's <details> unified filter.
+ */
+window.radiomapWireFilterBottomSheet = function (opts) {
+  opts = opts || {};
+  if (window.__radiomapFilterBottomSheetWired) return;
+  var detailsId = opts.detailsId || 'map-filters-details';
+  var onLayout = typeof opts.onLayout === 'function' ? opts.onLayout : function () {};
+  var closeMenu = typeof opts.closeMenu === 'function' ? opts.closeMenu : function () {};
+
+  var mq = window.matchMedia('(max-width: 768px)');
+  var trigger = document.getElementById('btn-map-filter-sheet');
+  var closeBtn = document.getElementById('btn-map-filter-sheet-close');
+  var panel = document.getElementById('map-filter-sheet-panel');
+  var backdrop = document.getElementById('map-filter-sheet-backdrop');
+  if (!trigger || !panel || !backdrop) return;
+
+  window.__radiomapFilterBottomSheetWired = true;
+
+  function isNarrow() {
+    return mq.matches;
+  }
+  function syncFiltersDetailsOpen(open) {
+    var d = document.getElementById(detailsId);
+    if (d) d.open = !!open;
+  }
+  function closeSheet() {
+    panel.classList.remove('map-filter-sheet-panel--open');
+    backdrop.hidden = true;
+    backdrop.setAttribute('aria-hidden', 'true');
+    trigger.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('map-filter-sheet-open');
+    syncFiltersDetailsOpen(false);
+    onLayout();
+  }
+  function openSheet() {
+    if (!isNarrow()) return;
+    closeMenu();
+    panel.classList.add('map-filter-sheet-panel--open');
+    backdrop.hidden = false;
+    backdrop.setAttribute('aria-hidden', 'false');
+    trigger.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('map-filter-sheet-open');
+    syncFiltersDetailsOpen(true);
+    onLayout();
+  }
+  function toggleSheet() {
+    if (panel.classList.contains('map-filter-sheet-panel--open')) closeSheet();
+    else openSheet();
+  }
+  trigger.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (!isNarrow()) return;
+    toggleSheet();
+  });
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeSheet();
+    });
+  }
+  backdrop.addEventListener('click', function () {
+    closeSheet();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (!isNarrow() || !panel.classList.contains('map-filter-sheet-panel--open')) return;
+    var help = document.getElementById('help-overlay');
+    if (help && help.classList.contains('open')) return;
+    e.preventDefault();
+    closeSheet();
+  });
+  function onMqChange() {
+    if (!mq.matches) closeSheet();
+  }
+  if (typeof mq.addEventListener === 'function') mq.addEventListener('change', onMqChange);
+  else mq.addListener(onMqChange);
+
+  window.__radiomapCloseMapFilterSheet = closeSheet;
+};

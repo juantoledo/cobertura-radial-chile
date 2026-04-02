@@ -56,27 +56,41 @@
 <div id="app">
 
 <!-- HEADER -->
-<header class="header">
-  <a href="https://www.radiomap.cl/" class="header-signal"><span class="header-signal-mark" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M 5 22 A 11 11 0 0 1 27 22"/><path d="M 9 22 A 7 7 0 0 1 23 22"/><path d="M 12 22 A 4 4 0 0 1 20 22"/></g><circle cx="16" cy="22" r="2.25" fill="currentColor"/></svg></span><span class="header-signal-text"><span class="header-signal-title">Radiomap</span><span class="header-signal-version" id="header-app-version" aria-label="Versión">__VERSION__</span></span></a>
-  <nav class="header-nav" aria-label="Navegación principal">
+<header class="header header--app-bar">
+  <a href="https://www.radiomap.cl/" class="header-signal header-signal--map"><span class="header-signal-mark" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M 5 22 A 11 11 0 0 1 27 22"/><path d="M 9 22 A 7 7 0 0 1 23 22"/><path d="M 12 22 A 4 4 0 0 1 20 22"/></g><circle cx="16" cy="22" r="2.25" fill="currentColor"/></svg></span><span class="header-signal-text"><span class="header-signal-title">Radiomap</span><span class="header-signal-version" id="header-app-version" aria-label="Versión">__VERSION__</span></span></a>
+  <nav class="header-nav header-nav--map" aria-label="Navegación principal">
     <a href="index.html" class="header-link header-link-nav header-link-nav--map current">MAPA</a>
     <a href="lista.html" class="header-link header-link-nav header-link-nav--list">LISTA</a>
   </nav>
-  <div class="header-actions">
-    <button type="button" id="theme-toggle" onclick="toggleTheme()" aria-label="Modo claro" title="Cambiar tema" class="theme-btn"></button>
-    <button type="button" id="help-btn" onclick="openHelp()" aria-label="Ayuda" title="Cómo usar la app" class="help-btn"><span class="material-symbols-outlined" aria-hidden="true">help</span></button>
-    <a href="#" id="btn-share-view" class="header-action-link btn-download" title="Copiar enlace con filtros y vista del mapa"><span class="material-symbols-outlined" aria-hidden="true">share</span> Compartir</a>
-    <a href="#" id="btn-download-csv" class="header-action-link btn-download" title="Descargar CSV"><span class="material-symbols-outlined" aria-hidden="true">download</span> CSV</a>
-    <a href="https://github.com/juantoledo/radiomap" class="header-link header-link-icon" target="_blank" rel="noopener" title="Ver en GitHub" aria-label="Ver en GitHub"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+  <div class="header-map-tools">
+    <div class="header-actions">
+      <button type="button" id="theme-toggle" onclick="toggleTheme()" aria-label="Modo claro" title="Cambiar tema" class="theme-btn"></button>
+      <button type="button" id="help-btn" onclick="openHelp()" aria-label="Ayuda" title="Cómo usar la app" class="help-btn"><span class="material-symbols-outlined" aria-hidden="true">help</span></button>
+      <a href="#" id="btn-share-view" class="header-action-link btn-download" title="Copiar enlace con filtros y vista del mapa" aria-label="Compartir vista del mapa"><span class="material-symbols-outlined" aria-hidden="true">share</span><span class="header-action-link__text">Compartir</span></a>
+      <a href="#" id="btn-download-csv" class="header-action-link btn-download" title="Descargar CSV" aria-label="Descargar CSV"><span class="material-symbols-outlined" aria-hidden="true">download</span><span class="header-action-link__text">CSV</span></a>
+      <a href="https://github.com/juantoledo/radiomap" class="header-link header-link-icon" target="_blank" rel="noopener" title="Ver en GitHub" aria-label="Ver en GitHub"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+    </div>
+    <button type="button" class="menu-toggle" id="menu-toggle" aria-label="Menú" aria-expanded="false" aria-haspopup="menu" title="Menú"><span class="material-symbols-outlined" aria-hidden="true">menu</span></button>
   </div>
-  <button type="button" class="menu-toggle" id="menu-toggle" aria-label="Menú" aria-expanded="false" aria-haspopup="menu" title="Menú"><span class="material-symbols-outlined" aria-hidden="true">menu</span></button>
   <div class="header-menu" id="header-menu" role="menu">
-    <button type="button" onclick="toggleTheme(); closeMenuMap();" class="theme-btn menu-theme-toggle" aria-label="Cambiar tema" role="menuitem"></button>
-    <button type="button" onclick="openHelp(); closeMenuMap();" class="help-btn" role="menuitem"><span class="menu-item-icon"><span class="material-symbols-outlined" aria-hidden="true">help</span></span> Ayuda</button>
-    <button type="button" onclick="toggleNearMe(); closeMenuMap();" class="location-btn" role="menuitem"><span class="menu-item-icon"><span class="material-symbols-outlined" aria-hidden="true">my_location</span></span> Cerca de mí</button>
-    <a href="#" id="btn-share-view-menu" class="header-action-link btn-download" role="menuitem"><span class="menu-item-icon"><span class="material-symbols-outlined" aria-hidden="true">share</span></span> Compartir vista</a>
-    <a href="#" id="btn-download-csv-menu" class="header-action-link btn-download" role="menuitem"><span class="menu-item-icon"><span class="material-symbols-outlined" aria-hidden="true">download</span></span> Descargar CSV</a>
-    <a href="https://github.com/juantoledo/radiomap" class="header-link" target="_blank" rel="noopener" role="menuitem"><span class="menu-item-icon"><span class="material-symbols-outlined" aria-hidden="true">code</span></span> GitHub</a>
+    <div class="header-menu-group" role="group" aria-labelledby="menu-grp-appearance">
+      <div class="header-menu-group__label" id="menu-grp-appearance">Apariencia</div>
+      <button type="button" onclick="toggleTheme(); closeMenuMap();" class="theme-btn menu-theme-toggle" aria-label="Cambiar tema" role="menuitem"></button>
+      <button type="button" onclick="openHelp(); closeMenuMap();" class="help-btn" role="menuitem"><span class="menu-item-icon"><span class="material-symbols-outlined" aria-hidden="true">help</span></span> Ayuda</button>
+    </div>
+    <div class="header-menu-group" role="group" aria-labelledby="menu-grp-location">
+      <div class="header-menu-group__label" id="menu-grp-location">Ubicación</div>
+      <button type="button" onclick="toggleNearMe(); closeMenuMap();" class="location-btn" role="menuitem"><span class="menu-item-icon"><span class="material-symbols-outlined" aria-hidden="true">my_location</span></span> Cerca de mí</button>
+    </div>
+    <div class="header-menu-group" role="group" aria-labelledby="menu-grp-export">
+      <div class="header-menu-group__label" id="menu-grp-export">Exportar</div>
+      <a href="#" id="btn-share-view-menu" class="header-action-link btn-download" role="menuitem"><span class="menu-item-icon"><span class="material-symbols-outlined" aria-hidden="true">share</span></span> Compartir vista</a>
+      <a href="#" id="btn-download-csv-menu" class="header-action-link btn-download" role="menuitem"><span class="menu-item-icon"><span class="material-symbols-outlined" aria-hidden="true">download</span></span> Descargar CSV</a>
+    </div>
+    <div class="header-menu-group" role="group" aria-labelledby="menu-grp-more">
+      <div class="header-menu-group__label" id="menu-grp-more">Más</div>
+      <a href="https://github.com/juantoledo/radiomap" class="header-link" target="_blank" rel="noopener" role="menuitem"><span class="menu-item-icon"><span class="material-symbols-outlined" aria-hidden="true">code</span></span> GitHub</a>
+    </div>
   </div>
 </header>
 
@@ -104,9 +118,9 @@
         <ul>
           <li>Explora el mapa; cambia el tema claro/oscuro con ☽.</li>
           <li>Vista (iconos): marcador, círculo de cobertura o ambos.</li>
-          <li>Filtros: banda, región, tipo y conferencia/red — listas con casillas; «Todas» en cada una quita el filtro de ese criterio (varias opciones = OR).</li>
-          <li>Clic en un punto: datos y nodos cercanos en el panel. Radioclubes = círculo; Echolink = cuadrado «e»; DMR = rombo «d». Descarga CSV o comparte desde el panel.</li>
-          <li><a href="propagacion.html?v=__VERSION__" target="_blank" rel="noopener noreferrer">Sobre propagación</a> — cómo se interpreta el mapa de cobertura experimental, leyenda dBm y limitaciones.</li>
+          <li>Filtros: banda, región, tipo y conferencia/red — listas con casillas; «Todas» en cada una quita el filtro de ese criterio (varias opciones = OR). En pantallas chicas, el botón <span class="material-symbols-outlined help-inline-icon" aria-hidden="true">tune</span> abre los filtros en un panel inferior.</li>
+          <li>Clic en un punto: datos y nodos cercanos en el panel (en móvil, panel inferior deslizable). Radioclubes = círculo; Echolink = cuadrado «e»; DMR = rombo «d». Descarga CSV o comparte desde el panel.</li>
+          <li><a href="propagacion.html?v=__VERSION__" target="_blank" rel="noopener noreferrer">Sobre propagación</a> — cómo se interpreta el mapa de cobertura experimental, leyenda dBm y limitaciones. Con una repetidora que tenga mapa, el interruptor <strong>Propagación</strong> y el enlace de ayuda están en la cabecera del panel de la estación (junto al título).</li>
         </ul>
       </section>
       <section class="help-section">
@@ -122,8 +136,10 @@
   </div>
 </div>
 
-<!-- CONTROLS -->
-<div class="controls">
+<!-- MAP -->
+<div id="map-wrap">
+  <div class="radiomap-toolbar-host">
+  <div class="controls">
   <!-- Vista (marcadores / círculos / ambos): oculto; vista por defecto = marcadores (map.js currentMode) -->
   <!--
   <div class="btn-group" role="group" aria-labelledby="map-view-label">
@@ -139,53 +155,73 @@
     </button>
   </div>
   -->
-  <div class="search-nearme-wrap">
-    <div class="search-wrap">
-      <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
-      <input type="text" id="search" placeholder="Buscar señal, club, comuna, frecuencias...">
+  <div class="map-controls-search-row">
+    <button type="button" id="btn-map-filter-sheet" class="map-filter-sheet-trigger" aria-expanded="false" aria-controls="map-filter-sheet-panel" title="Filtros" aria-label="Abrir filtros"><span class="material-symbols-outlined" aria-hidden="true">tune</span></button>
+    <div class="search-nearme-wrap">
+      <div class="search-wrap">
+        <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
+        <input type="text" id="search" placeholder="Buscar señal, club, comuna, frecuencias...">
+      </div>
+      <button type="button" id="btn-nearme" onclick="toggleNearMe()" class="location-btn location-btn--controls" aria-label="Cerca de mí" title="Mostrar repetidoras cerca de mi ubicación"><span class="material-symbols-outlined" aria-hidden="true">my_location</span></button>
     </div>
-    <button type="button" id="btn-nearme" onclick="toggleNearMe()" class="location-btn location-btn--controls" aria-label="Cerca de mí" title="Mostrar repetidoras cerca de mi ubicación"><span class="material-symbols-outlined" aria-hidden="true">my_location</span></button>
   </div>
-  <details class="filter-dropdown">
-    <summary class="filter-dropdown__summary"><span id="filter-banda-summary">Todas las bandas</span></summary>
-    <div class="filter-dropdown__panel">
-      <div class="filter-checkbox-list filter-checkbox-list--compact" id="filter-banda">
-        <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
-        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="VHF"> VHF</label>
-        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="UHF"> UHF</label>
+  <div id="map-filter-sheet-backdrop" class="map-filter-sheet-backdrop" hidden aria-hidden="true"></div>
+  <div id="map-filter-sheet-panel" class="map-filter-sheet-panel" aria-labelledby="map-filter-sheet-title">
+    <div class="map-filter-sheet-panel__header">
+      <div class="map-filter-sheet-panel__header-text">
+        <h2 id="map-filter-sheet-title" class="map-filter-sheet-panel__title">Filtros</h2>
+        <p class="map-filter-sheet-panel__meta" id="filter-unified-summary-sheet" aria-live="polite"></p>
       </div>
+      <button type="button" id="btn-map-filter-sheet-close" class="map-filter-sheet-panel__close" aria-label="Cerrar filtros"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
     </div>
-  </details>
-  <details class="filter-dropdown">
-    <summary class="filter-dropdown__summary"><span id="filter-region-summary">Todas las regiones</span></summary>
-    <div class="filter-dropdown__panel">
-      <div class="filter-checkbox-list" id="filter-region">
-        <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
-      </div>
-    </div>
-  </details>
-  <details class="filter-dropdown">
-    <summary class="filter-dropdown__summary"><span id="filter-type-summary">Todos los tipos</span></summary>
-    <div class="filter-dropdown__panel">
-      <div class="filter-checkbox-list filter-checkbox-list--compact" id="filter-type">
-        <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
-        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="echolink"> Echolink</label>
-        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="dmr"> DMR</label>
-        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="radioclub"> Radioclubes</label>
-        <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="atc"> ATC / aéreo</label>
-      </div>
-    </div>
-  </details>
-  <details class="filter-dropdown">
-    <summary class="filter-dropdown__summary"><span id="filter-conference-summary">Todas las conferencias</span></summary>
-    <div class="filter-dropdown__panel">
-      <div class="filter-checkbox-list" id="filter-conference">
-        <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
+    <div class="map-filter-sheet-panel__body">
+  <details class="filter-dropdown filter-dropdown--unified" id="map-filters-details">
+    <summary class="filter-dropdown__summary filter-dropdown__summary--unified">
+      <span class="material-symbols-outlined filter-dropdown__summary-icon" aria-hidden="true">tune</span>
+      <span class="filter-dropdown__summary-text">
+        <span class="filter-dropdown__summary-key">Filtros</span>
+        <span id="filter-unified-summary" class="filter-dropdown__summary-value">Sin restricciones</span>
+      </span>
+    </summary>
+    <div class="filter-dropdown__panel filter-dropdown__panel--unified">
+      <div class="filters-stack">
+        <section class="filter-section" aria-labelledby="filter-heading-banda">
+          <h3 class="filter-section__heading" id="filter-heading-banda">Banda</h3>
+          <div class="filter-checkbox-list filter-checkbox-list--compact" id="filter-banda">
+            <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
+            <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="VHF"> VHF</label>
+            <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="UHF"> UHF</label>
+          </div>
+        </section>
+        <section class="filter-section" aria-labelledby="filter-heading-region">
+          <h3 class="filter-section__heading" id="filter-heading-region">Región</h3>
+          <div class="filter-checkbox-list" id="filter-region">
+            <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
+          </div>
+        </section>
+        <section class="filter-section" aria-labelledby="filter-heading-type">
+          <h3 class="filter-section__heading" id="filter-heading-type">Tipo</h3>
+          <div class="filter-checkbox-list filter-checkbox-list--compact" id="filter-type">
+            <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
+            <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="echolink"> Echolink</label>
+            <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="dmr"> DMR</label>
+            <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="radioclub"> Radioclubes</label>
+            <label class="filter-checkbox-row"><input type="checkbox" data-filter-value="atc"> ATC / aéreo</label>
+          </div>
+        </section>
+        <section class="filter-section" aria-labelledby="filter-heading-conference">
+          <h3 class="filter-section__heading" id="filter-heading-conference">Conferencia / red</h3>
+          <div class="filter-checkbox-list" id="filter-conference">
+            <label class="filter-checkbox-row filter-checkbox-row--all"><input type="checkbox" data-filter-all="1" checked> Todas</label>
+          </div>
+        </section>
       </div>
     </div>
   </details>
   <button type="button" id="btn-clear-filters" class="btn-clear-filters" onclick="clearAllFilters()" title="Quitar búsqueda, filtros y cerca de mí" aria-label="Limpiar filtros"><span class="material-symbols-outlined" aria-hidden="true">filter_alt_off</span> Limpiar filtros</button>
-  <div class="controls-footer-row">
+    </div>
+  </div>
+  <div class="controls-footer-row controls-footer-row--map-toolbar">
     <div class="filter-count-wrap">
       <div class="filter-count">Mostrando <span id="shown-count">172</span> de <span id="total-count">172</span> · <span id="regions-count">13</span> regiones · <span id="clubs-count">—</span> clubes<span id="filter-nearme"></span></div>
       <div id="near-radius-floater" class="near-radius-floater" hidden aria-hidden="true" title="Distancia máxima desde la referencia (ubicación o repetidora elegida)">
@@ -200,28 +236,15 @@
         </div>
       </div>
     </div>
-    <div id="propagation-actions-wrap" class="propagation-actions-wrap" hidden>
-      <div id="propagation-toolbar" class="propagation-toolbar">
-        <button type="button" id="btn-toggle-propagation" class="btn-toggle-propagation" aria-pressed="false" aria-label="Mostrar u ocultar mapa de propagación en el mapa">
-          <span class="material-symbols-outlined btn-toggle-propagation__icon" aria-hidden="true">radar</span>
-          <span class="btn-toggle-propagation__text">Propagación</span>
-        </button>
-      </div>
-      <a href="propagacion.html?v=__VERSION__" class="btn-propagation-about" id="link-propagation-about" target="_blank" rel="noopener noreferrer" title="Cómo se calcula la cobertura y qué significa el mapa">
-        <span class="material-symbols-outlined btn-propagation-about__icon" aria-hidden="true">menu_book</span>
-        <span class="btn-propagation-about__text">Sobre propagación</span>
-      </a>
-    </div>
   </div>
-</div>
-
-<!-- MAP -->
-<div id="map-wrap">
+  </div>
+  </div>
   <div id="map"></div>
   <div id="propagation-legend-host" class="propagation-legend-float" hidden aria-live="polite"></div>
   <div id="map-empty-overlay" class="map-empty-overlay" hidden aria-live="polite"></div>
   <!-- SIDEBAR -->
-  <div id="sidebar">
+  <div id="sidebar" inert aria-hidden="true">
+    <div class="sidebar-panel-slide">
     <div class="sidebar-header">
       <div class="sidebar-header__main">
         <div class="sidebar-signal" id="sb-signal">—</div>
@@ -230,8 +253,21 @@
       <button type="button" class="sidebar-close" onclick="closeSidebar()" aria-label="Cerrar y volver al mapa">
         <span class="material-symbols-outlined sidebar-close__icon" aria-hidden="true">close</span>
       </button>
+      <div id="propagation-actions-wrap" class="propagation-actions-wrap propagation-actions-wrap--sidebar" hidden>
+        <div id="propagation-toolbar" class="propagation-toolbar">
+          <button type="button" id="btn-toggle-propagation" class="btn-toggle-propagation" aria-pressed="false" aria-label="Mostrar u ocultar mapa de propagación en el mapa">
+            <span class="material-symbols-outlined btn-toggle-propagation__icon" aria-hidden="true">radar</span>
+            <span class="btn-toggle-propagation__text">Propagación</span>
+          </button>
+        </div>
+        <a href="propagacion.html?v=__VERSION__" class="btn-propagation-about" id="link-propagation-about" target="_blank" rel="noopener noreferrer" title="Cómo se calcula la cobertura y qué significa el mapa">
+          <span class="material-symbols-outlined btn-propagation-about__icon" aria-hidden="true">menu_book</span>
+          <span class="btn-propagation-about__text">Sobre propagación</span>
+        </a>
+      </div>
     </div>
     <div class="sidebar-body" id="sb-body"></div>
+    </div>
   </div>
 
   <!-- LEGEND (commented out - work in progress)

@@ -63,7 +63,7 @@
   const map = L.map('map', {
     center: [-33.5, -70.6],
     zoom: 5,
-    zoomControl: true,
+    zoomControl: false,
     attributionControl: true,
   });
 
@@ -212,6 +212,36 @@
       var qs = p.toString();
       history.replaceState(null, '', u.pathname + (qs ? '?' + qs : '') + u.hash);
     } catch (eSync) { /* ignore */ }
+  }
+
+  /** Panel lateral: .open en el contenedor + inert/aria; el slide es CSS en .sidebar-panel-slide. */
+  function setSidebarOpen(isOpen) {
+    var sb = document.getElementById('sidebar');
+    if (!sb) return;
+    sb.classList.toggle('open', !!isOpen);
+    if (isOpen) {
+      sb.removeAttribute('inert');
+      sb.removeAttribute('aria-hidden');
+    } else {
+      sb.setAttribute('inert', '');
+      sb.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  /**
+   * Dos rAF + reflow para que el navegador aplique el estado cerrado del hijo antes de .open
+   * (transition translateX / translateY en .sidebar-panel-slide).
+   */
+  function openSidebarAfterLayout(whenOpen) {
+    var sb = document.getElementById('sidebar');
+    if (!sb || sb.classList.contains('open')) return;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        void sb.offsetWidth;
+        setSidebarOpen(true);
+        if (typeof whenOpen === 'function') whenOpen();
+      });
+    });
   }
 
   function syncNearRadiusFilterOverlay() {
@@ -544,7 +574,8 @@
       '<div class="sb-row"><span class="sb-key">Filtro</span><span class="sb-val">Cerca de mí</span></div>' +
       '</div>' +
       '<p class="sb-nearme-hint">No hay repetidoras visibles aquí. Ajustá filtros o la búsqueda.</p>';
-    sidebar.classList.add('open');
+    if (typeof window.__radiomapCloseMapFilterSheet === 'function') window.__radiomapCloseMapFilterSheet();
+    openSidebarAfterLayout(syncRadiomapMapUiToUrl);
   }
 
   function toggleNearMe(){
@@ -601,8 +632,7 @@
       selectedIdx = null;
       clearedSelection = true;
       resetPropagationSidebar();
-      const sb = document.getElementById('sidebar');
-      if (sb) sb.classList.remove('open');
+      setSidebarOpen(false);
     }
     document.getElementById('shown-count').textContent = visibleSet.size;
     document.getElementById('total-count').textContent = NODES.length;
@@ -640,6 +670,9 @@
       const help = document.getElementById('help-overlay');
       return !!(help && help.classList.contains('open'));
     }
+    function isMapFilterSheetOpen() {
+      return document.body.classList.contains('map-filter-sheet-open');
+    }
     function activeElementIsEditable() {
       const el = document.activeElement;
       if (!el || el.nodeType !== 1) return false;
@@ -654,6 +687,7 @@
       if (e.key.length !== 1) return;
       if (activeElementIsEditable()) return;
       if (isMapOverlayOpen()) return;
+      if (isMapFilterSheetOpen()) return;
       if (e.key === ' ' && document.activeElement && document.activeElement.matches &&
           document.activeElement.matches('button, [role="button"], a[href], summary')) return;
 
@@ -810,8 +844,13 @@
     }
 
     body.innerHTML = html;
-    document.getElementById('sidebar').classList.add('open');
-    syncRadiomapMapUiToUrl();
+    if (typeof window.__radiomapCloseMapFilterSheet === 'function') window.__radiomapCloseMapFilterSheet();
+    var sbPanel = document.getElementById('sidebar');
+    if (sbPanel && !sbPanel.classList.contains('open')) {
+      openSidebarAfterLayout(syncRadiomapMapUiToUrl);
+    } else {
+      syncRadiomapMapUiToUrl();
+    }
   }
 
   function downloadNeighborsCSV(){
@@ -871,7 +910,7 @@
     if (!keepPropagation) {
       resetPropagationSidebar();
     }
-    document.getElementById('sidebar').classList.remove('open');
+    setSidebarOpen(false);
     selectedIdx = null;
     renderAll();
     if (keepPropagation && propagationActiveSignal) {
@@ -888,8 +927,7 @@
     if (!hadSelection && !hadRef) return;
     if (hadSelection) {
       resetPropagationSidebar();
-      var sb = document.getElementById('sidebar');
-      if (sb) sb.classList.remove('open');
+      setSidebarOpen(false);
       selectedIdx = null;
     }
     if (hadRef && typeof clearRadiusRefSignal === 'function') clearRadiusRefSignal();
@@ -904,15 +942,35 @@
     if (toggle) toggle.setAttribute('aria-expanded', 'false');
   }
 
-  document.getElementById('menu-toggle').addEventListener('click', function() {
-    const menu = document.getElementById('header-menu');
-    const open = menu.classList.toggle('open');
-    this.setAttribute('aria-expanded', open);
-  });
-  document.addEventListener('click', function(e) {
+  (function wireMapFilterBottomSheet() {
+    if (typeof window.radiomapWireFilterBottomSheet !== 'function') return;
+    function invalidateMapSizeSoon() {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          if (map && typeof map.invalidateSize === 'function') map.invalidateSize();
+        });
+      });
+    }
+    window.radiomapWireFilterBottomSheet({
+      detailsId: 'map-filters-details',
+      closeMenu: closeMenuMap,
+      onLayout: invalidateMapSizeSoon
+    });
+  })();
+
+  var menuToggleEl = document.getElementById('menu-toggle');
+  if (menuToggleEl) {
+    menuToggleEl.addEventListener('click', function () {
+      const menu = document.getElementById('header-menu');
+      if (!menu) return;
+      const open = menu.classList.toggle('open');
+      this.setAttribute('aria-expanded', open);
+    });
+  }
+  document.addEventListener('click', function (e) {
     const menu = document.getElementById('header-menu');
     const toggle = document.getElementById('menu-toggle');
-    if (menu && menu.classList.contains('open') && !menu.contains(e.target) && !toggle.contains(e.target)) closeMenuMap();
+    if (menu && menu.classList.contains('open') && toggle && !menu.contains(e.target) && !toggle.contains(e.target)) closeMenuMap();
   });
 
   (function wireNeighborKeyboard() {
@@ -948,8 +1006,7 @@
         }
         var rDone = nodeBySignal(propagationActiveSignal);
         if (rDone) showPropagationLegendFromNode(rDone);
-        var sb = document.getElementById('sidebar');
-        if (sb) sb.classList.remove('open');
+        setSidebarOpen(false);
         closeMenuMap();
         if (rDone) syncPropagationSidebarUI(rDone);
         syncRadiomapMapUiToUrl();
@@ -993,8 +1050,7 @@
           btn.classList.add('is-pressed');
           var rDone = nodeBySignal(propagationActiveSignal);
           if (rDone) showPropagationLegendFromNode(rDone);
-          var sb = document.getElementById('sidebar');
-          if (sb) sb.classList.remove('open');
+          setSidebarOpen(false);
           closeMenuMap();
           if (rDone) syncPropagationSidebarUI(rDone);
           syncRadiomapMapUiToUrl();
@@ -1040,6 +1096,7 @@
       map.removeLayer(userMarker);
       userMarker = null;
     }
+    if (typeof window.__radiomapCloseMapFilterSheet === 'function') window.__radiomapCloseMapFilterSheet();
     closeSidebar();
     applyFilters({ skipFitBounds: true });
   };
