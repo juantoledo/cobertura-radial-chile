@@ -42,7 +42,7 @@ CE3RRM RPT-B,RADIO CLUB COLINA,COLINA,"CERRO TRES OREJAS, QUILAPILUN ALTO",-33.0
 CE5REN RPT-A,RADIO CLUB CONDORES ANDINOS,LOS ÁNGELES,"EDIFICIO GOBERNACIÓN, CAUPOLICÁN N° 400",-37.7513888889,-72.5897222222,20,7,VHF/FM,147.375,147.975,141.3,REGIÓN DEL BIOBÍO,03-02-2022,16-12-2026,,,,,,,,,,sur vhf
 CE4CC RPT-A,RADIO CLUB CONSTITUCION,CONSTITUCIÓN,SECTOR PANGALILLO KM 3,-35.3566666667,-72.4080555556,10,4,UHF/FM,434.575,439.575,123,REGIÓN DEL MAULE,07-11-2024,07-11-2029,,,,,,,,,,centro uhf
 CE4CC RPT-B,RADIO CLUB CONSTITUCION,CONSTITUCIÓN,CERRO MUTRUN,-35.3227777778,-72.4125,25,6,VHF/FM,146.910,146.310,123,REGIÓN DEL MAULE,06-03-2025,06-03-2030,,,,,,,,,,centro vhf
-CE4CC-R,CE4CC-R Echolink Repeater,CONSTITUCIÓN,,-35.3566666667,-72.4080555556,,,UHF/FM,439.555,439.555,88.5,REGIÓN DEL MAULE,,,1,,,,,,,,,centro uhf
+CE4CC-R,CE4CC-R Echolink Repeater,CONSTITUCIÓN,,-35.3566666667,-72.4080555556,,,UHF/FM,439.555,439.555,88.5,REGIÓN DEL MAULE,,,1,,,,,,,,,centro uhf simplex
 CE5CO RPT-A,RADIO CLUB CORONEL,CORONEL,CERRO ESCUADRÓN,-36.9555555556,-73.1208333333,25,7,VHF/FM,146.685,146.085,51,REGIÓN DEL BIOBÍO,05-05-2023,30-03-2028,,,,,,,,,,sur vhf
 CE5CO RPT-B,RADIO CLUB CORONEL,CORONEL,CERRO QUETRA,-37.0577777778,-73.0933333333,25,7,VHF/FM,146.020,146.620,51,REGIÓN DEL BIOBÍO,02-06-2023,30-03-2028,,,,,,,,,,sur vhf
 CE3AA RPT-K,RADIO CLUB DE CHILE,MAIPÚ,CERRO LO AGUIRRE,-33.4636111111,-70.8329166667,10,6,UHF/FM,433.275,438.275,123,REGIÓN METROPOLITANA DE SANTIAGO,04-10-2024,04-10-2029,,,,,,,,https://www.ce3aa.cl/,,rm uhf
@@ -168,96 +168,96 @@ CE2AQ RPT-A,RADIOCLUB AMIGOS DE LA RADIOAFICIÓN,OLMUÉ,CORDON PARQUE NACIONAL L
 CE7RPV RPT-A,RADIOCLUB PUERTO VARAS,PUERTO VARAS,VOLCAN CALBUCO,-41.3209166667,-72.6685194444,10,6,VHF/FM,147.060,147.660,100,REGIÓN DE LOS LAGOS,21-03-2024,07-09-2028,,,,,,,,https://www.qrz.com/db/CE7RPV,,los-lagos vhf
 CE7RPV RPT-B,RADIOCLUB PUERTO VARAS,PUERTO VARAS,VOLCAN CALBUCO,-41.3209166667,-72.6685194444,10,6,UHF/FM,433.100,438.100,123,REGIÓN DE LOS LAGOS,26-03-2024,07-09-2028,,,,,,,,https://www.qrz.com/db/CE7RPV,,los-lagos uhf
 CE4SF RPT-A,SIN FRONTERA AGRUPACION RADIO CLUB,PARRAL,CERRO DIGUA,-36.2933333333,-71.4394444444,10,7,VHF/FM,146.850,146.250,151.4,REGIÓN DEL MAULE,10-09-2024,10-09-2029,,,,,,,,,,centro vhf
-XQ1KK-L,Red Chile - Arica,Arica,,-18.475,-70.3144444,,,VHF/FM,147.540,147.540,88.5,REGIÓN DE ARICA Y PARINACOTA,,,1,Red Chile,,,,,,https://redchile.org/,,gran-norte vhf
-CE1NAH-R,Red Chile - Iquique,Iquique,,-20.2166667,-70.1666667,,,VHF/FM,146.950,146.950,23,REGIÓN DE TARAPACÁ,,,1,Red Chile,,,,,,https://redchile.org/,,gran-norte vhf
-CE1NAH-L,Red Chile - La Huayca,La Huayca,,-20.25,-70.1166667,,,VHF/FM,146.950,146.950,23,REGIÓN DE TARAPACÁ,,,1,Red Chile,,,,,,https://redchile.org/,,gran-norte vhf
-CE1AZP-L,Red Chile - Antofagasta,Antofagasta,,-23.6333333,-70.4,,,VHF/FM,146.420,146.420,,REGIÓN DE ANTOFAGASTA,,,1,Red Chile,,,,,,https://redchile.org/,,gran-norte vhf
-CA1HDG-L,Red Chile - Copiapo,Copiapo,,-27.3666667,-70.3166667,,,VHF/FM,147.430,147.430,,REGIÓN DE ATACAMA,,,1,Red Chile,,,,,,https://redchile.org/,,norte-chico vhf
-CA1HDG-R,Red Chile - Coquimbo,Coquimbo,,-29.95,-71.3333333,,,VHF/FM,146.420,146.420,,REGIÓN DE COQUIMBO,,,1,Red Chile,,,,,,https://redchile.org/,,norte-chico vhf
-CE2MTP-L,Red Chile - Paihuano,Paihuano,,-30.0166667,-70.5166667,,,VHF/FM,147.540,147.540,,REGIÓN DE COQUIMBO,,,1,Red Chile,,,,,,https://redchile.org/,,norte-chico vhf
-CE2RVV-L,Red Chile - Llay Llay,Llay Llay,,-32.85,-70.9666667,,,VHF/FM,145.050,145.050,,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf
-CE2LGI-L,Red Chile - Los Andes,Los Andes,,-32.8166667,-70.6166667,,,VHF/FM,147.180,147.180,67.0,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf
-CE2JJF-L,Red Chile - Isla Negra,Isla Negra,,-33.4,-71.7,,,VHF/FM,146.490,146.490,,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf
-CE2KVL-L,Red Chile - Valparaiso,Valparaiso,,-33.0458333,-71.6163889,,,VHF/FM,146.590,146.590,67.0,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf
-CA2JOT-L,Red Chile - Quilpue,Quilpue,,-33.05,-71.45,,,VHF/FM,146.320,146.320,67.0,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf
-CE2BMA-L,Red Chile - Villa Alemana,Villa Alemana,,-33.05,-71.3666667,,,VHF/FM,146.440,146.440,67,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf
-CE2BMA-R,Red Chile - Limache,Limache,,-32.9833333,-71.2833333,,,VHF/FM,145.220,145.220,67,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf
-CE3LWV-L,Red Chile - El Monte,El Monte,,-33.6833333,-71.0166667,,,VHF/FM,146.500,146.500,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf
-CE3LWV-R,Red Chile - María Pinto,María Pinto,,-33.5333333,-71.1333333,,,VHF/FM,146.550,146.550,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf
-CA3AMG-L,Red Chile - Renca,Renca,,-33.4,-70.7333333,,,VHF/FM,145.550,145.550,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf
-CE3PBR-L,Red Chile - San Joaquin,San Joaquin,,-33.5,-70.6166667,,,VHF/FM,147.540,147.540,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf
-CE3IME-L,Red Chile - Las Condes,Las Condes,,-33.4166667,-70.5833333,,,VHF/FM,146.180,146.180,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf
-CE3WAQ-L,Red Chile - Las Condes,Las Condes,,-33.4166667,-70.5833333,,,VHF/FM,146.420,146.420,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf
-CE3PPY-L,Red Chile - Cerro Navia,Cerro Navia,,-33.4166667,-70.7166667,,,VHF/FM,147.410,147.410,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf
-CE3KA-L,Red Chile - La Cisterna,La Cisterna,,-33.55,-70.6833333,,,VHF/FM,147.430,147.430,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf
-CE4CVX-L,Red Chile - Coltauco,Coltauco,,-34.287229,-71.085723,,,VHF/FM,147.000,147.000,,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,Red Chile,,,,,,https://redchile.org/,,centro vhf
-CA4FBR-L,Red Chile - Talca,Talca,,-35.4333333,-71.6666667,,,VHF/FM,147.650,147.650,88.5,REGIÓN DEL MAULE,,,1,Red Chile,,,,,,https://redchile.org/,,centro vhf
-CE4UYP-L,Red Chile - Chillan,Chillan,,-36.6,-72.1166667,,,VHF/FM,146.550,146.550,151.4,REGIÓN DE NUBLE,,,1,Red Chile,,,,,,https://redchile.org/,,centro vhf
-CE4JVU-L,Red Chile - Rengo,Rengo,,-34.4166667,-70.8666667,,,VHF/FM,146.450,146.450,71.9,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,Red Chile,,,,,,https://redchile.org/,,centro vhf
-CE4VRI-R,Red Chile - Chanco,Chanco,,-35.7333333,-72.5333333,,,VHF/FM,145.400,145.400,,REGIÓN DEL MAULE,,,1,Red Chile,,,,,,https://redchile.org/,,centro vhf
-XQ5OS-L,Red Chile - Yumbel,Yumbel,,-37.1333333,-72.5333333,,,VHF/FM,146.420,146.420,67,REGIÓN DEL BIOBÍO,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf
-CE5MBM-L,Red Chile - Dichato,Dichato,,-36.6166667,-72.95,,,VHF/FM,146.500,146.500,123,REGIÓN DEL BIOBÍO,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf
-CE5AUC-R,Red Chile - Laja,Laja,,-37.2666667,-72.7,,,VHF/FM,147.500,147.500,123,REGIÓN DEL BIOBÍO,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf
-CE7UQS-L,Red Chile - Temuco,Temuco,,-38.75,-72.6666667,,,VHF/FM,146.350,146.350,123,REGIÓN DE LA ARAUCANÍA,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf
-XQ6RMG-L,Red Chile - Temuco,Temuco,,-38.75,-72.6666667,,,VHF/FM,147.350,147.350,146.2,REGIÓN DE LA ARAUCANÍA,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf
-XQ6RMG-R,Red Chile - Temuco,Temuco,,-38.75,-72.6666667,,,VHF/FM,147.420,147.420,123,REGIÓN DE LA ARAUCANÍA,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf
+XQ1KK-L,Red Chile - Arica,Arica,,-18.475,-70.3144444,,,VHF/FM,147.540,147.540,88.5,REGIÓN DE ARICA Y PARINACOTA,,,1,Red Chile,,,,,,https://redchile.org/,,gran-norte vhf simplex
+CE1NAH-R,Red Chile - Iquique,Iquique,,-20.2166667,-70.1666667,,,VHF/FM,146.950,146.950,23,REGIÓN DE TARAPACÁ,,,1,Red Chile,,,,,,https://redchile.org/,,gran-norte vhf simplex
+CE1NAH-L,Red Chile - La Huayca,La Huayca,,-20.25,-70.1166667,,,VHF/FM,146.950,146.950,23,REGIÓN DE TARAPACÁ,,,1,Red Chile,,,,,,https://redchile.org/,,gran-norte vhf simplex
+CE1AZP-L,Red Chile - Antofagasta,Antofagasta,,-23.6333333,-70.4,,,VHF/FM,146.420,146.420,,REGIÓN DE ANTOFAGASTA,,,1,Red Chile,,,,,,https://redchile.org/,,gran-norte vhf simplex
+CA1HDG-L,Red Chile - Copiapo,Copiapo,,-27.3666667,-70.3166667,,,VHF/FM,147.430,147.430,,REGIÓN DE ATACAMA,,,1,Red Chile,,,,,,https://redchile.org/,,norte-chico vhf simplex
+CA1HDG-R,Red Chile - Coquimbo,Coquimbo,,-29.95,-71.3333333,,,VHF/FM,146.420,146.420,,REGIÓN DE COQUIMBO,,,1,Red Chile,,,,,,https://redchile.org/,,norte-chico vhf simplex
+CE2MTP-L,Red Chile - Paihuano,Paihuano,,-30.0166667,-70.5166667,,,VHF/FM,147.540,147.540,,REGIÓN DE COQUIMBO,,,1,Red Chile,,,,,,https://redchile.org/,,norte-chico vhf simplex
+CE2RVV-L,Red Chile - Llay Llay,Llay Llay,,-32.85,-70.9666667,,,VHF/FM,145.050,145.050,,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf simplex
+CE2LGI-L,Red Chile - Los Andes,Los Andes,,-32.8166667,-70.6166667,,,VHF/FM,147.180,147.180,67.0,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf simplex
+CE2JJF-L,Red Chile - Isla Negra,Isla Negra,,-33.4,-71.7,,,VHF/FM,146.490,146.490,,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf simplex
+CE2KVL-L,Red Chile - Valparaiso,Valparaiso,,-33.0458333,-71.6163889,,,VHF/FM,146.590,146.590,67.0,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf simplex
+CA2JOT-L,Red Chile - Quilpue,Quilpue,,-33.05,-71.45,,,VHF/FM,146.320,146.320,67.0,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf simplex
+CE2BMA-L,Red Chile - Villa Alemana,Villa Alemana,,-33.05,-71.3666667,,,VHF/FM,146.440,146.440,67,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf simplex
+CE2BMA-R,Red Chile - Limache,Limache,,-32.9833333,-71.2833333,,,VHF/FM,145.220,145.220,67,REGIÓN DE VALPARAÍSO,,,1,Red Chile,,,,,,https://redchile.org/,,valparaiso vhf simplex
+CE3LWV-L,Red Chile - El Monte,El Monte,,-33.6833333,-71.0166667,,,VHF/FM,146.500,146.500,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf simplex
+CE3LWV-R,Red Chile - María Pinto,María Pinto,,-33.5333333,-71.1333333,,,VHF/FM,146.550,146.550,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf simplex
+CA3AMG-L,Red Chile - Renca,Renca,,-33.4,-70.7333333,,,VHF/FM,145.550,145.550,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf simplex
+CE3PBR-L,Red Chile - San Joaquin,San Joaquin,,-33.5,-70.6166667,,,VHF/FM,147.540,147.540,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf simplex
+CE3IME-L,Red Chile - Las Condes,Las Condes,,-33.4166667,-70.5833333,,,VHF/FM,146.180,146.180,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf simplex
+CE3WAQ-L,Red Chile - Las Condes,Las Condes,,-33.4166667,-70.5833333,,,VHF/FM,146.420,146.420,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf simplex
+CE3PPY-L,Red Chile - Cerro Navia,Cerro Navia,,-33.4166667,-70.7166667,,,VHF/FM,147.410,147.410,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf simplex
+CE3KA-L,Red Chile - La Cisterna,La Cisterna,,-33.55,-70.6833333,,,VHF/FM,147.430,147.430,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Chile,,,,,,https://redchile.org/,,rm vhf simplex
+CE4CVX-L,Red Chile - Coltauco,Coltauco,,-34.287229,-71.085723,,,VHF/FM,147.000,147.000,,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,Red Chile,,,,,,https://redchile.org/,,centro vhf simplex
+CA4FBR-L,Red Chile - Talca,Talca,,-35.4333333,-71.6666667,,,VHF/FM,147.650,147.650,88.5,REGIÓN DEL MAULE,,,1,Red Chile,,,,,,https://redchile.org/,,centro vhf simplex
+CE4UYP-L,Red Chile - Chillan,Chillan,,-36.6,-72.1166667,,,VHF/FM,146.550,146.550,151.4,REGIÓN DE NUBLE,,,1,Red Chile,,,,,,https://redchile.org/,,centro vhf simplex
+CE4JVU-L,Red Chile - Rengo,Rengo,,-34.4166667,-70.8666667,,,VHF/FM,146.450,146.450,71.9,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,Red Chile,,,,,,https://redchile.org/,,centro vhf simplex
+CE4VRI-R,Red Chile - Chanco,Chanco,,-35.7333333,-72.5333333,,,VHF/FM,145.400,145.400,,REGIÓN DEL MAULE,,,1,Red Chile,,,,,,https://redchile.org/,,centro vhf simplex
+XQ5OS-L,Red Chile - Yumbel,Yumbel,,-37.1333333,-72.5333333,,,VHF/FM,146.420,146.420,67,REGIÓN DEL BIOBÍO,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf simplex
+CE5MBM-L,Red Chile - Dichato,Dichato,,-36.6166667,-72.95,,,VHF/FM,146.500,146.500,123,REGIÓN DEL BIOBÍO,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf simplex
+CE5AUC-R,Red Chile - Laja,Laja,,-37.2666667,-72.7,,,VHF/FM,147.500,147.500,123,REGIÓN DEL BIOBÍO,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf simplex
+CE7UQS-L,Red Chile - Temuco,Temuco,,-38.75,-72.6666667,,,VHF/FM,146.350,146.350,123,REGIÓN DE LA ARAUCANÍA,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf simplex
+XQ6RMG-L,Red Chile - Temuco,Temuco,,-38.75,-72.6666667,,,VHF/FM,147.350,147.350,146.2,REGIÓN DE LA ARAUCANÍA,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf simplex
+XQ6RMG-R,Red Chile - Temuco,Temuco,,-38.75,-72.6666667,,,VHF/FM,147.420,147.420,123,REGIÓN DE LA ARAUCANÍA,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf simplex
 CE6PHG-L,Red Chile - Villarrica,Villarrica,,-39.2666667,-72.2166667,,,VHF/FM,146.200,146.800,203.5,REGIÓN DE LA ARAUCANÍA,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf
 CE6ROX-L,Red Chile - Lautaro,Lautaro,,-38.5291667,-72.435,,,VHF/FM,146.200,146.800,203.5,REGIÓN DE LA ARAUCANÍA,,,1,Red Chile,,,,,,https://redchile.org/,,sur vhf
-CE6RCR-L,Red Chile - Valdivia,Valdivia,,-39.8,-73.2333333,,,VHF/FM,146.850,146.850,,REGIÓN DE LOS RÍOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-rios vhf
-CE7RVF-L,Red Chile - Puerto Varas,Puerto Varas,,-41.3166667,-72.9833333,,,VHF/FM,146.430,146.430,,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf
-CD7LVC-L,Red Chile - Castro Chiloé,Castro Chiloé,,-42.4666667,-73.8,,,VHF/FM,146.420,146.420,,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf
-CE7DNN-L,Red Chile - Tenaun Chiloé,Tenaun Chiloé,,-42.3666667,-73.7,,,VHF/FM,146.500,146.500,,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf
-CE7DE-L,Red Chile - Queilen Chiloé,Queilen Chiloé,,-42.8666667,-73.4666667,,,VHF/FM,147.500,147.500,,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf
-CE7VP-L,Red Chile - Quellón Chiloé,Quellón Chiloé,,-43.1,-73.6,,,VHF/FM,146.420,146.420,,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf
-CA7VHX-L,Red Chile - Ancud Chiloé,Ancud Chiloé,,-41.8666667,-73.8333333,,,VHF/FM,146.580,146.580,67,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf
-CE8CAU-L,Red Chile - Punta Arenas,Punta Arenas,,-53.1669444,-70.9336111,,,VHF/FM,147.800,147.800,,REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA,,,1,Red Chile,,,,,,https://redchile.org/,,patagonia vhf
-CE8RJN-L,Red Chile - Puerto Porvenir,Puerto Porvenir,,-53.3,-70.3666667,,,VHF/FM,147.540,147.540,,REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA,,,1,Red Chile,,,,,,https://redchile.org/,,patagonia vhf
-CA7TWY-L,Red Echolink Chile - Puerto Montt,Puerto Montt,,-41.4666667,-72.9333333,,,VHF/FM,146.550,146.550,,REGIÓN DE LOS LAGOS,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,los-lagos vhf
-CE4VYB-L,Red Echolink Chile - Chillán,Chillán,,-36.6,-72.1166667,,,VHF/FM,147.440,147.440,,REGIÓN DE NUBLE,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,centro vhf
-CE4TAG-L,Red Echolink Chile - San Francisco de Mostazal,San Francisco de Mostazal,,-33.9833333,-70.7,,,VHF/FM,146.460,146.460,,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,centro vhf
-CA4JNU-L,Red Echolink Chile - Empedrado,Empedrado,,-35.6,-72.2833333,,,VHF/FM,146.210,146.210,,REGIÓN DEL MAULE,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,centro vhf
-CE3EDQ-L,Red Echolink Chile - Santiago,Santiago,,-33.45,-70.6666667,,,VHF/FM,147.740,147.740,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,rm vhf
-CE6RLA-L,Red Echolink Chile - Temuco,Temuco,,-38.75,-72.6666667,,,VHF/FM,147.560,147.560,203.5,REGIÓN DE LA ARAUCANÍA,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,sur vhf
-CA6ELP-L,RCDR - Valdivia,Valdivia,,-39.8,-73.2333333,,,VHF/FM,145.430,145.430,,REGIÓN DE LOS RÍOS,,,1,RCDR,,,,,,https://www.rcdr.cl/,,los-rios vhf
-CA4JPX-L,RCDR - Nueva Imperial,Nueva Imperial,,-38.7333333,-72.95,,,VHF/FM,145.430,145.430,,REGIÓN DE LA ARAUCANÍA,,,1,RCDR,,,,,,https://www.rcdr.cl/,,sur vhf
-CA2VCR-L,RCDR - La Serena,La Serena,,-29.9,-71.25,,,VHF/FM,145.430,145.430,,REGIÓN DE COQUIMBO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,norte-chico vhf
-CA2LNQ-L,RCDR - Los Andes,Los Andes,,-32.8166667,-70.6166667,,,VHF/FM,145.430,145.430,,REGIÓN DE VALPARAÍSO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,valparaiso vhf
-CE4MOW-L,RCDR - Santa Cruz,Santa Cruz,,-34.6333333,-71.3666667,,,VHF/FM,145.430,145.430,77.0,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,RCDR,,,,,,https://www.rcdr.cl/,,centro vhf
-CA4SVL-L,RCDR - Rauco,Rauco,,-34.9333333,-71.3166667,,,VHF/FM,145.430,145.430,,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,RCDR,,,,,,https://www.rcdr.cl/,,centro vhf
-CA3VNX-L,RCDR - El Monte,El Monte,,-33.6833333,-71.0166667,,,VHF/FM,145.530,145.530,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,rm vhf
-CD6AWE-L,RCDR - Futrono,Futrono,,-40.1333333,-72.4,,,VHF/FM,145.430,145.430,,REGIÓN DE LOS RÍOS,,,1,RCDR,,,,,,https://www.rcdr.cl/,,los-rios vhf
-CE3HKG-L,RCDR - Peñalolén,Peñalolén,,-33.4833333,-70.5333333,,,VHF/FM,145.430,145.430,77.0,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,rm vhf
-CD5ILA-L,RCDR - Chiguayante,Chiguayante,,-36.9166667,-73.0166667,,,VHF/FM,145.500,145.500,,REGIÓN DEL BIOBÍO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,sur vhf
-CE5HRJ-L,RCDR - Penco,Penco,,-36.7333333,-72.9833333,,,VHF/FM,145.430,145.430,77.0,REGIÓN DEL BIOBÍO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,sur vhf
-CE3KGB-L,San Jose de Maipo,San Jose de Maipo,,-33.6333333,-70.3666667,,,VHF/FM,147.900,147.900,88.5,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf
-CE3KGB-L,RCDR - San Jose de Maipo,San Jose de Maipo,,-33.6333333,-70.3666667,,,VHF/FM,145.630,145.630,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,rm vhf
-CE4LAB-L,RCDR - San Joaquin,San Joaquin,,-33.5,-70.6166667,,,UHF/FM,433.430,433.430,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,rm uhf
+CE6RCR-L,Red Chile - Valdivia,Valdivia,,-39.8,-73.2333333,,,VHF/FM,146.850,146.850,,REGIÓN DE LOS RÍOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-rios vhf simplex
+CE7RVF-L,Red Chile - Puerto Varas,Puerto Varas,,-41.3166667,-72.9833333,,,VHF/FM,146.430,146.430,,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf simplex
+CD7LVC-L,Red Chile - Castro Chiloé,Castro Chiloé,,-42.4666667,-73.8,,,VHF/FM,146.420,146.420,,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf simplex
+CE7DNN-L,Red Chile - Tenaun Chiloé,Tenaun Chiloé,,-42.3666667,-73.7,,,VHF/FM,146.500,146.500,,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf simplex
+CE7DE-L,Red Chile - Queilen Chiloé,Queilen Chiloé,,-42.8666667,-73.4666667,,,VHF/FM,147.500,147.500,,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf simplex
+CE7VP-L,Red Chile - Quellón Chiloé,Quellón Chiloé,,-43.1,-73.6,,,VHF/FM,146.420,146.420,,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf simplex
+CA7VHX-L,Red Chile - Ancud Chiloé,Ancud Chiloé,,-41.8666667,-73.8333333,,,VHF/FM,146.580,146.580,67,REGIÓN DE LOS LAGOS,,,1,Red Chile,,,,,,https://redchile.org/,,los-lagos vhf simplex
+CE8CAU-L,Red Chile - Punta Arenas,Punta Arenas,,-53.1669444,-70.9336111,,,VHF/FM,147.800,147.800,,REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA,,,1,Red Chile,,,,,,https://redchile.org/,,patagonia vhf simplex
+CE8RJN-L,Red Chile - Puerto Porvenir,Puerto Porvenir,,-53.3,-70.3666667,,,VHF/FM,147.540,147.540,,REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA,,,1,Red Chile,,,,,,https://redchile.org/,,patagonia vhf simplex
+CA7TWY-L,Red Echolink Chile - Puerto Montt,Puerto Montt,,-41.4666667,-72.9333333,,,VHF/FM,146.550,146.550,,REGIÓN DE LOS LAGOS,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,los-lagos vhf simplex
+CE4VYB-L,Red Echolink Chile - Chillán,Chillán,,-36.6,-72.1166667,,,VHF/FM,147.440,147.440,,REGIÓN DE NUBLE,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,centro vhf simplex
+CE4TAG-L,Red Echolink Chile - San Francisco de Mostazal,San Francisco de Mostazal,,-33.9833333,-70.7,,,VHF/FM,146.460,146.460,,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,centro vhf simplex
+CA4JNU-L,Red Echolink Chile - Empedrado,Empedrado,,-35.6,-72.2833333,,,VHF/FM,146.210,146.210,,REGIÓN DEL MAULE,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,centro vhf simplex
+CE3EDQ-L,Red Echolink Chile - Santiago,Santiago,,-33.45,-70.6666667,,,VHF/FM,147.740,147.740,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,rm vhf simplex
+CE6RLA-L,Red Echolink Chile - Temuco,Temuco,,-38.75,-72.6666667,,,VHF/FM,147.560,147.560,203.5,REGIÓN DE LA ARAUCANÍA,,,1,Red Echolink Chile,,,,,,https://echolinkchile.cl/,,sur vhf simplex
+CA6ELP-L,RCDR - Valdivia,Valdivia,,-39.8,-73.2333333,,,VHF/FM,145.430,145.430,,REGIÓN DE LOS RÍOS,,,1,RCDR,,,,,,https://www.rcdr.cl/,,los-rios vhf simplex
+CA4JPX-L,RCDR - Nueva Imperial,Nueva Imperial,,-38.7333333,-72.95,,,VHF/FM,145.430,145.430,,REGIÓN DE LA ARAUCANÍA,,,1,RCDR,,,,,,https://www.rcdr.cl/,,sur vhf simplex
+CA2VCR-L,RCDR - La Serena,La Serena,,-29.9,-71.25,,,VHF/FM,145.430,145.430,,REGIÓN DE COQUIMBO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,norte-chico vhf simplex
+CA2LNQ-L,RCDR - Los Andes,Los Andes,,-32.8166667,-70.6166667,,,VHF/FM,145.430,145.430,,REGIÓN DE VALPARAÍSO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,valparaiso vhf simplex
+CE4MOW-L,RCDR - Santa Cruz,Santa Cruz,,-34.6333333,-71.3666667,,,VHF/FM,145.430,145.430,77.0,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,RCDR,,,,,,https://www.rcdr.cl/,,centro vhf simplex
+CA4SVL-L,RCDR - Rauco,Rauco,,-34.9333333,-71.3166667,,,VHF/FM,145.430,145.430,,REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS,,,1,RCDR,,,,,,https://www.rcdr.cl/,,centro vhf simplex
+CA3VNX-L,RCDR - El Monte,El Monte,,-33.6833333,-71.0166667,,,VHF/FM,145.530,145.530,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,rm vhf simplex
+CD6AWE-L,RCDR - Futrono,Futrono,,-40.1333333,-72.4,,,VHF/FM,145.430,145.430,,REGIÓN DE LOS RÍOS,,,1,RCDR,,,,,,https://www.rcdr.cl/,,los-rios vhf simplex
+CE3HKG-L,RCDR - Peñalolén,Peñalolén,,-33.4833333,-70.5333333,,,VHF/FM,145.430,145.430,77.0,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,rm vhf simplex
+CD5ILA-L,RCDR - Chiguayante,Chiguayante,,-36.9166667,-73.0166667,,,VHF/FM,145.500,145.500,,REGIÓN DEL BIOBÍO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,sur vhf simplex
+CE5HRJ-L,RCDR - Penco,Penco,,-36.7333333,-72.9833333,,,VHF/FM,145.430,145.430,77.0,REGIÓN DEL BIOBÍO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,sur vhf simplex
+CE3KGB-L,San Jose de Maipo,San Jose de Maipo,,-33.6333333,-70.3666667,,,VHF/FM,147.900,147.900,88.5,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf simplex
+CE3KGB-L,RCDR - San Jose de Maipo,San Jose de Maipo,,-33.6333333,-70.3666667,,,VHF/FM,145.630,145.630,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,rm vhf simplex
+CE4LAB-L,RCDR - San Joaquin,San Joaquin,,-33.5,-70.6166667,,,UHF/FM,433.430,433.430,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,RCDR,,,,,,https://www.rcdr.cl/,,rm uhf simplex
 CE5RPP-R,Conferencia Sur - Penco,Penco,,-36.7408,-72.9953,,,VHF/FM,146.940,146.340,88.5,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/,,sur vhf
 CE4LY-R,Conferencia Sur - Talca,Talca,,-35.4433333,-71.6780555556,,,VHF/FM,146.380,146.980,67,REGIÓN DEL MAULE,,,1,SUR,,,,,,https://conferenciasur.cl/,,centro vhf
-CE4RWW-L,Conferencia Sur - Constitución,CONSTITUCIÓN,,-35.3333333,-72.4166667,,,VHF/FM,146.410,146.410,88.5,REGIÓN DEL MAULE,,,1,SUR,,,,,,https://conferenciasur.cl/,,centro vhf
-CA5EHC-L,Conferencia Sur - Coronel,Coronel,,-36.9555555556,-73.1208333333,,,VHF/FM,145.550,145.550,67,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/,,sur vhf
-CE5VKK-L,Conferencia Sur - Concepción,Concepción,,-36.8269,-73.0503,,,VHF/FM,147.500,147.500,123,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/,,sur vhf
-CA1ILI-L,Conferencia Sur - Iquique,Iquique,,-20.2166667,-70.1666667,,,UHF/FM,439.200,439.200,136.5,REGIÓN DE TARAPACÁ,,,1,SUR,,,,,,https://conferenciasur.cl/,,gran-norte uhf
+CE4RWW-L,Conferencia Sur - Constitución,CONSTITUCIÓN,,-35.3333333,-72.4166667,,,VHF/FM,146.410,146.410,88.5,REGIÓN DEL MAULE,,,1,SUR,,,,,,https://conferenciasur.cl/,,centro vhf simplex
+CA5EHC-L,Conferencia Sur - Coronel,Coronel,,-36.9555555556,-73.1208333333,,,VHF/FM,145.550,145.550,67,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/,,sur vhf simplex
+CE5VKK-L,Conferencia Sur - Concepción,Concepción,,-36.8269,-73.0503,,,VHF/FM,147.500,147.500,123,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/,,sur vhf simplex
+CA1ILI-L,Conferencia Sur - Iquique,Iquique,,-20.2166667,-70.1666667,,,UHF/FM,439.200,439.200,136.5,REGIÓN DE TARAPACÁ,,,1,SUR,,,,,,https://conferenciasur.cl/,,gran-norte uhf simplex
 CE5UFR-L,Conferencia Sur - Puerto Montt,Puerto Montt,,-41.4688888889,-72.9630555556,,,VHF/FM,,,,REGIÓN DE LOS LAGOS,,,1,SUR,,,,,,https://conferenciasur.cl/,,los-lagos vhf
-CA3HRS-L,Conferencia Sur - Cabrero,Cabrero,,-37.0333,-72.4,,,VHF/FM,145.550,145.550,67,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/,,sur vhf
-CA2RDP-L,Conferencia Sur - La Serena,La Serena,,-29.9388888889,-71.2233333333,,,VHF/FM,145.680,145.680,88.5,REGIÓN DE COQUIMBO,,,1,SUR,,,,,,https://conferenciasur.cl/,,norte-chico vhf
+CA3HRS-L,Conferencia Sur - Cabrero,Cabrero,,-37.0333,-72.4,,,VHF/FM,145.550,145.550,67,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/,,sur vhf simplex
+CA2RDP-L,Conferencia Sur - La Serena,La Serena,,-29.9388888889,-71.2233333333,,,VHF/FM,145.680,145.680,88.5,REGIÓN DE COQUIMBO,,,1,SUR,,,,,,https://conferenciasur.cl/,,norte-chico vhf simplex
 CE5UNI-L,Conferencia Sur - UdeC,Concepción,Universidad de Concepción,-36.83101365,-73.03468047,,,VHF/FM,220.100,224.980,88.5,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/,,sur vhf
 CE5NCR,Conferencia Sur - Chile centro,Cañete,,-37.7531805556,-73.3611666667,,,VHF/FM,146.750,146.150,100,REGIÓN DEL BIOBÍO,,,1,SUR,,,,,,https://conferenciasur.cl/,,sur vhf
-CE3RDV,RADIO CLUB VALLES DEL MAIPO,Buin,Centro urbano,-33.7333333333,-70.7333333333,,,VHF/FM,146.480,146.480,,REGIÓN METROPOLITANA DE SANTIAGO,,,,,,,,,,https://ce3rdv.cl/,,rm vhf
+CE3RDV,RADIO CLUB VALLES DEL MAIPO,Buin,Centro urbano,-33.7333333333,-70.7333333333,,,VHF/FM,146.480,146.480,,REGIÓN METROPOLITANA DE SANTIAGO,,,,,,,,,,https://ce3rdv.cl/,,rm vhf simplex
 CE3BIO,RADIO CLUB DEL BIOBIO,LOS ANGELES,LOS ANGELES CENTRO,-37.4697305556,-72.3536611111,,,VHF/FM,146.790,146.190,,REGIÓN DEL BIOBÍO,,,,,1,,1,1,,https://www.ce5bio.cl/,,sur vhf
-CE3SER-VHF,CE3SER — Simplex VHF (emergencias RC Chile),Santiago,Centro urbano,-33.45,-70.6666667,,,VHF/FM,146.520,146.520,,REGIÓN METROPOLITANA DE SANTIAGO,,,,,,,,,,https://www.ce3ser.cl/,,emergencias encuentro rm vhf
-CE3SER-UHF,CE3SER — Simplex UHF (emergencias RC Chile),Santiago,Centro urbano,-33.45,-70.6666667,,,UHF/FM,433.520,433.520,,REGIÓN METROPOLITANA DE SANTIAGO,,,,,,,,,,https://www.ce3ser.cl/,,emergencias encuentro rm uhf
-ZDMR Iquique,Zona DMR CL — Iquique,Iquique,Simplex VHF · CA1ILI,-20.2144,-70.1525,,,VHF/DMR,145.780,145.780,,REGIÓN DE TARAPACÁ,,,,Zona DMR CL,1,,1,2,730 7300444 7301,https://zonadmr.cl/nodos/,,gran-norte vhf
-ZDMR Punitaqui,Zona DMR CL — Punitaqui,Punitaqui,Simplex VHF · CA2FHD,-30.7828,-71.2247,,,VHF/DMR,145.680,145.680,,REGIÓN DE COQUIMBO,,,,Zona DMR CL,1,,1,2,730 7300444,https://zonadmr.cl/nodos/,,norte-chico vhf
-ZDMR Vicuña,Zona DMR CL — Vicuña,Vicuña,Simplex VHF · CE2DRB,-30.0319,-70.7081,,,VHF/DMR,145.650,145.650,,REGIÓN DE COQUIMBO,,,,Zona DMR CL,1,,1,2,730 7300444,https://zonadmr.cl/nodos/,,norte-chico vhf
-ZDMR Isla Negra,Zona DMR CL — Isla Negra,Isla Negra,Simplex VHF · CE2JJF,-33.7889,-71.7028,,,VHF/DMR,144.600,144.600,,REGIÓN DE VALPARAÍSO,,,,Zona DMR CL,1,,1,2,730 7300444 7301,https://zonadmr.cl/nodos/,,valparaiso vhf
-ZDMR Combarbalá,Zona DMR CL — Combarbalá,Combarbalá,Simplex VHF · CE2JDX,-31.1764,-70.9553,,,VHF/DMR,146.460,146.460,,REGIÓN DE COQUIMBO,,,,Zona DMR CL,1,,1,2,730 7300444,https://zonadmr.cl/nodos/,,norte-chico vhf
-ZDMR La Serena,Zona DMR CL — La Serena,La Serena,Simplex UHF · CA2RDP,-29.9027,-71.2522,,,UHF/DMR,433.080,433.080,,REGIÓN DE COQUIMBO,,,,Zona DMR CL,1,,1,2,7300444,https://zonadmr.cl/nodos/,,norte-chico uhf
+CE3SER-VHF,CE3SER — Simplex VHF (emergencias RC Chile),Santiago,Centro urbano,-33.45,-70.6666667,,,VHF/FM,146.520,146.520,,REGIÓN METROPOLITANA DE SANTIAGO,,,,,,,,,,https://www.ce3ser.cl/,,emergencias encuentro rm vhf simplex
+CE3SER-UHF,CE3SER — Simplex UHF (emergencias RC Chile),Santiago,Centro urbano,-33.45,-70.6666667,,,UHF/FM,433.520,433.520,,REGIÓN METROPOLITANA DE SANTIAGO,,,,,,,,,,https://www.ce3ser.cl/,,emergencias encuentro rm uhf simplex
+ZDMR Iquique,Zona DMR CL — Iquique,Iquique,Simplex VHF · CA1ILI,-20.2144,-70.1525,,,VHF/DMR,145.780,145.780,,REGIÓN DE TARAPACÁ,,,,Zona DMR CL,1,,1,2,730 7300444 7301,https://zonadmr.cl/nodos/,,gran-norte vhf simplex
+ZDMR Punitaqui,Zona DMR CL — Punitaqui,Punitaqui,Simplex VHF · CA2FHD,-30.7828,-71.2247,,,VHF/DMR,145.680,145.680,,REGIÓN DE COQUIMBO,,,,Zona DMR CL,1,,1,2,730 7300444,https://zonadmr.cl/nodos/,,norte-chico vhf simplex
+ZDMR Vicuña,Zona DMR CL — Vicuña,Vicuña,Simplex VHF · CE2DRB,-30.0319,-70.7081,,,VHF/DMR,145.650,145.650,,REGIÓN DE COQUIMBO,,,,Zona DMR CL,1,,1,2,730 7300444,https://zonadmr.cl/nodos/,,norte-chico vhf simplex
+ZDMR Isla Negra,Zona DMR CL — Isla Negra,Isla Negra,Simplex VHF · CE2JJF,-33.7889,-71.7028,,,VHF/DMR,144.600,144.600,,REGIÓN DE VALPARAÍSO,,,,Zona DMR CL,1,,1,2,730 7300444 7301,https://zonadmr.cl/nodos/,,valparaiso vhf simplex
+ZDMR Combarbalá,Zona DMR CL — Combarbalá,Combarbalá,Simplex VHF · CE2JDX,-31.1764,-70.9553,,,VHF/DMR,146.460,146.460,,REGIÓN DE COQUIMBO,,,,Zona DMR CL,1,,1,2,730 7300444,https://zonadmr.cl/nodos/,,norte-chico vhf simplex
+ZDMR La Serena,Zona DMR CL — La Serena,La Serena,Simplex UHF · CA2RDP,-29.9027,-71.2522,,,UHF/DMR,433.080,433.080,,REGIÓN DE COQUIMBO,,,,Zona DMR CL,1,,1,2,7300444,https://zonadmr.cl/nodos/,,norte-chico uhf simplex
 ZDMR Maipú,Zona DMR CL — Maipú,Maipú,UHF dúplex −5 MHz · CA3DPI,-33.5095,-70.7567,,,UHF/DMR,435.450,430.450,,REGIÓN METROPOLITANA DE SANTIAGO,,,,Zona DMR CL,1,,1,1,730 7300444,https://zonadmr.cl/nodos/,,rm uhf
-ZDMR Coronel,Zona DMR CL — Coronel,Coronel,Simplex VHF · CA5EHC,-37.0296,-73.1408,,,VHF/DMR,145.750,145.750,,REGIÓN DEL BIOBÍO,,,,Zona DMR CL,1,,1,2,730 7300444 7305,https://zonadmr.cl/nodos/,,sur vhf
-ZDMR Osorno,Zona DMR CL — Osorno,Osorno,Simplex VHF · CD6UMX,-40.5729,-73.1144,,,VHF/DMR,145.450,145.450,,REGIÓN DE LOS LAGOS,,,,Zona DMR CL,1,,1,2,730 7300444,https://zonadmr.cl/nodos/,,los-lagos vhf
-ZDMR Punta Arenas,Zona DMR CL — Punta Arenas,Punta Arenas,Simplex VHF · CE8TDO,-53.1638,-70.9171,,,VHF/DMR,145.750,145.750,,REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA,,,,Zona DMR CL,1,,1,2,730 7300444,https://zonadmr.cl/nodos/,,patagonia vhf
-ZDMR Longavi,Zona DMR CL — Longavi,Longavi,Simplex VHF · CA4BRW,-35.9642,-71.6822,,,VHF/DMR,144.745,144.745,,REGIÓN DEL MAULE,,,,Zona DMR CL,1,,1,1 2,730 7300444,https://zonadmr.cl/nodos/,,centro vhf
+ZDMR Coronel,Zona DMR CL — Coronel,Coronel,Simplex VHF · CA5EHC,-37.0296,-73.1408,,,VHF/DMR,145.750,145.750,,REGIÓN DEL BIOBÍO,,,,Zona DMR CL,1,,1,2,730 7300444 7305,https://zonadmr.cl/nodos/,,sur vhf simplex
+ZDMR Osorno,Zona DMR CL — Osorno,Osorno,Simplex VHF · CD6UMX,-40.5729,-73.1144,,,VHF/DMR,145.450,145.450,,REGIÓN DE LOS LAGOS,,,,Zona DMR CL,1,,1,2,730 7300444,https://zonadmr.cl/nodos/,,los-lagos vhf simplex
+ZDMR Punta Arenas,Zona DMR CL — Punta Arenas,Punta Arenas,Simplex VHF · CE8TDO,-53.1638,-70.9171,,,VHF/DMR,145.750,145.750,,REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA,,,,Zona DMR CL,1,,1,2,730 7300444,https://zonadmr.cl/nodos/,,patagonia vhf simplex
+ZDMR Longavi,Zona DMR CL — Longavi,Longavi,Simplex VHF · CA4BRW,-35.9642,-71.6822,,,VHF/DMR,144.745,144.745,,REGIÓN DEL MAULE,,,,Zona DMR CL,1,,1,1 2,730 7300444,https://zonadmr.cl/nodos/,,centro vhf simplex
 ZDMR Curicó,Zona DMR CL — Curicó,Curicó,VHF dúplex +600 kHz · CE4UJP,-34.9828,-71.2394,,,VHF/DMR,147.180,146.580,,REGIÓN DEL MAULE,,,,Zona DMR CL,1,,1,1 2,730 73004 730911 73099 7300444,https://zonadmr.cl/nodos/,,centro vhf
 NAC EMRG 121.5,Nacional — EMRG (Emergencia / Guard — internacional H24),Chile,Nacional,-33.45,-70.65,,,VHF/AM (ATC),121.500,,,ATC — NACIONAL (Chile),,,,,,atc,,,,https://aipchile.dgac.gob.cl/,,aviones nacional vhf
 NAC TIBA 118.2,Nacional — TIBA (Aeródromos sin control — nacional),Chile,Nacional,-33.45,-70.65,,,VHF/AM (ATC),118.200,,,ATC — NACIONAL (Chile),,,,,,atc,,,,https://aipchile.dgac.gob.cl/,,aviones nacional vhf
@@ -331,20 +331,20 @@ SCCI APP 123.9,Aeropuerto Presidente Carlos Ibáñez del Campo — APP (Punta Ar
 SCCI APP 128.1,Aeropuerto Presidente Carlos Ibáñez del Campo — APP (Punta Arenas Centro (Secundario)),Punta Arenas,Aeropuerto Presidente Carlos Ibáñez del Campo,-53.0026,-70.8546,,,VHF/AM (ATC),128.100,,,REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA,,,,,,atc,,,,https://aipchile.dgac.gob.cl/,,aviones patagonia vhf
 CE2RPE,Sistema Interconectado CE2RPE - RPT Norte,COQUIMBO,,-29.9902777778,-71.2652777778,,,VHF/FM,145.300,144.700,71.9,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf
 CE2RPE,Sistema Interconectado CE2RPE - RPT Panul,COQUIMBO,,-30.0277777778,-71.3602777778,,,VHF/FM,146.700,146.100,71.9,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf
-CE2CZJ,Sistema Interconectado CE2RPE - Nodo Coquimbo,COQUIMBO,,-29.9533,-71.3436,,,VHF/FM,145.100,145.100,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf
-CE2DRB,Sistema Interconectado CE2RPE - Nodo Vicuña,VICUÑA,,-30.0377777778,-70.7013888889,,,VHF/FM,145.050,145.050,71.9,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf
-CE1CCX,Sistema Interconectado CE2RPE - Nodo Copiapó,COPIAPÓ,,-27.4065358333,-70.3999961111,,,VHF/FM,145.100,145.100,,REGIÓN DE ATACAMA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf
-CA1FOB,Sistema Interconectado CE2RPE - Nodo Vallenar,VALLENAR,,-28.5708333333,-70.7580555556,,,VHF/FM,145.100,145.100,,REGIÓN DE ATACAMA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf
-CA2ICV,Sistema Interconectado CE2RPE - Nodo Valparaíso,VALPARAÍSO,,-33.0458333333,-71.6197222222,,,VHF/FM,145.050,145.050,71.9,REGIÓN DE VALPARAÍSO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,valparaiso vhf
+CE2CZJ,Sistema Interconectado CE2RPE - Nodo Coquimbo,COQUIMBO,,-29.9533,-71.3436,,,VHF/FM,145.100,145.100,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf simplex
+CE2DRB,Sistema Interconectado CE2RPE - Nodo Vicuña,VICUÑA,,-30.0377777778,-70.7013888889,,,VHF/FM,145.050,145.050,71.9,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf simplex
+CE1CCX,Sistema Interconectado CE2RPE - Nodo Copiapó,COPIAPÓ,,-27.4065358333,-70.3999961111,,,VHF/FM,145.100,145.100,,REGIÓN DE ATACAMA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf simplex
+CA1FOB,Sistema Interconectado CE2RPE - Nodo Vallenar,VALLENAR,,-28.5708333333,-70.7580555556,,,VHF/FM,145.100,145.100,,REGIÓN DE ATACAMA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf simplex
+CA2ICV,Sistema Interconectado CE2RPE - Nodo Valparaíso,VALPARAÍSO,,-33.0458333333,-71.6197222222,,,VHF/FM,145.050,145.050,71.9,REGIÓN DE VALPARAÍSO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,valparaiso vhf simplex
 CE2BIS,Sistema Interconectado CE2RPE - RPT Salamanca,SALAMANCA,,-31.7794444444,-70.9675000000,,,VHF/FM,147.240,147.840,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf
-CA3MZU,Sistema Interconectado CE2RPE - Nodo Maipú,MAIPÚ,,-33.5111111111,-70.7663888889,,,VHF/FM,145.150,145.150,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf
-CA2DKI,Sistema Interconectado CE2RPE - Nodo Las Condes 1,LAS CONDES,,-33.4130555556,-70.5172222222,,,VHF/FM,145.200,145.200,71.9,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf
-CE2WUI,Sistema Interconectado CE2RPE - Nodo Las Condes 2,LAS CONDES,,-33.4130555556,-70.5172222222,,,VHF/FM,145.100,145.100,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf
-CE2SQV,Sistema Interconectado CE2RPE - Nodo Ovalle,OVALLE,,-30.5980555556,-71.1888888889,,,VHF/FM,145.100,145.100,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf
-CE3HOV,Sistema Interconectado CE2RPE - Nodo Colina,COLINA,,-33.0765027778,-70.6737,,,VHF/FM,145.050,145.050,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf
-CE3HOV,Sistema Interconectado CE2RPE - Nodo Algarrobo,ALGARROBO,,-33.3541666667,-71.6680555556,,,VHF/FM,145.050,145.050,,REGIÓN DE VALPARAÍSO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,valparaiso vhf
-CD2FYS,Sistema Interconectado CE2RPE - Nodo Tongoy,COQUIMBO,,-30.2547222222,-71.3963888889,,,VHF/FM,145.200,145.200,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf
-CE2RZL,Sistema Interconectado CE2RPE - Nodo El Tabo,EL TABO,,-33.4572954,-71.6478833,,,VHF/FM,145.100,145.100,91.5,REGIÓN DE VALPARAÍSO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,valparaiso vhf
-CE1WWG,Sistema Interconectado CE2RPE - Nodo asociado Arica,ARICA,,-18.4786111111,-70.3108333333,,,VHF/FM,147.480,147.480,233.6,REGIÓN DE ARICA Y PARINACOTA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,gran-norte vhf
-CE1WWG,Sistema Interconectado CE2RPE - Nodo asociado Calama,CALAMA,,-22.4569444444,-68.9286111111,,,VHF/FM,147.480,147.480,233.6,REGIÓN DE ANTOFAGASTA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,gran-norte vhf
+CA3MZU,Sistema Interconectado CE2RPE - Nodo Maipú,MAIPÚ,,-33.5111111111,-70.7663888889,,,VHF/FM,145.150,145.150,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf simplex
+CA2DKI,Sistema Interconectado CE2RPE - Nodo Las Condes 1,LAS CONDES,,-33.4130555556,-70.5172222222,,,VHF/FM,145.200,145.200,71.9,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf simplex
+CE2WUI,Sistema Interconectado CE2RPE - Nodo Las Condes 2,LAS CONDES,,-33.4130555556,-70.5172222222,,,VHF/FM,145.100,145.100,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf simplex
+CE2SQV,Sistema Interconectado CE2RPE - Nodo Ovalle,OVALLE,,-30.5980555556,-71.1888888889,,,VHF/FM,145.100,145.100,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf simplex
+CE3HOV,Sistema Interconectado CE2RPE - Nodo Colina,COLINA,,-33.0765027778,-70.6737,,,VHF/FM,145.050,145.050,,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf simplex
+CE3HOV,Sistema Interconectado CE2RPE - Nodo Algarrobo,ALGARROBO,,-33.3541666667,-71.6680555556,,,VHF/FM,145.050,145.050,,REGIÓN DE VALPARAÍSO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,valparaiso vhf simplex
+CD2FYS,Sistema Interconectado CE2RPE - Nodo Tongoy,COQUIMBO,,-30.2547222222,-71.3963888889,,,VHF/FM,145.200,145.200,,REGIÓN DE COQUIMBO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,norte-chico vhf simplex
+CE2RZL,Sistema Interconectado CE2RPE - Nodo El Tabo,EL TABO,,-33.4572954,-71.6478833,,,VHF/FM,145.100,145.100,91.5,REGIÓN DE VALPARAÍSO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,valparaiso vhf simplex
+CE1WWG,Sistema Interconectado CE2RPE - Nodo asociado Arica,ARICA,,-18.4786111111,-70.3108333333,,,VHF/FM,147.480,147.480,233.6,REGIÓN DE ARICA Y PARINACOTA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,gran-norte vhf simplex
+CE1WWG,Sistema Interconectado CE2RPE - Nodo asociado Calama,CALAMA,,-22.4569444444,-68.9286111111,,,VHF/FM,147.480,147.480,233.6,REGIÓN DE ANTOFAGASTA,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,gran-norte vhf simplex
 CE3RZL,Sistema Interconectado CE2RPE - Nodo asociado Santiago,SANTIAGO,,-33.4377777778,-70.6505555556,,,VHF/FM,145.500,144.900,91.5,REGIÓN METROPOLITANA DE SANTIAGO,,,1,Sistema Interconectado CE2RPE,,,,,,https://www.qrz.com/db/CE2RPE,,rm vhf
