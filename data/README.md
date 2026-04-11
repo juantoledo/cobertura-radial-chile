@@ -72,6 +72,7 @@ Los `README.md` dentro de cada carpeta de señal documentan corridas concretas (
 | `tg` | **Talkgroups** DMR. Varios TG: **solo espacios** (ej. `730 7300444 7301`), sin guiones. Sin filtro dedicado en la app. |
 | `website` | URL pública del club o red asociada a esa fila (ver abajo). |
 | `notes` | Notas libres de curación (texto). Vacío si no aplica. En la app solo se muestran en el **detalle de estación** (lista) cuando hay contenido; entran en búsqueda y en la exportación CSV. |
+| `labels` | Identificadores internos (texto). Varios valores: **solo espacios** entre tokens (ej. `red-a demo`). No son filtros en la UI; entran en **búsqueda** por texto, exportación CSV, y se muestran en detalle de estación (lista) y panel lateral del mapa si hay contenido. |
 
 ### `isEcholink` y `conference`
 

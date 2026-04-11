@@ -3,8 +3,8 @@
  * criteria: from getExportFilterCriteria() — { search, nearMe, bandas, regions, types, conferences }
  */
 function exportRepeatersCSV(rows, criteria) {
-  const cols = ['signal', 'nombre', 'banda', 'comuna', 'ubicacion', 'rx', 'tx', 'tono', 'potencia', 'ganancia', 'region', 'vence', 'isEcholink', 'isDMR', 'serviceType', 'conference', 'color', 'slot', 'tg', 'website', 'notes'];
-  const headers = ['Señal', 'Club/Titular', 'Banda', 'Comuna', 'Ubicación', 'RX (MHz)', 'TX (MHz)', 'Tono', 'Pot. W', 'Gan. dBi', 'Región', 'Vence', 'Echolink', 'DMR', 'Servicio (icono)', 'Conferencia / red', 'Color', 'Slot', 'TG', 'Sitio web', 'Notas'];
+  const cols = ['signal', 'nombre', 'banda', 'comuna', 'ubicacion', 'rx', 'tx', 'tono', 'potencia', 'ganancia', 'region', 'vence', 'isEcholink', 'isDMR', 'serviceType', 'conference', 'color', 'slot', 'tg', 'website', 'notes', 'labels'];
+  const headers = ['Señal', 'Club/Titular', 'Banda', 'Comuna', 'Ubicación', 'RX (MHz)', 'TX (MHz)', 'Tono', 'Pot. W', 'Gan. dBi', 'Región', 'Vence', 'Echolink', 'DMR', 'Servicio (icono)', 'Conferencia / red', 'Color', 'Slot', 'TG', 'Sitio web', 'Notas', 'Etiquetas'];
   const esc = function (v) {
     if (v == null || v === '') return '';
     var s = '' + v;

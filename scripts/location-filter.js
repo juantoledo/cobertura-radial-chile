@@ -600,7 +600,7 @@ function nodeMatchesFilterCriteria(r, c, distAnchor) {
   if (c.q) {
     var haystack = [
       r.signal, r.nombre, r.comuna, r.ubicacion, r.region, r.rx, r.tx, r.tono, r.banda,
-      r.conference, r.color, r.slot, r.tg, r.website, r.notes, r.serviceType
+      r.conference, r.color, r.slot, r.tg, r.website, r.notes, r.labels, r.serviceType
     ].filter(Boolean).join(' ').toLowerCase();
     if (haystack.indexOf(c.q) < 0) return false;
   }

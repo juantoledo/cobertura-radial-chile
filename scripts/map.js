@@ -775,6 +775,13 @@
     if (fieldShown(r.potencia)) rows.push(['POTENCIA', escapeHtml(String(r.potencia)) + ' W']);
     if (fieldShown(r.ganancia)) rows.push(['GANANCIA', escapeHtml(String(r.ganancia)) + ' dBi']);
     if (fieldShown(r.ubicacion)) rows.push(['UBICACIÓN', escapeHtml(r.ubicacion)]);
+    if (fieldShown(r.labels)) {
+      const labelsHtml =
+        typeof formatStationLabelsHtml === 'function'
+          ? formatStationLabelsHtml(r.labels)
+          : escapeHtml(String(r.labels));
+      rows.push(['ETIQUETAS', labelsHtml]);
+    }
     if (fieldShown(r.vence)) rows.push(['VENCE', escapeHtml(r.vence)]);
     if (r.isEcholink) {
       const ccf = (r.conference || '').trim();
@@ -850,10 +857,10 @@
     const filteredNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || []).filter(n=>visibleSet.has(n.idx))].sort((a,b)=>a.dist-b.dist);
     if(filteredNeighbors.length === 0) return;
     const esc = v => (v == null || v === '') ? '' : (''+v).includes(',') || (''+v).includes('"') ? '"' + (''+v).replace(/"/g, '""') + '"' : ''+v;
-    const headers = ['Repetidor','Señal nodo cercano','Club','Región','Comuna','RX (MHz)','TX (MHz)','Tono (Hz)','Banda','Distancia (km)'];
+    const headers = ['Repetidor','Señal nodo cercano','Club','Región','Comuna','RX (MHz)','TX (MHz)','Tono (Hz)','Banda','Etiquetas','Distancia (km)'];
     const rows = filteredNeighbors.map(n=>{
       const nb = NODES[n.idx];
-      return [r.signal, nb.signal, nb.nombre || getClubName(nb.signal), nb.region, nb.comuna || '', nb.rx || '', nb.tx || '', nb.tono || '', nb.banda || '', n.dist];
+      return [r.signal, nb.signal, nb.nombre || getClubName(nb.signal), nb.region, nb.comuna || '', nb.rx || '', nb.tx || '', nb.tono || '', nb.banda || '', nb.labels || '', n.dist];
     });
     const csv = [headers.join(','), ...rows.map(row=>row.map(esc).join(','))].join('\n');
     const blob = new Blob(['\ufeff'+csv], { type: 'text/csv;charset=utf-8' });

@@ -2415,6 +2415,43 @@ body.page-list main { padding: 24px 32px; }
   border: 1px solid #0277bd;
   color: #81d4fa;
 }
+/* Etiquetas internas (CSV): #hashtag por token, color estable por texto */
+.station-label-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 7px;
+  align-items: center;
+  max-width: 100%;
+}
+.station-label-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xxs);
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+  line-height: 1.25;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  border: 1px solid hsla(var(--label-h), 55%, 52%, 0.55);
+  color: hsl(var(--label-h), 65%, 78%);
+  background: hsla(var(--label-h), 48%, 46%, 0.22);
+}
+html[data-theme="light"] .station-label-tag {
+  border-color: hsla(var(--label-h), 50%, 40%, 0.42);
+  color: hsl(var(--label-h), 55%, 28%);
+  background: hsla(var(--label-h), 45%, 93%, 0.98);
+}
+.sb-val .station-label-tags {
+  justify-content: flex-end;
+  text-align: right;
+}
+@media (max-width: 520px) {
+  .sb-val .station-label-tags {
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
 /* DMR: valores separados por espacio (CSV) → chips que envuelven en móvil */
 .dmr-tokens {
   display: inline-flex;

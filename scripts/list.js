@@ -205,6 +205,13 @@
     if (fieldShown(r.region)) rows.push([['Región', ''], fmtVal(r.region)]);
     if (fieldShown(r.comuna)) rows.push([['Comuna', ''], fmtVal(r.comuna)]);
     if (fieldShown(r.ubicacion)) rows.push([['Ubicación', ''], fmtVal(r.ubicacion)]);
+    if (fieldShown(r.labels)) {
+      const labelsHtml =
+        typeof formatStationLabelsHtml === 'function'
+          ? formatStationLabelsHtml(r.labels)
+          : escapeHtml(String(r.labels));
+      rows.push([['Etiquetas', 'station-detail-grid-full'], labelsHtml, 'html']);
+    }
     if (r.lat != null && r.lon != null && !isNaN(r.lat) && !isNaN(r.lon)) {
       rows.push([['Lat / Lon', ''], r.lat.toFixed(5) + ', ' + r.lon.toFixed(5)]);
     }
