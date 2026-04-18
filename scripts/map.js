@@ -782,6 +782,15 @@
           : escapeHtml(String(r.labels));
       rows.push(['ETIQUETAS', labelsHtml]);
     }
+    if (fieldShown(r.notes)) {
+      const notesHtml = String(r.notes)
+        .split(/\r?\n/)
+        .map(function (line) {
+          return escapeHtml(line);
+        })
+        .join('<br>');
+      rows.push(['NOTAS', '<span class="sb-notes">' + notesHtml + '</span>']);
+    }
     if (fieldShown(r.vence)) rows.push(['VENCE', escapeHtml(r.vence)]);
     if (r.isEcholink) {
       const ccf = (r.conference || '').trim();

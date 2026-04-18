@@ -1529,6 +1529,13 @@ html[data-theme="light"] .btn-toggle-propagation[aria-pressed="true"] {
 .sb-freq-val {
   color: var(--accent);
 }
+.sb-detail-grid .sb-val .sb-notes {
+  display: block;
+  font-size: var(--fs-xxs);
+  color: var(--text);
+  line-height: 1.45;
+  font-family: var(--font-sans);
+}
 .sb-section-title {
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
@@ -4003,7 +4010,8 @@ html[data-theme="light"] .rpt-table tbody tr { border-bottom-color: rgba(0,0,0,0
     align-content: start;
     width: 100%;
   }
-  .sb-detail-grid .sb-row:has(.dmr-inline) {
+  .sb-detail-grid .sb-row:has(.dmr-inline),
+  .sb-detail-grid .sb-row:has(.sb-notes) {
     grid-column: 1 / -1;
   }
   .sb-detail-grid .sb-row {
