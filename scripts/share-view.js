@@ -138,7 +138,7 @@
     }
     return {
       title: 'Radiomap',
-      text: '¡Hola! Te comparto este mapa de estaciones de radio contigo: ' + url,
+      text: '¡Hola! Te comparto este mapa de estaciones de radio: ' + url,
     };
   }
 
