@@ -1,6 +1,6 @@
 # Radiomap — reference
 
-Companion to [`SKILL.md`](SKILL.md). URL/query details, globals, script roles.
+Companion to [`CLAUDE.md`](../CLAUDE.md). URL/query details, globals, script roles.
 
 ## `data/data.js` globals
 
@@ -20,7 +20,7 @@ Node objects follow CSV-derived fields (see `data/README.md`); the generator may
 
 ## Share / URL query parameters
 
-Implemented in [`scripts/share-view.js`](../../scripts/share-view.js) (build) and [`scripts/location-filter.js`](../../scripts/location-filter.js) (`loadFilterState`, `urlHasShareParams`).
+Implemented in [`scripts/share-view.js`](../scripts/share-view.js) (build) and [`scripts/location-filter.js`](../scripts/location-filter.js) (`loadFilterState`, `urlHasShareParams`).
 
 | Param | Notes |
 |-------|--------|
@@ -31,7 +31,7 @@ Implemented in [`scripts/share-view.js`](../../scripts/share-view.js) (build) an
 | `conference` | Repeatable or comma-separated |
 | `echolink` | Legacy: `only` / `no` maps to type filters if `type` absent |
 | `echolinkConference` | Legacy single conference if `conference` absent |
-| `near` | `lat,lon` (decimal) for “cerca de mí” anchor |
+| `near` | `lat,lon` (decimal) for "cerca de mí" anchor |
 | `nearRadius` | Radius km when distance semantics apply (near, signal anchor, etc.) |
 | `signal` | Reference station for distance filter / map focus |
 | `mlat`, `mlon`, `zoom` | Map center and zoom (map page) |
@@ -42,7 +42,7 @@ Implemented in [`scripts/share-view.js`](../../scripts/share-view.js) (build) an
 
 ## Propagation docs
 
-- **User-facing:** [`propagacion.html`](../../propagacion.html) (deployed as `/propagacion.html`). **Contributors:** [`data/propagation/README.md`](../../data/propagation/README.md) (Signal-Server, SRTM/OpenTopography citation pointer, experimental note).
+- **User-facing:** [`propagacion.html`](../propagacion.html) (deployed as `/propagacion.html`). **Contributors:** [`data/propagation/README.md`](../data/propagation/README.md) (Signal-Server, SRTM/OpenTopography citation pointer, experimental note).
 
 ## Script map (repo root: `scripts/`)
 
