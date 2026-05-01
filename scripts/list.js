@@ -737,13 +737,59 @@
   function getExportCriteria() {
     return typeof getExportFilterCriteria === 'function' ? getExportFilterCriteria() : { search: '', nearMe: !!(typeof getDistanceFilterAnchor === 'function' && getDistanceFilterAnchor()), bandas: [], regions: [], types: [], conferences: [] };
   }
+  function openExportDialog() {
+    const dialog = document.getElementById('export-dialog');
+    if (!dialog) return;
+    const exportRows = getFiltered();
+    const criteria = getExportCriteria();
+
+    document.getElementById('export-dialog-csv').onclick = function() {
+      if (typeof window.radiomapGaEvent === 'function') window.radiomapGaEvent('radiomap_csv_download', { page_type: 'list' });
+      exportRepeatersCSV(exportRows, criteria);
+      dialog.close();
+    };
+
+    const radioList = document.getElementById('export-dialog-radios');
+    radioList.innerHTML = '';
+    (window.RADIOMAP_EXPORTERS || []).forEach(function(exp) {
+      const btn = document.createElement('button');
+      btn.className = 'export-dialog__option';
+      btn.textContent = exp.label;
+      btn.onclick = function() {
+        if (typeof window.radiomapGaEvent === 'function') window.radiomapGaEvent('radiomap_exporter_download', { page_type: 'list', exporter: exp.id });
+        if (typeof window[exp.fn] === 'function') window[exp.fn](exportRows, criteria);
+        dialog.close();
+      };
+      const row = document.createElement('div');
+      row.className = 'export-dialog__option-row';
+      row.appendChild(btn);
+      if (exp.url) {
+        const link = document.createElement('a');
+        link.className = 'export-dialog__option-link';
+        try { link.textContent = new URL(exp.url).hostname; } catch(_) { link.textContent = exp.url; }
+        link.href = exp.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        row.appendChild(link);
+      }
+      radioList.appendChild(row);
+    });
+
+    document.getElementById('export-dialog-cancel').onclick = function() { dialog.close(); };
+    dialog.showModal();
+  }
+
   document.querySelectorAll('#btn-download-csv, #btn-download-csv-menu').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
-      if (typeof window.radiomapGaEvent === 'function') window.radiomapGaEvent('radiomap_csv_download', {});
-      exportRepeatersCSV(getFiltered(), getExportCriteria());
       closeMenu();
+      openExportDialog();
     });
+  });
+
+  const _exportDlg = document.getElementById('export-dialog');
+  if (_exportDlg) _exportDlg.addEventListener('click', function(e) {
+    if (e.target === this) this.close();
   });
 
   document.addEventListener('click', function(e) {

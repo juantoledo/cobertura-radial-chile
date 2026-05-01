@@ -48,6 +48,9 @@
 <script defer src="scripts/dmr-ui.js?v=__VERSION__"></script>
 <script defer src="scripts/share-view.js?v=__VERSION__"></script>
 <script defer src="scripts/export-csv.js?v=__VERSION__"></script>
+<script defer src="scripts/exporter/registry.js?v=__VERSION__"></script>
+<script defer src="scripts/exporter/chirp/mapper.js?v=__VERSION__"></script>
+<script defer src="scripts/exporter/ft5dr/mapper.js?v=__VERSION__"></script>
 <script defer src="scripts/help.js?v=__VERSION__"></script>
 <script defer src="scripts/station-display.js?v=__VERSION__"></script>
 <script defer src="scripts/propagation-map.js?v=__VERSION__"></script>
@@ -253,5 +256,19 @@
 </div><!-- #app -->
 
 <script defer src="scripts/map.js?v=__VERSION__"></script>
+
+<dialog id="export-dialog" aria-labelledby="export-dialog-title">
+  <div class="export-dialog__inner">
+    <h2 id="export-dialog-title" class="export-dialog__title">Descargar datos</h2>
+    <button id="export-dialog-csv" class="export-dialog__option export-dialog__option--primary">
+      <span class="material-symbols-outlined" aria-hidden="true">download</span>
+      CSV Estándar Radiomap
+    </button>
+    <div class="export-dialog__section-label">Para radio/software específico</div>
+    <div id="export-dialog-radios" class="export-dialog__radio-list"></div>
+    <p class="export-dialog__disclaimer"><strong>⚠ Altamente experimental.</strong> Estos archivos pueden fallar al importar o contener valores incorrectos. <strong>Verifique potencia y configuraciones antes de cargar.</strong> No opere sin revisar.</p>
+    <button id="export-dialog-cancel" class="export-dialog__cancel">Cancelar</button>
+  </div>
+</dialog>
 </body>
 </html>

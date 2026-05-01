@@ -809,7 +809,7 @@
 
     const filteredNeighbors = [{idx: idx, dist: 0}, ...r._neighbors.filter(n=>visibleSet.has(n.idx))].sort((a,b)=>a.dist-b.dist);
     if(filteredNeighbors.length > 0){
-      html += '<div class="sb-section-title">NODOS CERCANOS <span class="sb-neighbor-actions"><a href="#" class="sb-download-neighbors" onclick="downloadNeighborsCSV();return false" title="Descargar nodos cercanos como CSV"><span class="material-symbols-outlined" aria-hidden="true">download</span> CSV</a><a href="#" class="sb-share-neighbors" onclick="shareNeighbors();return false" title="Compartir enlace con filtros, mapa y esta repetidora (panel de nodos cercanos)"><span class="material-symbols-outlined" aria-hidden="true">share</span> Compartir</a></span></div>';
+      html += '<div class="sb-section-title">NODOS CERCANOS <span class="sb-neighbor-actions"><a href="#" class="sb-download-neighbors" onclick="openNeighborsExportDialog();return false" title="Descargar nodos cercanos como CSV"><span class="material-symbols-outlined" aria-hidden="true">download</span> CSV</a><a href="#" class="sb-share-neighbors" onclick="shareNeighbors();return false" title="Compartir enlace con filtros, mapa y esta repetidora (panel de nodos cercanos)"><span class="material-symbols-outlined" aria-hidden="true">share</span> Compartir</a></span></div>';
       html += filteredNeighbors.map(n=>{
         const nb = NODES[n.idx];
         const nc = REGION_COLORS[nb.region]||'#5e35b1';
@@ -876,6 +876,52 @@
     a.download = 'nodos-cercanos-' + r.signal.replace(/\s+/g,'-') + '.csv';
     a.click();
     URL.revokeObjectURL(a.href);
+  }
+
+  function openNeighborsExportDialog(){
+    if(selectedIdx == null) return;
+    const dialog = document.getElementById('export-dialog');
+    if (!dialog) return;
+    const r = NODES[selectedIdx];
+    const filteredNeighbors = [{idx: selectedIdx, dist: 0}, ...(r._neighbors || []).filter(n=>visibleSet.has(n.idx))].sort((a,b)=>a.dist-b.dist);
+    if(filteredNeighbors.length === 0) return;
+    const exportRows = filteredNeighbors.map(n => NODES[n.idx]);
+    const criteria = { signal: r.signal, context: 'neighbors' };
+
+    document.getElementById('export-dialog-csv').onclick = function() {
+      if (typeof window.radiomapGaEvent === 'function') window.radiomapGaEvent('radiomap_csv_download', { page_type: 'map' });
+      downloadNeighborsCSV();
+      dialog.close();
+    };
+
+    const radioList = document.getElementById('export-dialog-radios');
+    radioList.innerHTML = '';
+    (window.RADIOMAP_EXPORTERS || []).forEach(function(exp) {
+      const btn = document.createElement('button');
+      btn.className = 'export-dialog__option';
+      btn.textContent = exp.label;
+      btn.onclick = function() {
+        if (typeof window.radiomapGaEvent === 'function') window.radiomapGaEvent('radiomap_exporter_download', { page_type: 'map', exporter: exp.id });
+        if (typeof window[exp.fn] === 'function') window[exp.fn](exportRows, criteria);
+        dialog.close();
+      };
+      const row = document.createElement('div');
+      row.className = 'export-dialog__option-row';
+      row.appendChild(btn);
+      if (exp.url) {
+        const link = document.createElement('a');
+        link.className = 'export-dialog__option-link';
+        try { link.textContent = new URL(exp.url).hostname; } catch(_) { link.textContent = exp.url; }
+        link.href = exp.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        row.appendChild(link);
+      }
+      radioList.appendChild(row);
+    });
+
+    document.getElementById('export-dialog-cancel').onclick = function() { dialog.close(); };
+    dialog.showModal();
   }
 
   function shareNeighbors(){
@@ -1078,20 +1124,66 @@
   function getExportCriteria() {
     return typeof getExportFilterCriteria === 'function' ? getExportFilterCriteria() : { search: '', nearMe: !!(typeof getDistanceFilterAnchor === 'function' && getDistanceFilterAnchor()), bandas: [], regions: [], types: [], conferences: [] };
   }
+  function openExportDialog() {
+    const dialog = document.getElementById('export-dialog');
+    if (!dialog) return;
+    const visibleSignals = new Set(NODES.filter((r,i)=>visibleSet.has(i)).map(r=>r.signal));
+    const rows = NODES.filter(n=>visibleSignals.has(n.signal));
+    const exportRows = rows.length ? rows : NODES;
+    const criteria = getExportCriteria();
+
+    document.getElementById('export-dialog-csv').onclick = function() {
+      if (typeof window.radiomapGaEvent === 'function') window.radiomapGaEvent('radiomap_csv_download', { page_type: 'map' });
+      exportRepeatersCSV(exportRows, criteria);
+      dialog.close();
+    };
+
+    const radioList = document.getElementById('export-dialog-radios');
+    radioList.innerHTML = '';
+    (window.RADIOMAP_EXPORTERS || []).forEach(function(exp) {
+      const btn = document.createElement('button');
+      btn.className = 'export-dialog__option';
+      btn.textContent = exp.label;
+      btn.onclick = function() {
+        if (typeof window.radiomapGaEvent === 'function') window.radiomapGaEvent('radiomap_exporter_download', { page_type: 'map', exporter: exp.id });
+        if (typeof window[exp.fn] === 'function') window[exp.fn](exportRows, criteria);
+        dialog.close();
+      };
+      const row = document.createElement('div');
+      row.className = 'export-dialog__option-row';
+      row.appendChild(btn);
+      if (exp.url) {
+        const link = document.createElement('a');
+        link.className = 'export-dialog__option-link';
+        try { link.textContent = new URL(exp.url).hostname; } catch(_) { link.textContent = exp.url; }
+        link.href = exp.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        row.appendChild(link);
+      }
+      radioList.appendChild(row);
+    });
+
+    document.getElementById('export-dialog-cancel').onclick = function() { dialog.close(); };
+    dialog.showModal();
+  }
+
   document.querySelectorAll('#btn-download-csv, #btn-download-csv-menu').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
-      if (typeof window.radiomapGaEvent === 'function') window.radiomapGaEvent('radiomap_csv_download', {});
-      const visibleSignals = new Set(NODES.filter((r,i)=>visibleSet.has(i)).map(r=>r.signal));
-      const rows = NODES.filter(n=>visibleSignals.has(n.signal));
-      exportRepeatersCSV(rows.length ? rows : NODES, getExportCriteria());
       closeMenuMap();
+      openExportDialog();
     });
+  });
+
+  document.getElementById('export-dialog').addEventListener('click', function(e) {
+    if (e.target === this) this.close();
   });
 
   window.setMode = setMode;
   window.selectRepeater = selectRepeater;
   window.downloadNeighborsCSV = downloadNeighborsCSV;
+  window.openNeighborsExportDialog = openNeighborsExportDialog;
   window.shareNeighbors = shareNeighbors;
   window.closeSidebar = closeSidebar;
   window.closeMenuMap = closeMenuMap;

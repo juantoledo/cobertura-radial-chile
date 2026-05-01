@@ -54,7 +54,9 @@ Implemented in [`scripts/share-view.js`](../scripts/share-view.js) (build) and [
 | `station-display.js` | Field visibility / empty helpers |
 | `location-filter.js` | Near me, filters, URL/session restore |
 | `share-view.js` | Build share URLs, copy/share handlers |
-| `export-csv.js` | CSV download |
+| `export-csv.js` | Generic CSV download (Spanish headers, all fields) |
+| `exporter/registry.js` | Auto-generated list of radio/software exporters; read by the download dialog |
+| `exporter/chirp/mapper.js` | Auto-generated CHIRP exporter; do not edit directly |
 | `help.js` | Help overlay, focus trap |
 | `theme.js` | Theme toggle / persistence |
 | `utils.js` | Shared helpers |
@@ -66,3 +68,4 @@ Implemented in [`scripts/share-view.js`](../scripts/share-view.js) (build) and [
 |--------|---------|
 | Regenerate `data.js` | `./scripts/sync-data.sh` |
 | Local HTTP server | `./scripts/serve.sh [PORT]` (default `8080`) |
+| Regenerate exporters | `python scripts/generate-exporter-mapper.py` — rewrites `exporter/*/mapper.js` and `exporter/registry.js` from each format's `reference.csv`; see [`scripts/exporter/README.md`](../scripts/exporter/README.md) for how to add a new format |
